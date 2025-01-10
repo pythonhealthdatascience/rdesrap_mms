@@ -12,6 +12,7 @@ Depends:
     R (>= 4.4.1)
 Imports: 
     simmer (>= 4.4.7)
+    future.apply (>= 1.11.3)
 Encoding: UTF-8
 URL: https://github.com/pythonhealthdatascience/rap_template_r_des
 BugReports: https://github.com/pythonhealthdatascience/rap_template_r_des/issues
