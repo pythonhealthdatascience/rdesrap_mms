@@ -1,0 +1,17 @@
+Package: rap_template_r_des
+Type: Package
+Title: Reproducible Discrete Event Simulation (DES) Template
+Version: 0.1.0
+Date: 2025-01-10
+Authors@R:
+    c(person("Amy", "Heather", email = "a.heather2@exeter.ac.uk",
+             role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6596-3479")))
+Description: Simple reproducible simulation template created with simmer.
+License: MIT + file LICENSE
+Imports: 
+    simmer
+Encoding: UTF-8
+URL: https://github.com/pythonhealthdatascience/rap_template_r_des
+BugReports: https://github.com/pythonhealthdatascience/rap_template_r_des/issues
+Suggests:
+    testthat
