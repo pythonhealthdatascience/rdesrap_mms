@@ -8,8 +8,10 @@ Authors@R:
              role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6596-3479")))
 Description: Simple reproducible simulation template created with simmer.
 License: MIT + file LICENSE
+Depends:
+    R (>= 4.4.1)
 Imports: 
-    simmer
+    simmer (>= 4.4.7)
 Encoding: UTF-8
 URL: https://github.com/pythonhealthdatascience/rap_template_r_des
 BugReports: https://github.com/pythonhealthdatascience/rap_template_r_des/issues
