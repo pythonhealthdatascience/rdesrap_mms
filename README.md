@@ -2,8 +2,12 @@
 
 # Simple Reproducible R<br>Discrete-Event Simulation (DES) Template
 
-![r](https://img.shields.io/badge/-R-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
-![licence](https://img.shields.io/badge/Licence-MIT-green.svg?labelColor=gray)
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml)
+![R](https://img.shields.io/badge/-R-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
+![MIT Licence](https://img.shields.io/badge/Licence-MIT-green.svg?labelColor=gray)
+<!-- badges: end -->
+
 <!-- TODO: Add DOI -->
 <!-- TODO: Add CI tests badge -->
 
