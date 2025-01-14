@@ -1,19 +1,24 @@
-Package: rap_template_r_des
+Package: simulation
 Type: Package
-Title: Reproducible Discrete Event Simulation (DES) Template
+Title: What the Package Does (Title Case)
 Version: 0.1.0
-Date: 2025-01-10
-Authors@R:
-    c(person("Amy", "Heather", email = "a.heather2@exeter.ac.uk",
-             role = c("aut", "cre"), comment = c(ORCID = "0000-0002-6596-3479")))
-Description: Simple reproducible simulation template created with simmer.
+Authors@R: c(
+    person(
+      "Jane", "Doe",
+      email = "jane@example.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
 License: MIT + file LICENSE
-Depends:
-    R (>= 4.4.1)
-Imports: 
-    simmer (>= 4.4.7)
 Encoding: UTF-8
-URL: https://github.com/pythonhealthdatascience/rap_template_r_des
-BugReports: https://github.com/pythonhealthdatascience/rap_template_r_des/issues
-Suggests:
-    testthat
+LazyData: true
+RoxygenNote: 7.3.2
+Imports:
+    simmer,
+    magrittr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -15,6 +15,11 @@ A `README` template is provided at the **end of this file**.
 
 <br>
 
+<!--
+roxygen2::roxygenise()
+devtools::check()
+-->
+
 Table of contents:
 
 * [📌 Introduction](#-introduction)
@@ -42,6 +47,31 @@ This repository provides a template for building discrete-event simulation (DES)
 * Recommendations from [Heather et al. 2025](TODO:ADDLINK) "*On the reproducibility of discrete-event simulation studies in health research: a computational investigation using open models*" (as documented in `heather_2025.md`).
 
 TBC <!-- TODO: Finish writing introduction -->
+
+<!-- TODO: Explain that structuring as package (as required by RAP) is beneficial in forcing you to keep model and analysis seperate, and so easily reuse that model in another analysis as all seperate, and as can use roxygen tools to ensure documentation is complete... devtools::check() to make sure files like DESCRIPTION are valid -->
+
+<!-- 
+
+#' Provides option of parallel processing, implemented using parLapply (as
+#' mcLapply does not work on Windows and future_lapply would often get stuck).
+#'# TODO: Test that random seeds are working properly
+# e.g. consistent results, but unique between replications
+
+# TODO: Check validity of approach to seeds...
+# https://www.r-bloggers.com/2020/09/future-1-19-1-making-sure-proper-random-numbers-are-produced-in-parallel-processing/)
+
+# TODO: Add methods that will get patient-level, trial-level and overall
+# results tables
+
+# TODO: Look at lots of examples of simmer models, for how people typically
+# layout the model code (inc. the simmer documentation itself)
+
+# TODO: Set up package, with validity checks, and Roxygen
+
+# TODO: Look at how R scripts should be organised e.g. seperate scripts for
+# seperate functions?
+
+-->
 
 ## 🧐 What are we modelling?
 

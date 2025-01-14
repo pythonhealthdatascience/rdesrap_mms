@@ -1,0 +1,63 @@
+---
+title: "Trial execution"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Trial execution}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(simmer)
+library(simulation)
+```
+
+```{r}
+envs <- trial(param=defaults())
+envs %>% get_mon_arrivals() %>% head()
+```
+
+```{r}
+# Get results
+cat("Number of patients generated in the first simulation:",
+    envs[[1]] %>% get_n_generated("patient"), "\n")
+
+# Aggregate and display resource monitoring results
+res_monitor <- do.call(rbind, lapply(envs, get_mon_resources))
+head(res_monitor)
+
+# Aggregate and display arrival monitoring results
+arrivals_monitor <- do.call(rbind, lapply(envs, get_mon_arrivals))
+head(arrivals_monitor)
+```
+
+Get process and resource parameters
+
+```{r}
+env <- envs[[1]]
+
+env %>% get_sources()
+env %>% get_resources()
+
+env %>% get_n_generated("patient")
+
+env %>% get_capacity("nurse")
+env %>% get_queue_size("nurse")
+env %>% get_server_count("nurse")
+env %>% get_queue_count("nurse")
+```
+
+Get monitoring statistics
+
+```{r}
+env %>% get_mon_arrivals() %>% head()
+env %>% get_mon_attributes() %>% head()
+env %>% get_mon_resources() %>% head()
+```
