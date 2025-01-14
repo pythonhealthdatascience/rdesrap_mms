@@ -9,6 +9,7 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
+URL: https://github.com/pythonhealthdatascience/rap_template_r_des
 Description: More about what it does (maybe more than one line).
     Continuation lines should be indented.
 License: MIT + file LICENSE

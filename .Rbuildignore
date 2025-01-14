@@ -2,3 +2,7 @@
 ^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^LICENSE\.md$
+^CONTRIBUTING\.md$
+^docs$
+^images
