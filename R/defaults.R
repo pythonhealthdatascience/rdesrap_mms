@@ -17,12 +17,12 @@
 
 defaults <- function() {
   return(list(
-    patient_inter = 4,
-    mean_n_consult_time = 10,
-    number_of_nurses = 5,
+    patient_inter = 4.0,
+    mean_n_consult_time = 10.0,
+    number_of_nurses = 5.0,
     verbose = FALSE,
-    data_collection_period = 80,
-    number_of_runs = 100,
-    cores = 1
+    data_collection_period = 80.0,
+    number_of_runs = 100.0,
+    cores = 1.0
   ))
 }

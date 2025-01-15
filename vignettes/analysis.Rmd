@@ -10,7 +10,7 @@ vignette: >
 To knit this vignette, will first need to run `devtools::install()` to fetch the latest version of our `simulation` model code.
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
+knitr::opts_chunk[["set"]](
   collapse = TRUE,
   comment = "#>"
 )
@@ -21,21 +21,23 @@ knitr::opts_chunk$set(
 Import required packages.
 
 ```{r setup}
+# nolint start: undesirable_function_linter.
 library(simmer)
 library(simulation)
+# nolint end
 ```
 
 # Run model
 
 ```{r}
-envs <- trial(param=defaults())
+envs <- trial(param = defaults())
 envs %>% get_mon_arrivals() %>% head()
 ```
 
 ```{r}
 # Get results
 cat("Number of patients generated in the first simulation:",
-    envs[[1]] %>% get_n_generated("patient"), "\n")
+    envs[[1L]] %>% get_n_generated("patient"), "\n")
 
 # Aggregate and display resource monitoring results
 res_monitor <- do.call(rbind, lapply(envs, get_mon_resources))
@@ -49,7 +51,7 @@ head(arrivals_monitor)
 Get process and resource parameters
 
 ```{r}
-env <- envs[[1]]
+env <- envs[[1L]]
 
 env %>% get_sources()
 env %>% get_resources()

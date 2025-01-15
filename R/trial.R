@@ -9,21 +9,22 @@
 #' @export
 
 trial <- function(param) {
-  if (param$cores == 1){
+  if (param[["cores"]] == 1L) {
 
     # Sequential execution
     envs <- lapply(
-      1:param$number_of_runs,
-      function(i) simulation::model(run_number = i, param = param))
+      1L:param[["number_of_runs"]],
+      function(i) simulation::model(run_number = i, param = param)
+    )
 
   } else {
     # Parallel execution
 
     # Create a cluster with specified number of cores
-    if (param$cores == -1) {
-      cores <- detectCores() -1
+    if (param[["cores"]] == -1L) {
+      cores <- detectCores() - 1L
     } else {
-      cores <- param$cores
+      cores <- param[["cores"]]
     }
     cl <- makeCluster(cores)
 
@@ -34,13 +35,11 @@ trial <- function(param) {
     clusterEvalQ(cl, library(simmer))
     clusterExport(cl, varlist = c("param", "model"))
 
-    # Set RNG streams for reproducible randomness
-    # clusterSetRNGStream(cl, iseed = 42)
-
     # Run simulations in parallel
     envs <- parLapply(
-      cl, 1:param$number_of_runs,
-      function(i) simulation::model(run_number = i, param = param))
+      cl, 1L:param[["number_of_runs"]],
+      function(i) simulation::model(run_number = i, param = param)
+    )
   }
   return(envs)
 }
