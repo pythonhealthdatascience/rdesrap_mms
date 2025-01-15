@@ -23,6 +23,7 @@ Import required packages.
 ```{r setup}
 # nolint start: undesirable_function_linter.
 library(simmer)
+library(simmer.plot)
 library(simulation)
 # nolint end
 ```
@@ -71,3 +72,41 @@ env %>% get_mon_arrivals() %>% head()
 env %>% get_mon_attributes() %>% head()
 env %>% get_mon_resources() %>% head()
 ```
+
+## Trajectory
+
+```{r}
+t0 <- trajectory("appointment") %>%
+  seize("nurse", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("nurse", 1L)
+
+get_palette <- scales::brewer_pal(type = "qual", palette = 1)
+plot(t0, fill = get_palette)
+```
+
+## Plots from `simmer.plot`
+
+```{r}
+resources <- get_mon_resources(envs)
+plot(resources, metric="usage")
+plot(resources, metric="utilization")
+plot(resources, metric = "usage", c("nurse"), items = "server")
+```
+
+```{r}
+arrivals <- get_mon_arrivals(envs)
+plot(arrivals, metric = "flow_time")
+plot(arrivals, metric = "activity_time")
+plot(arrivals, metric = "waiting_time")
+```
+
+## Tables
+
+Useful to look at `simmer.plot` documentation
+
+MIT licence
+
+Can use to help
