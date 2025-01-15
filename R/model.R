@@ -18,15 +18,18 @@ model <- function(run_number, param) {
 
   # Define the patient trajectory
   patient <- trajectory("appointment") %>%
-    seize("nurse", 1) %>%
-    timeout(function() rexp(n = 1, rate = param$mean_n_consult_time)) %>%
-    release("nurse", 1)
+    seize("nurse", 1L) %>%
+    timeout(function() {
+      rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+    }) %>%
+    release("nurse", 1L)
 
   # Create and run a simmer environment
-  simmer("simulation", verbose = param$verbose) %>%
-    add_resource("nurse", param$number_of_nurses) %>%
-    add_generator("patient", patient,
-                  function() rexp(n = 1, rate = param$patient_inter)) %>%
-    simmer::run(param$data_collection_period) %>%
+  simmer("simulation", verbose = param[["verbose"]]) %>%
+    add_resource("nurse", param[["number_of_nurses"]]) %>%
+    add_generator("patient", patient, function() {
+      rexp(n = 1L, rate = 1L / param[["patient_inter"]])
+    }) %>%
+    simmer::run(param[["data_collection_period"]]) %>%
     wrap()
 }
