@@ -1,11 +1,13 @@
 ---
-title: "Trial execution"
+title: "Analysis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Trial execution}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+To knit this vignette, will first need to run `devtools::install()` to fetch the latest version of our `simulation` model code.
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -14,10 +16,16 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Set up
+
+Import required packages.
+
 ```{r setup}
 library(simmer)
 library(simulation)
 ```
+
+# Run model
 
 ```{r}
 envs <- trial(param=defaults())
