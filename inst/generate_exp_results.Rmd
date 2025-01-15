@@ -14,8 +14,10 @@ The run time is provided at the end of this notebook.
 Load required packages.
 
 ```{r setup}
+# nolint start: undesirable_function_linter.
 library(simmer)
 library(simulation)
+# nolint end
 ```
 
 Start timer.
@@ -27,7 +29,7 @@ start_time <- Sys.time()
 Define path to expected results.
 
 ```{r path}
-tests <- "../tests/testthat/testdata/"
+tests <- file.path("..", "tests", "testthat", "testdata")
 ```
 
 ## Run model and save results
@@ -35,12 +37,12 @@ tests <- "../tests/testthat/testdata/"
 ```{r}
 # Define model parameters
 param <- defaults()
-param["patient_inter"] <- 4.0
-param["mean_n_consult_time"] <- 10.0
-param["number_of_nurses"] <- 5.0
-param["data_collection_period"] <- 80.0
-param["number_of_runs"] <- 10.0
-param["cores"] <- 1.0
+param[["patient_inter"]] <- 4.0
+param[["mean_n_consult_time"]] <- 10.0
+param[["number_of_nurses"]] <- 5.0
+param[["data_collection_period"]] <- 80.0
+param[["number_of_runs"]] <- 10.0
+param[["cores"]] <- 1.0
 
 # Run the trial
 envs <- trial(param = param)
@@ -55,18 +57,20 @@ write.csv(result_arrivals, file.path(tests, "arrivals.csv"), row.names = FALSE)
 ```{r}
 # Monitored data about resources
 result_resources <- do.call(rbind, lapply(envs, get_mon_resources))
-write.csv(result_resources, file.path(tests, "resources.csv"), row.names = FALSE)
+write.csv(
+  result_resources, file.path(tests, "resources.csv"), row.names = FALSE
+)
 ```
 
 ## Calculate run time
 
 ```{r end_timer}
-# Get run time in seconds 
+# Get run time in seconds
 end_time <- Sys.time()
-runtime <- as.numeric(end_time - start_time, units="secs")
+runtime <- as.numeric(end_time - start_time, units = "secs")
 
 # Display converted to minutes and seconds
-minutes <- as.integer(runtime / 60)
-seconds <- as.integer(runtime %% 60)
+minutes <- as.integer(runtime / 60L)
+seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```

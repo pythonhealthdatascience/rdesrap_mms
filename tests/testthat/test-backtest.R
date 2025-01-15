@@ -6,12 +6,12 @@ test_that("results from a new run match those previously generated", {
   # Choose a specific set of parameters (ensuring test remains on the same
   # set, regardless of any changes to defaults())
   param <- defaults()
-  param["patient_inter"] <- 4.0
-  param["mean_n_consult_time"] <- 10.0
-  param["number_of_nurses"] <- 5.0
-  param["data_collection_period"] <- 80.0
-  param["number_of_runs"] <- 10.0
-  param["cores"] <- 1.0
+  param[["patient_inter"]] <- 4.0
+  param[["mean_n_consult_time"]] <- 10.0
+  param[["number_of_nurses"]] <- 5.0
+  param[["data_collection_period"]] <- 80.0
+  param[["number_of_runs"]] <- 10.0
+  param[["cores"]] <- 1.0
 
   # Run the trial then get the monitored arrivals and resources
   envs <- trial(param = param)
@@ -27,6 +27,8 @@ test_that("results from a new run match those previously generated", {
   attr(resources, "na.action") <- NULL
 
   # Compare results
+  # nolint start: expect_identical_linter.
   expect_equal(arrivals, exp_arrivals)
   expect_equal(resources, exp_resources)
+  # nolint end
 })

@@ -31,10 +31,6 @@ trial <- function(param) {
     # Ensure the cluster is stopped upon exit
     on.exit(stopCluster(cl))
 
-    # Load required libraries and export variables to workers
-    clusterEvalQ(cl, library(simmer))
-    clusterExport(cl, varlist = c("param", "model"))
-
     # Run simulations in parallel
     envs <- parLapply(
       cl, 1L:param[["number_of_runs"]],
