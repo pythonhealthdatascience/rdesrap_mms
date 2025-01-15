@@ -1,3 +1,8 @@
+# Unit testing for the Discrete-Event Simulation (DES) Model.
+#
+# These check specific parts of the simulation and code, ensuring they work
+# correctly and as expected.
+
 test_that("the same seed returns the same result", {
 
   # Run model twice using same run number (which will set the seed)
