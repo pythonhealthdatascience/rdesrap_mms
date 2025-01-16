@@ -10,6 +10,8 @@ Authors@R: c(
     )
   )
 URL: https://github.com/pythonhealthdatascience/rap_template_r_des
+Description: Template reproducible analytical pipeline (RAP) for simple R
+    discrete-event simulation (DES) model.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -17,11 +19,15 @@ RoxygenNote: 7.3.2
 Imports:
     simmer,
     magrittr,
-    simmer.plot
+    dplyr,
+    purrr,
+    rlang,
+    tidyr
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    lintr
+    lintr,
+    simmer.plot
 VignetteBuilder: knitr
 Config/testthat/edition: 3
