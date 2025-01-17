@@ -5,21 +5,15 @@ output: html_document
 
 To knit this vignette, will first need to run `devtools::install()` to fetch the latest version of our `simulation` model code.
 
-```{r, include = FALSE}
-knitr::opts_chunk[["set"]](
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 ## Set up
 
 Import required packages.
 
 ```{r}
 # nolint start: undesirable_function_linter.
+library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
-library(simmer)
+library(simmer, warn.conflicts = FALSE)
 library(simulation)
 
 options(dplyr.summarise.inform = FALSE)
@@ -59,9 +53,9 @@ write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
 
 ```{r}
 #' Plot spread of results from across replications, for chosen column.
-#' 
+#'
 #' Generate figure, show it, and then save under specified file name.
-#' 
+#'
 #' @param column Name of column to plot.
 #' @param x_label X axis label.
 #' @param file Filename to save figure to.
@@ -70,7 +64,7 @@ plot_results_spread <- function(column, x_label, file) {
 
   # Generate plot
   p <- ggplot(trial_results, aes(.data[[column]])) +
-    geom_histogram(bins=10) +
+    geom_histogram(bins = 10L) +
     labs(x = x_label, y = "Frequency") +
     theme_minimal()
 
@@ -78,7 +72,7 @@ plot_results_spread <- function(column, x_label, file) {
   print(p)
 
   # Save plot
-  ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4)
+  ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4L)
 }
 ```
 
@@ -104,52 +98,52 @@ plot_results_spread(column = "utilisation_nurse",
 
 ```{r}
 #' Run a set of scenarios
-#' 
+#'
 #' @param scenarios List where key is name of parameter and value is a list of
 #' different values to run in scenarios
-#' 
+#'
 #' @return Tibble with results from each replication for each scenario.
 
 run_scenarios <- function(scenarions) {
   # Generate all permutations of the scenarios
   all_scenarios <- expand.grid(scenarios)
-  
+
   # Preview the number of scenarios
   print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
-  
+
   results <- list()
-  
+
   # Iterate through each scenario
   for (index in seq_len(nrow(all_scenarios))) {
-  
+
     # Filter to one of the scenarios
     scenario_to_run <- all_scenarios[index, ]
-  
+
     # Print the scenario parameters
     formatted_scenario <- toString(
       paste0(names(scenario_to_run), " = ", scenario_to_run)
     )
     print(paste0("Scenario: ", formatted_scenario))
-  
+
     # Overwrite defaults with scenario-specific values
     param <- defaults()
     param[["scenario_name"]] <- index
     for (key in names(scenario_to_run)) {
       param[[key]] <- scenario_to_run[[key]]
     }
-  
+
     # Run the trial for the current scenario
     envs <- trial(param)
-  
+
     # Extract results
     scenario_result <- process_replications(envs)
-  
+
     # Append scenario parameters to the results
     scenario_result[["scenario"]] <- index
     for (key in names(scenario_to_run)) {
       scenario_result[[key]] <- scenario_to_run[[key]]
     }
-  
+
     # Append to results list
     results[[index]] <- scenario_result
   }
@@ -176,8 +170,94 @@ head(scenario_results)
 Example plot
 
 ```{r}
-# TODO: Add plot of results over time with confidence intervals
+#' Plot results from different model scenarios.
+#'
+#' @param results Dataframe with results from each replication of scenarios.
+#' @param x_var Name of variable to plot on X axis.
+#' @param result_var Name of variable with results, to plot on Y axis.
+#' @param colour_var Name of variable to colour lines with (or set to NULL).
+#' @param xaxis_title Title for X axis.
+#' @param yaxis_title Title for Y axis.
+#' @param legend_title Title for figure legend.
+#' @param file Filename to save figure to.
+
+plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
+                          yaxis_title, legend_title, file) {
+  # If x_var and colour_var are provided, combine both in a list to use
+  # as grouping variables when calculating average results
+  if (!is.null(colour_var)) {
+    group_vars <- c(x_var, colour_var)
+  } else {
+    group_vars <- c(x_var)
+  }
+
+  # Calculate average results from each scenario
+  df <- scenario_results %>%
+    group_by_at(group_vars) %>%
+    summarise(mean = mean(.data[[result_var]]),
+              std_dev = sd(.data[[result_var]]),
+              ci_lower = t.test(.data[[result_var]])[["conf.int"]][[1L]],
+              ci_upper = t.test(.data[[result_var]])[["conf.int"]][[2L]])
+
+  # Generate plot - with or without colour, depending on whether it was given
+  if (!is.null(colour_var)) {
+    # Convert colour variable to factor so it is treated like categorical
+    df[[colour_var]] <- as.factor(df[[colour_var]])
+    # Create plot
+    p <- ggplot(df, aes(x = .data[[x_var]], y = mean,
+                        group = .data[[colour_var]])) +
+      geom_line(aes(color = .data[[colour_var]])) +
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]],
+                      fill = .data[[colour_var]]), alpha = 0.1)
+  } else {
+    # Create plot
+    p <- ggplot(df, aes(x = .data[[x_var]], y = mean)) +
+      geom_line() +
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
+                  alpha = 0.1)
+  }
+
+  # Modify labels and style
+  p <- p +
+    labs(x = xaxis_title, y = yaxis_title, color = legend_title,
+         fill = legend_title) +
+    theme_minimal()
+
+  # Show plot
+  print(p)
+
+  # Save plot
+  ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4L)
+}
 ```
+
+```{r}
+plot_scenario(
+  results = scenario_results,
+  x_var = "patient_inter",
+  result_var = "mean_waiting_time_nurse",
+  colour_var = "number_of_nurses",
+  xaxis_title = "Patient inter-arrival time",
+  yaxis_title = "Mean wait time for nurse (minutes)",
+  legend_title = "Nurses",
+  file = "scenario_nurse_wait.png"
+)
+
+plot_scenario(
+  results = scenario_results,
+  x_var = "patient_inter",
+  result_var = "utilisation_nurse",
+  colour_var = "number_of_nurses",
+  xaxis_title = "Patient inter-arrival time",
+  yaxis_title = "Mean nurse utilisation",
+  legend_title = "Nurses",
+  file = "scenario_nurse_util.png"
+)
+
+# TODO: Why do these confidence intervals look much wider than in Python?
+```
+
+Example table.
 
 ## Sensitivity analysis
 
