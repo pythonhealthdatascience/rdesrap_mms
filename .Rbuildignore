@@ -5,6 +5,8 @@
 ^LICENSE\.md$
 ^CONTRIBUTING\.md$
 ^docs$
-^images
+^images$
 ^\.github$
-^\.lintr
+^\.lintr$
+^outputs$
+^notebooks$

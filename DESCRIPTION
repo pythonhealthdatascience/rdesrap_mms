@@ -23,11 +23,7 @@ Imports:
     purrr,
     rlang,
     tidyr
-Suggests: 
-    knitr,
-    rmarkdown,
+Suggests:
     testthat (>= 3.0.0),
-    lintr,
-    ggplot2
-VignetteBuilder: knitr
+    lintr
 Config/testthat/edition: 3

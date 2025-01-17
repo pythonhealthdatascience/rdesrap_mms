@@ -29,7 +29,7 @@ start_time <- Sys.time()
 Define path to expected results.
 
 ```{r path}
-tests <- file.path("..", "tests", "testthat", "testdata")
+testdata_dir <- file.path("..", "tests", "testthat", "testdata")
 ```
 
 ## Run model and save results
@@ -56,7 +56,7 @@ results <- process_replications(envs)
 head(results)
 
 # Save to csv
-write.csv(results, file.path(tests, "results.csv"), row.names = FALSE)
+write.csv(results, file.path(testdata_dir, "results.csv"), row.names = FALSE)
 ```
 
 ## Calculate run time

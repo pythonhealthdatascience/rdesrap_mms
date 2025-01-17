@@ -1,10 +1,6 @@
 ---
 title: "Analysis"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Analysis}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: html_document
 ---
 
 To knit this vignette, will first need to run `devtools::install()` to fetch the latest version of our `simulation` model code.
@@ -39,7 +35,7 @@ start_time <- Sys.time()
 Define path to outputs folder.
 
 ```{r}
-output_dir <- file.path("../outputs")
+output_dir <- file.path("..", "outputs")
 ```
 
 ## Default run
