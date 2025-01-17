@@ -6,29 +6,22 @@ test_that("results from a new run match those previously generated", {
   # Choose a specific set of parameters (ensuring test remains on the same
   # set, regardless of any changes to defaults())
   param <- defaults()
-  param[["patient_inter"]] <- 4.0
-  param[["mean_n_consult_time"]] <- 10.0
-  param[["number_of_nurses"]] <- 5.0
-  param[["data_collection_period"]] <- 80.0
-  param[["number_of_runs"]] <- 10.0
-  param[["cores"]] <- 1.0
+  param[["patient_inter"]] <- 4L
+  param[["mean_n_consult_time"]] <- 10L
+  param[["number_of_nurses"]] <- 5L
+  param[["data_collection_period"]] <- 80L
+  param[["number_of_runs"]] <- 10L
+  param[["cores"]] <- 1L
 
   # Run the trial then get the monitored arrivals and resources
   envs <- trial(param = param)
-  arrivals <- do.call(rbind, lapply(envs, simmer::get_mon_arrivals))
-  resources <- do.call(rbind, lapply(envs, simmer::get_mon_resources))
+  results <- as.data.frame(process_replications(envs))
 
   # Import the expected results
-  exp_arrivals <- read.csv(test_path("testdata", "arrivals.csv"))
-  exp_resources <- read.csv(test_path("testdata", "resources.csv"))
-
-  # Remove the na.action attribute before comparing
-  attr(arrivals, "na.action") <- NULL
-  attr(resources, "na.action") <- NULL
+  exp_results <- read.csv(test_path("testdata", "results.csv"))
 
   # Compare results
   # nolint start: expect_identical_linter.
-  expect_equal(arrivals, exp_arrivals)
-  expect_equal(resources, exp_resources)
+  expect_equal(results, exp_results)
   # nolint end
 })

@@ -37,29 +37,26 @@ tests <- file.path("..", "tests", "testthat", "testdata")
 ```{r}
 # Define model parameters
 param <- defaults()
-param[["patient_inter"]] <- 4.0
-param[["mean_n_consult_time"]] <- 10.0
-param[["number_of_nurses"]] <- 5.0
-param[["data_collection_period"]] <- 80.0
-param[["number_of_runs"]] <- 10.0
-param[["cores"]] <- 1.0
+param[["patient_inter"]] <- 4L
+param[["mean_n_consult_time"]] <- 10L
+param[["number_of_nurses"]] <- 5L
+param[["data_collection_period"]] <- 80L
+param[["number_of_runs"]] <- 10L
+param[["cores"]] <- 1L
 
 # Run the trial
 envs <- trial(param = param)
 ```
 
 ```{r}
-# Monitored data about arrivals
-result_arrivals <- do.call(rbind, lapply(envs, get_mon_arrivals))
-write.csv(result_arrivals, file.path(tests, "arrivals.csv"), row.names = FALSE)
-```
+# Process results
+results <- process_replications(envs)
 
-```{r}
-# Monitored data about resources
-result_resources <- do.call(rbind, lapply(envs, get_mon_resources))
-write.csv(
-  result_resources, file.path(tests, "resources.csv"), row.names = FALSE
-)
+# Preview
+head(results)
+
+# Save to csv
+write.csv(results, file.path(tests, "results.csv"), row.names = FALSE)
 ```
 
 ## Calculate run time
