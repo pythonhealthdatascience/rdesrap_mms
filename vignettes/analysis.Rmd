@@ -2,7 +2,7 @@
 title: "Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Trial execution}
+  %\VignetteIndexEntry{Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,8 +22,8 @@ Import required packages.
 
 ```{r}
 # nolint start: undesirable_function_linter.
+library(ggplot2)
 library(simmer)
-library(simmer.plot)
 library(simulation)
 
 options(dplyr.summarise.inform = FALSE)
@@ -39,9 +39,7 @@ start_time <- Sys.time()
 Define path to outputs folder.
 
 ```{r}
-# TODO: Determine appropriate location for saving output data (given package
-# structure), then save all files below.
-# output_dir = file.path("../outputs/")
+output_dir <- file.path("../outputs")
 ```
 
 ## Default run
@@ -58,74 +56,131 @@ Process results and save to `.csv`.
 trial_results <- process_replications(envs)
 head(trial_results)
 
-# trial_results.to_csv
+write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
 ```
 
 ## View spread of results across replication
 
 ```{r}
-# TODO: Add these plots
-# TODO: Remove simmer.plot() if not used anywhere
+#' Plot spread of results from across replications, for chosen column.
+#' 
+#' Generate figure, show it, and then save under specified file name.
+#' 
+#' @param column Name of column to plot.
+#' @param x_label X axis label.
+#' @param file Filename to save figure to.
+
+plot_results_spread <- function(column, x_label, file) {
+
+  # Generate plot
+  p <- ggplot(trial_results, aes(.data[[column]])) +
+    geom_histogram(bins=10) +
+    labs(x = x_label, y = "Frequency") +
+    theme_minimal()
+
+  # Show plot
+  print(p)
+
+  # Save plot
+  ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4)
+}
+```
+
+```{r}
+plot_results_spread(column = "arrivals",
+                    x_label = "Arrivals",
+                    file = "spread_arrivals.png")
+
+plot_results_spread(column = "mean_waiting_time_nurse",
+                    x_label = "Mean wait time for nurse",
+                    file = "spread_nurse_wait.png")
+
+plot_results_spread(column = "mean_activity_time_nurse",
+                    x_label = "Mean length of nurse consultation",
+                    file = "spread_nurse_time.png")
+
+plot_results_spread(column = "utilisation_nurse",
+                    x_label = "Mean nurse utilisation",
+                    file = "spread_nurse_util.png")
 ```
 
 ## Scenario analysis
 
 ```{r}
-# TODO: Set up as function
-# TODO: Use process_replications
+#' Run a set of scenarios
+#' 
+#' @param scenarios List where key is name of parameter and value is a list of
+#' different values to run in scenarios
+#' 
+#' @return Tibble with results from each replication for each scenario.
 
+run_scenarios <- function(scenarions) {
+  # Generate all permutations of the scenarios
+  all_scenarios <- expand.grid(scenarios)
+  
+  # Preview the number of scenarios
+  print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
+  
+  results <- list()
+  
+  # Iterate through each scenario
+  for (index in seq_len(nrow(all_scenarios))) {
+  
+    # Filter to one of the scenarios
+    scenario_to_run <- all_scenarios[index, ]
+  
+    # Print the scenario parameters
+    formatted_scenario <- toString(
+      paste0(names(scenario_to_run), " = ", scenario_to_run)
+    )
+    print(paste0("Scenario: ", formatted_scenario))
+  
+    # Overwrite defaults with scenario-specific values
+    param <- defaults()
+    param[["scenario_name"]] <- index
+    for (key in names(scenario_to_run)) {
+      param[[key]] <- scenario_to_run[[key]]
+    }
+  
+    # Run the trial for the current scenario
+    envs <- trial(param)
+  
+    # Extract results
+    scenario_result <- process_replications(envs)
+  
+    # Append scenario parameters to the results
+    scenario_result[["scenario"]] <- index
+    for (key in names(scenario_to_run)) {
+      scenario_result[[key]] <- scenario_to_run[[key]]
+    }
+  
+    # Append to results list
+    results[[index]] <- scenario_result
+  }
+  return(do.call(rbind, results))
+}
+```
+
+```{r}
+# Run scenario analysis
 scenarios <- list(
   patient_inter = c(3L, 4L, 5L, 6L, 7L),
   number_of_nurses = c(5L, 6L, 7L, 8L)
 )
 
-# Generate all permutations of the scenarios
-all_scenarios <- expand.grid(scenarios)
+scenario_results <- run_scenarios(scenarios)
+```
 
-# Preview the number of scenarios
-print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
+```{r}
+# Preview scenario results dataframe
+print(dim(scenario_results))
+head(scenario_results)
+```
 
-results_resources <- list()
-results_arrivals <- list()
+Example plot
 
-# Iterate through each scenario
-for (index in seq_len(nrow(all_scenarios))) {
-
-  # Filter to one of the scenarios
-  scenario_to_run <- all_scenarios[index, ]
-
-  # Print the scenario parameters
-  formatted_scenario <- toString(
-    paste0(names(scenario_to_run), " = ", scenario_to_run)
-  )
-  print(paste0("Scenario: ", formatted_scenario))
-
-  # Overwrite defaults with scenario-specific values
-  param <- defaults()
-  param[["scenario_name"]] <- index
-  for (key in names(scenario_to_run)) {
-    param[[key]] <- scenario_to_run[[key]]
-  }
-
-  # Run the trial for the current scenario
-  envs <- trial(param)
-
-  # Extract results
-  trial_resources <- do.call(rbind, lapply(envs, get_mon_resources))
-  trial_arrivals <- do.call(rbind, lapply(envs, get_mon_arrivals))
-
-  # Append scenario parameters to the results
-  trial_resources[["scenario"]] <- index
-  trial_arrivals[["scenario"]] <- index
-  for (key in names(scenario_to_run)) {
-    trial_resources[[key]] <- scenario_to_run[[key]]
-    trial_arrivals[[key]] <- scenario_to_run[[key]]
-  }
-
-  # Append to results list
-  results_resources[[index]] <- trial_resources
-  results_arrivals[[index]] <- trial_arrivals
-}
+```{r}
+# TODO: Add plot of results over time with confidence intervals
 ```
 
 ## Sensitivity analysis
