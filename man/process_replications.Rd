@@ -13,11 +13,19 @@ process_replications(env)
 Tibble with results from each replication.
 }
 \description{
-For each replication (there can be one or many), calculate the number of
-arrivals, as well as mean results for each resource: wait time, activity
-time and utilisation. Credit: The utilisation calculation is taken from
-the plot.resources.utilization() function in simmer.plot 0.1.18, which is
+For each replication (there can be one or many), calculate the: (1) number
+of arrivals, (2) mean wait time for each resource, (3) mean activity time
+for each resource, and (4) mean resource utilisation.
+}
+\details{
+Credit: The utilisation calculation is taken from the
+`plot.resources.utilization()` function in simmer.plot 0.1.18, which is
 shared under an MIT Licence (Ucar I, Smeets B (2023). simmer.plot: Plotting
 Methods for 'simmer'. https://r-simmer.org
 https://github.com/r-simmer/simmer.plot.).
+
+Note: When calculating the mean wait time, it is rounded to 10 decimal
+places. This is to resolve an issue that occurs because `start_time`,
+`end_time` and `activity_time` are all to 14 decimal places, but the
+calculations can produce tiny negative values due to floating-point errors.
 }

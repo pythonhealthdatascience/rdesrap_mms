@@ -1,12 +1,19 @@
 #' Process results from each replication.
 #'
-#' For each replication (there can be one or many), calculate the number of
-#' arrivals, as well as mean results for each resource: wait time, activity
-#' time and utilisation. Credit: The utilisation calculation is taken from
-#' the plot.resources.utilization() function in simmer.plot 0.1.18, which is
+#' For each replication (there can be one or many), calculate the: (1) number
+#' of arrivals, (2) mean wait time for each resource, (3) mean activity time
+#' for each resource, and (4) mean resource utilisation.
+#'
+#' Credit: The utilisation calculation is taken from the
+#' `plot.resources.utilization()` function in simmer.plot 0.1.18, which is
 #' shared under an MIT Licence (Ucar I, Smeets B (2023). simmer.plot: Plotting
 #' Methods for 'simmer'. https://r-simmer.org
 #' https://github.com/r-simmer/simmer.plot.).
+#'
+#' Note: When calculating the mean wait time, it is rounded to 10 decimal
+#' places. This is to resolve an issue that occurs because `start_time`,
+#' `end_time` and `activity_time` are all to 14 decimal places, but the
+#' calculations can produce tiny negative values due to floating-point errors.
 #'
 #' @param env Simmer Environment or list of simmer Environments.
 #'
@@ -21,19 +28,16 @@
 
 process_replications <- function(env) {
 
-  # Use simmer functions to get resources and arrivals from environment/s
+  # Extract monitoring data from the Simmer environment/s.
   raw_resources <- get_mon_resources(env)
   raw_arrivals <- get_mon_arrivals(env, per_resource = TRUE)
 
-  # Number of arrivals
+  # Calculate the number of arrivals
   calc_arr <- raw_arrivals %>%
     group_by(.data[["replication"]]) %>%
     summarise(arrivals = n_distinct(.data[["name"]]))
 
-  # Mean wait time for each resource
-  # start_time, end_time, and activity_time have up to 14 decimal places.
-  # Calculations may produce small negative values due to floating-point errors.
-  # We round waiting_time to 10 decimal places to fix these.
+  # Calculate the mean wait time for each resource
   calc_wait <- raw_arrivals %>%
     mutate(
       waiting_time = round(
@@ -48,7 +52,7 @@ process_replications <- function(env) {
                 values_from = "mean_waiting_time",
                 names_glue = "mean_waiting_time_{resource}")
 
-  # Mean time spent with each resource
+  # Calculate the mean time spent with each resource
   calc_act <- raw_arrivals %>%
     group_by(.data[["resource"]], .data[["replication"]]) %>%
     summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
@@ -56,7 +60,9 @@ process_replications <- function(env) {
                 values_from = "mean_activity_time",
                 names_glue = "mean_activity_time_{resource}")
 
-  # Mean utilisation
+  # Calculate the mean resource utilisation
+  # Utilisation is given by the total effective usage time (`in_use`) over the
+  # total time intervals considered (`dt`).
   calc_util <- raw_resources %>%
     group_by(.data[["resource"]], .data[["replication"]]) %>%
     mutate(dt = lead(.data[["time"]]) - .data[["time"]]) %>%
@@ -71,7 +77,7 @@ process_replications <- function(env) {
                 values_from = "utilisation",
                 names_glue = "utilisation_{resource}")
 
-  # Combine into a single dataframe
+  # Combine all calculated metrics into a single dataframe
   result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
     reduce(full_join, by = "replication")
 
