@@ -16,97 +16,133 @@ knitr::opts_chunk[["set"]](
 )
 ```
 
-# Set up
+## Set up
 
 Import required packages.
 
-```{r setup}
+```{r}
 # nolint start: undesirable_function_linter.
 library(simmer)
 library(simmer.plot)
 library(simulation)
+
+options(dplyr.summarise.inform = FALSE)
 # nolint end
 ```
 
-# Run model
+Start timer.
+
+```{r}
+start_time <- Sys.time()
+```
+
+Define path to outputs folder.
+
+```{r}
+# TODO: Determine appropriate location for saving output data (given package
+# structure), then save all files below.
+# output_dir = file.path("../outputs/")
+```
+
+## Default run
+
+Run with default parameters.
 
 ```{r}
 envs <- trial(param = defaults())
-envs %>% get_mon_arrivals() %>% head()
 ```
+
+Process results and save to `.csv`.
 
 ```{r}
-# Get results
-cat("Number of patients generated in the first simulation:",
-    envs[[1L]] %>% get_n_generated("patient"), "\n")
+trial_results <- process_replications(envs)
+head(trial_results)
 
-# Aggregate and display resource monitoring results
-res_monitor <- do.call(rbind, lapply(envs, get_mon_resources))
-head(res_monitor)
-
-# Aggregate and display arrival monitoring results
-arrivals_monitor <- do.call(rbind, lapply(envs, get_mon_arrivals))
-head(arrivals_monitor)
+# trial_results.to_csv
 ```
 
-Get process and resource parameters
+## View spread of results across replication
 
 ```{r}
-env <- envs[[1L]]
-
-env %>% get_sources()
-env %>% get_resources()
-
-env %>% get_n_generated("patient")
-
-env %>% get_capacity("nurse")
-env %>% get_queue_size("nurse")
-env %>% get_server_count("nurse")
-env %>% get_queue_count("nurse")
+# TODO: Add these plots
+# TODO: Remove simmer.plot() if not used anywhere
 ```
 
-Get monitoring statistics
+## Scenario analysis
 
 ```{r}
-env %>% get_mon_arrivals() %>% head()
-env %>% get_mon_attributes() %>% head()
-env %>% get_mon_resources() %>% head()
+# TODO: Set up as function
+# TODO: Use process_replications
+
+scenarios <- list(
+  patient_inter = c(3L, 4L, 5L, 6L, 7L),
+  number_of_nurses = c(5L, 6L, 7L, 8L)
+)
+
+# Generate all permutations of the scenarios
+all_scenarios <- expand.grid(scenarios)
+
+# Preview the number of scenarios
+print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
+
+results_resources <- list()
+results_arrivals <- list()
+
+# Iterate through each scenario
+for (index in seq_len(nrow(all_scenarios))) {
+
+  # Filter to one of the scenarios
+  scenario_to_run <- all_scenarios[index, ]
+
+  # Print the scenario parameters
+  formatted_scenario <- toString(
+    paste0(names(scenario_to_run), " = ", scenario_to_run)
+  )
+  print(paste0("Scenario: ", formatted_scenario))
+
+  # Overwrite defaults with scenario-specific values
+  param <- defaults()
+  param[["scenario_name"]] <- index
+  for (key in names(scenario_to_run)) {
+    param[[key]] <- scenario_to_run[[key]]
+  }
+
+  # Run the trial for the current scenario
+  envs <- trial(param)
+
+  # Extract results
+  trial_resources <- do.call(rbind, lapply(envs, get_mon_resources))
+  trial_arrivals <- do.call(rbind, lapply(envs, get_mon_arrivals))
+
+  # Append scenario parameters to the results
+  trial_resources[["scenario"]] <- index
+  trial_arrivals[["scenario"]] <- index
+  for (key in names(scenario_to_run)) {
+    trial_resources[[key]] <- scenario_to_run[[key]]
+    trial_arrivals[[key]] <- scenario_to_run[[key]]
+  }
+
+  # Append to results list
+  results_resources[[index]] <- trial_resources
+  results_arrivals[[index]] <- trial_arrivals
+}
 ```
 
-## Trajectory
+## Sensitivity analysis
 
 ```{r}
-t0 <- trajectory("appointment") %>%
-  seize("nurse", 1L) %>%
-  timeout(function() {
-    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
-  }) %>%
-  release("nurse", 1L)
-
-get_palette <- scales::brewer_pal(type = "qual", palette = 1)
-plot(t0, fill = get_palette)
+# TODO: Add sensitivity analysis
 ```
 
-## Plots from `simmer.plot`
+## Calculate run time
 
-```{r}
-resources <- get_mon_resources(envs)
-plot(resources, metric="usage")
-plot(resources, metric="utilization")
-plot(resources, metric = "usage", c("nurse"), items = "server")
+```{r end_timer}
+# Get run time in seconds
+end_time <- Sys.time()
+runtime <- as.numeric(end_time - start_time, units = "secs")
+
+# Display converted to minutes and seconds
+minutes <- as.integer(runtime / 60L)
+seconds <- as.integer(runtime %% 60L)
+print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
-
-```{r}
-arrivals <- get_mon_arrivals(envs)
-plot(arrivals, metric = "flow_time")
-plot(arrivals, metric = "activity_time")
-plot(arrivals, metric = "waiting_time")
-```
-
-## Tables
-
-Useful to look at `simmer.plot` documentation
-
-MIT licence
-
-Can use to help
