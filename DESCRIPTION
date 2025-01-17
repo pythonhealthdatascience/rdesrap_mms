@@ -27,7 +27,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    lintr,
-    simmer.plot
+    lintr
 VignetteBuilder: knitr
 Config/testthat/edition: 3

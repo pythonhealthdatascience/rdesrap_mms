@@ -1529,23 +1529,6 @@
       ],
       "Hash": "6e993f252a8a2a7bf19856c82af1414b"
     },
-    "simmer.plot": {
-      "Package": "simmer.plot",
-      "Version": "0.1.18",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "DiagrammeR",
-        "R",
-        "dplyr",
-        "ggplot2",
-        "scales",
-        "simmer",
-        "tidyr",
-        "utils"
-      ],
-      "Hash": "d0d5f1e1985d5d0bfe1b98bb731ccbb9"
-    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
