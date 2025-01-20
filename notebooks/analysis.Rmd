@@ -15,6 +15,8 @@ library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(simmer, warn.conflicts = FALSE)
 library(simulation)
+library(tidyr, warn.conflicts = FALSE)
+library(xtable)
 
 options(dplyr.summarise.inform = FALSE)
 # nolint end
@@ -104,7 +106,7 @@ plot_results_spread(column = "utilisation_nurse",
 #'
 #' @return Tibble with results from each replication for each scenario.
 
-run_scenarios <- function(scenarions) {
+run_scenarios <- function(scenarios) {
   # Generate all permutations of the scenarios
   all_scenarios <- expand.grid(scenarios)
 
@@ -117,7 +119,7 @@ run_scenarios <- function(scenarions) {
   for (index in seq_len(nrow(all_scenarios))) {
 
     # Filter to one of the scenarios
-    scenario_to_run <- all_scenarios[index, ]
+    scenario_to_run <- all_scenarios[index, , drop = FALSE]
 
     # Print the scenario parameters
     formatted_scenario <- toString(
@@ -180,6 +182,8 @@ Example plot
 #' @param yaxis_title Title for Y axis.
 #' @param legend_title Title for figure legend.
 #' @param file Filename to save figure to.
+#'
+#' @return Dataframe with the average results calculated.
 
 plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
                           yaxis_title, legend_title, file) {
@@ -192,7 +196,7 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   }
 
   # Calculate average results from each scenario
-  df <- scenario_results %>%
+  df <- results %>%
     group_by_at(group_vars) %>%
     summarise(mean = mean(.data[[result_var]]),
               std_dev = sd(.data[[result_var]]),
@@ -228,11 +232,14 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
 
   # Save plot
   ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4L)
+
+  # Return the results dataframe
+  return(df)
 }
 ```
 
 ```{r}
-plot_scenario(
+result <- plot_scenario(
   results = scenario_results,
   x_var = "patient_inter",
   result_var = "mean_waiting_time_nurse",
@@ -243,7 +250,7 @@ plot_scenario(
   file = "scenario_nurse_wait.png"
 )
 
-plot_scenario(
+result <- plot_scenario(
   results = scenario_results,
   x_var = "patient_inter",
   result_var = "utilisation_nurse",
@@ -259,10 +266,95 @@ plot_scenario(
 
 Example table.
 
+```{r}
+# Process table
+table <- result %>%
+  # Combine mean and CI into single column, and round
+  mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper),
+         nurses = sprintf("% s nurses", number_of_nurses)) %>%
+  dplyr::select(patient_inter, nurses, mean_ci) %>%
+  # Convert from long to wide format
+  pivot_wider(names_from = nurses, values_from = mean_ci) %>%
+  rename(`Patient inter-arrival time` = patient_inter)
+
+# Convert to latex, display and save
+table_latex <- xtable(table)
+print(table_latex)
+print(table_latex, file = file.path(output_dir, "scenario_nurse_util.tex"))
+```
+
 ## Sensitivity analysis
 
+Can use similar code to perform sensitivity analyses.
+
+**How does sensitivity analysis differ from scenario analysis?**
+
+* Scenario analysis focuses on a set of predefined situations which are plausible or relevant to the problem being studied. It can often involve varying multiple parameters simulatenously. The purpose is to understand how the system operates under different hypothetical scenarios.
+* Sensitivity analysis varies one (or a small group) of parameters and assesses the impact of small changes in that parameter on outcomes. The purpose is to understand how uncertainty in the inputs affects the model, and how robust results are to variation in those inputs.
+
 ```{r}
-# TODO: Add sensitivity analysis
+# Run sensitivity analysis
+consult <- list(mean_n_consult_time = c(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L))
+sensitivity_consult <- run_scenarios(consult)
+```
+
+```{r}
+# Preview result
+head(sensitivity_consult)
+```
+
+```{r}
+# Plot results of sensitivity analysis
+sensitivity_result <- plot_scenario(
+  results = sensitivity_consult,
+  x_var = "mean_n_consult_time",
+  result_var = "mean_waiting_time_nurse",
+  colour_var = NULL,
+  xaxis_title = "Mean nurse consultation time (minutes)",
+  yaxis_title = "Mean wait time for nurse (minutes)",
+  legend_title = "Nurses",
+  file = "sensitivity_consult_time.png"
+)
+```
+
+```{r}
+# Process table
+sensitivity_table <- sensitivity_result  %>%
+  # Combine mean and CI into single column, and round
+  mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper)) %>%
+  # Select and rename columns
+  dplyr::select(mean_n_consult_time, mean_ci) %>%
+  rename(`Mean nurse consultation time` = mean_n_consult_time,
+         `Mean wait time for nurse (95 percent confidence interval)` = mean_ci)
+
+# Convert to latex, display and save
+sensitivity_table_latex <- xtable(sensitivity_table)
+print(sensitivity_table_latex)
+print(sensitivity_table_latex,
+      file = file.path(output_dir, "sensitivity_consult_time"))
+```
+
+## Example run with logs
+
+The `verbose` parameter set in our `defaults()` function is used to control whether simmer runs the model with `verbose` set to TRUE or FALSE.
+
+If TRUE, this will output lots of information to the screen - currently set to give information on each patient as they arrive and then see the nurse. Therefore, it is only best used when running the simulation for a short time with few patients.
+
+```{r}
+param <- defaults()
+param[["param.data_collection_period"]] <- 100L
+param[["number_of_runs"]] <- 1L
+param[["cores"]] <- 0L
+param[["verbose"]] <- TRUE
+
+verbose_run <- model(run_number = 0, param = param)
+```
+
+This will align with the recorded results of each patient.
+
+```{r}
+# Compare to patient-level results
+get_mon_arrivals(verbose_run)
 ```
 
 ## Calculate run time

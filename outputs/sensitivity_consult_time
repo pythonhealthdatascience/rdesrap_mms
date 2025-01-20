@@ -1,0 +1,19 @@
+% latex table generated in R 4.4.1 by xtable 1.8-4 package
+% Mon Jan 20 15:19:56 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrl}
+  \hline
+ & Mean nurse consultation time & Mean wait time for nurse (95 percent confidence interval) \\ 
+  \hline
+1 &   8 & 0.09 (0.01, 0.17) \\ 
+  2 &   9 & 0.20 (0.04, 0.37) \\ 
+  3 &  10 & 0.14 (0.08, 0.20) \\ 
+  4 &  11 & 0.35 (0.17, 0.52) \\ 
+  5 &  12 & 0.46 (0.26, 0.66) \\ 
+  6 &  13 & 0.64 (0.37, 0.90) \\ 
+  7 &  14 & 0.72 (0.41, 1.02) \\ 
+  8 &  15 & 1.06 (0.67, 1.45) \\ 
+   \hline
+\end{tabular}
+\end{table}
