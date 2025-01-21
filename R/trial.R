@@ -5,14 +5,14 @@
 #' @importFrom parallel detectCores makeCluster stopCluster clusterEvalQ
 #' @importFrom parallel clusterExport parLapply
 #'
-#' @return A list of Simmer environment objects, one for each run.
+#' @return Named list with two tables: monitored arrivals and resources.
 #' @export
 
 trial <- function(param) {
   if (param[["cores"]] == 1L) {
 
     # Sequential execution
-    envs <- lapply(
+    results <- lapply(
       1L:param[["number_of_runs"]],
       function(i) simulation::model(run_number = i, param = param)
     )
@@ -32,10 +32,18 @@ trial <- function(param) {
     on.exit(stopCluster(cl))
 
     # Run simulations in parallel
-    envs <- parLapply(
+    results <- parLapply(
       cl, 1L:param[["number_of_runs"]],
       function(i) simulation::model(run_number = i, param = param)
     )
   }
-  return(envs)
+
+  # Combine the results from multiple replications into just two dataframes
+  if (param[["number_of_runs"]] > 1) {
+    all_arrivals <- do.call(rbind, lapply(results, function(x) x$arrivals))
+    all_resources <- do.call(rbind, lapply(results, function(x) x$resources))
+    results <- list(arrivals = all_arrivals, resources = all_resources)
+  }
+
+  return(results)
 }

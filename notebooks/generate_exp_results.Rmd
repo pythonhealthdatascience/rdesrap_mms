@@ -45,12 +45,12 @@ param_class[["update"]](list(patient_inter = 4L,
                              cores = 1L))
 
 # Run the trial
-envs <- trial(param = get_param(param_class))
+raw_results <- trial(param = get_param(param_class))
 ```
 
 ```{r}
 # Process results
-results <- process_replications(envs)
+results <- process_replications(raw_results)
 
 # Preview
 head(results)

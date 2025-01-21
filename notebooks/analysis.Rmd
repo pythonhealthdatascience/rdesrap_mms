@@ -336,6 +336,19 @@ print(sensitivity_table_latex,
       file = file.path(output_dir, "sensitivity_consult_time.tex"))
 ```
 
+## NaN results
+
+Note: In this model, if patients are still waiting to be seen at the end of the simulation, they will have NaN results. These patients are included in the results as we set `ongoing = TRUE` for `get_mon_arrivals()`.
+
+<!-- TODO: Do we handle these appropriately in analysis of results within this template and python template? Could do with including an example to show why this matters, to show importance of that backlog, and how to incorporate into analysis, and not just dropping those NaN? -->
+
+```{r}
+param_class <- defaults()
+param_class[["update"]](list(patient_inter = 0.5))
+result = model(run_number = 0L, param = get_param(param_class))
+tail(result[["arrivals"]])
+```
+
 ## Example run with logs
 
 The `verbose` parameter set in our parameter list is used to control whether simmer runs the model with `verbose` set to TRUE or FALSE.

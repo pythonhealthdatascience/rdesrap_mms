@@ -15,12 +15,13 @@
 #'   \item \code{mean_n_consult_time}: Mean nurse consultation time in
 #'   minutes.
 #'   \item \code{number_of_nurses}: Number of available nurses (integer).
-#'   \item \code{verbose}: Whether to print activity information (logical).
 #'   \item \code{data_collection_period}: Duration of data collection
 #'   period in minutes.
 #'   \item \code{number_of_runs}: Number of simulation runs (integer).
+#'   \item \code{scenario_name}: Label for the scenario (int|float|string).
 #'   \item \code{cores}: Number of cores to use for parallel execution
 #'   (integer).
+#'   \item \code{verbose}: Whether to print activity information (logical).
 #' }
 #'
 #' @docType class
@@ -36,11 +37,11 @@ Defaults <- R6Class( # nolint
       patient_inter = 4L,
       mean_n_consult_time = 10L,
       number_of_nurses = 5L,
-      verbose = FALSE,
       data_collection_period = 80L,
       number_of_runs = 100L,
+      scenario_name = NULL,
       cores = 1L,
-      scenario_name = NULL
+      verbose = FALSE
     ),
     allowed_keys = NULL
   ),

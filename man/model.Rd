@@ -12,7 +12,7 @@ model(run_number, param)
 \item{param}{List containing parameters for the simulation.}
 }
 \value{
-Simmer environment object containing the simulation results.
+Named list with two tables: monitored arrivals and resources
 }
 \description{
 Run simulation

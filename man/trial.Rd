@@ -10,7 +10,7 @@ trial(param)
 \item{param}{List containing parameters for the simulations.}
 }
 \value{
-A list of Simmer environment objects, one for each run.
+Named list with two tables: monitored arrivals and resources.
 }
 \description{
 Run simulation for multiple replications, sequentially or in parallel.

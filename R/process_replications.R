@@ -15,30 +15,31 @@
 #' `end_time` and `activity_time` are all to 14 decimal places, but the
 #' calculations can produce tiny negative values due to floating-point errors.
 #'
-#' @param env Simmer Environment or list of simmer Environments.
+#' @param results Named list with `arrivals` containing output from
+#' `get_mon_arrivals()` and `resources` containing output from
+#' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
 #'
 #' @importFrom dplyr group_by summarise n_distinct mutate lead full_join
 #' @importFrom purrr reduce
 #' @importFrom rlang .data
 #' @importFrom simmer get_mon_resources get_mon_arrivals
-#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_wider drop_na
 #'
 #' @return Tibble with results from each replication.
 #' @export
 
-process_replications <- function(env) {
+process_replications <- function(results) {
 
-  # Extract monitoring data from the Simmer environment/s.
-  raw_resources <- get_mon_resources(env)
-  raw_arrivals <- get_mon_arrivals(env, per_resource = TRUE)
+  # Remove patients who were still waiting and had not completed
+  results[["arrivals"]] <- results[["arrivals"]] %>% drop_na(end_time)
 
   # Calculate the number of arrivals
-  calc_arr <- raw_arrivals %>%
+  calc_arr <- results[["arrivals"]] %>%
     group_by(.data[["replication"]]) %>%
     summarise(arrivals = n_distinct(.data[["name"]]))
 
   # Calculate the mean wait time for each resource
-  calc_wait <- raw_arrivals %>%
+  calc_wait <- results[["arrivals"]] %>%
     mutate(
       waiting_time = round(
         .data[["end_time"]] - (
@@ -53,7 +54,7 @@ process_replications <- function(env) {
                 names_glue = "mean_waiting_time_{resource}")
 
   # Calculate the mean time spent with each resource
-  calc_act <- raw_arrivals %>%
+  calc_act <- results[["arrivals"]] %>%
     group_by(.data[["resource"]], .data[["replication"]]) %>%
     summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
     pivot_wider(names_from = "resource",
@@ -63,7 +64,7 @@ process_replications <- function(env) {
   # Calculate the mean resource utilisation
   # Utilisation is given by the total effective usage time (`in_use`) over the
   # total time intervals considered (`dt`).
-  calc_util <- raw_resources %>%
+  calc_util <- results[["resources"]] %>%
     group_by(.data[["resource"]], .data[["replication"]]) %>%
     mutate(dt = lead(.data[["time"]]) - .data[["time"]]) %>%
     mutate(capacity = pmax(.data[["capacity"]], .data[["server"]])) %>%
@@ -78,8 +79,8 @@ process_replications <- function(env) {
                 names_glue = "utilisation_{resource}")
 
   # Combine all calculated metrics into a single dataframe
-  result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
+  processed_result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
     reduce(full_join, by = "replication")
 
-  return(result)
+  return(processed_result)
 }

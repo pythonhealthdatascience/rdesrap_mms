@@ -4,10 +4,12 @@
 \alias{process_replications}
 \title{Process results from each replication.}
 \usage{
-process_replications(env)
+process_replications(results)
 }
 \arguments{
-\item{env}{Simmer Environment or list of simmer Environments.}
+\item{results}{Named list with `arrivals` containing output from
+`get_mon_arrivals()` and `resources` containing output from
+`get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
 }
 \value{
 Tibble with results from each replication.
