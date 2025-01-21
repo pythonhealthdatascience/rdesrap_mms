@@ -15,7 +15,6 @@ Load required packages.
 
 ```{r setup}
 # nolint start: undesirable_function_linter.
-library(simmer)
 library(simulation)
 # nolint end
 ```
@@ -36,16 +35,17 @@ testdata_dir <- file.path("..", "tests", "testthat", "testdata")
 
 ```{r}
 # Define model parameters
-param <- defaults()
-param[["patient_inter"]] <- 4L
-param[["mean_n_consult_time"]] <- 10L
-param[["number_of_nurses"]] <- 5L
-param[["data_collection_period"]] <- 80L
-param[["number_of_runs"]] <- 10L
-param[["cores"]] <- 1L
+param_class <- defaults()
+param_class[["update"]](list())
+param_class[["update"]](list(patient_inter = 4L,
+                             mean_n_consult_time = 10L,
+                             number_of_nurses = 5L,
+                             data_collection_period = 80L,
+                             number_of_runs = 10L,
+                             cores = 1L))
 
 # Run the trial
-envs <- trial(param = param)
+envs <- trial(param = get_param(param_class))
 ```
 
 ```{r}

@@ -6,19 +6,19 @@
 test_that("the same seed returns the same result", {
 
   # Run model twice using same run number (which will set the seed)
-  env1 <- model(run_number = 0L, param = defaults())
-  env2 <- model(run_number = 0L, param = defaults())
+  env1 <- model(run_number = 0L, param = get_param(defaults()))
+  env2 <- model(run_number = 0L, param = get_param(defaults()))
   expect_identical(process_replications(env1), process_replications(env2))
 
   # Conversely, if run with different run number, expect different
-  env1 <- model(run_number = 0L, param = defaults())
-  env2 <- model(run_number = 1L, param = defaults())
+  env1 <- model(run_number = 0L, param = get_param(defaults()))
+  env2 <- model(run_number = 1L, param = get_param(defaults()))
   expect_failure(
     expect_identical(process_replications(env1), process_replications(env2))
   )
 
   # Repeat experiment, but with multiple replications
-  envs1 <- trial(param = defaults())
-  envs2 <- trial(param = defaults())
+  envs1 <- trial(param = get_param(defaults()))
+  envs2 <- trial(param = get_param(defaults()))
   expect_identical(process_replications(envs1), process_replications(envs2))
 })

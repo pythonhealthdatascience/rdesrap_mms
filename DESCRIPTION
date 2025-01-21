@@ -22,7 +22,8 @@ Imports:
     dplyr,
     purrr,
     rlang,
-    tidyr
+    tidyr,
+    R6
 Suggests:
     testthat (>= 3.0.0),
     lintr
