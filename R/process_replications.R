@@ -31,7 +31,8 @@
 process_replications <- function(results) {
 
   # Remove patients who were still waiting and had not completed
-  results[["arrivals"]] <- results[["arrivals"]] %>% drop_na(end_time)
+  results[["arrivals"]] <- results[["arrivals"]] %>%
+    drop_na(.data[["end_time"]])
 
   # Calculate the number of arrivals
   calc_arr <- results[["arrivals"]] %>%

@@ -262,8 +262,6 @@ result <- plot_scenario(
   legend_title = "Nurses",
   file = "scenario_nurse_util.png"
 )
-
-# TODO: Why do these confidence intervals look much wider than in Python?
 ```
 
 Example table.

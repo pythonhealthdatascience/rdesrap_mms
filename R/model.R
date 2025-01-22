@@ -33,7 +33,7 @@ model <- function(run_number, param) {
   # Create simmer environment, add nurse resource and patient generator, and
   # run the simulation. Capture output, which will save a log if verbose=TRUE
   log <- capture.output(
-    env <- simmer("simulation", verbose = verbose) %>%
+    env = simmer("simulation", verbose = verbose) %>%
       add_resource("nurse", param[["number_of_nurses"]]) %>%
       add_generator("patient", patient, function() {
         rexp(n = 1L, rate = 1L / param[["patient_inter"]])
@@ -45,7 +45,7 @@ model <- function(run_number, param) {
   # Save and/or display the log
   if (isTRUE(verbose)) {
     # Create full log message by adding parameters
-    param_string <- paste(names(param), param, sep="=",collapse="; " )
+    param_string <- paste(names(param), param, sep = "=", collapse = "; ")
     full_log <- append(c("Parameters:", param_string, "Log:"), log)
     # Print to console
     if (isTRUE(param[["log_to_console"]])) {

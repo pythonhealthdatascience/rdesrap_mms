@@ -1,5 +1,9 @@
 #' Run simulation for multiple replications, sequentially or in parallel.
 #'
+#' Note: The parallel processing is implemented using `parLapply` because
+#' `mcLapply`` does not work on Windows and `future_lapply`` would often get
+#' stuck.
+#'
 #' @param param List containing parameters for the simulations.
 #'
 #' @importFrom parallel detectCores makeCluster stopCluster clusterEvalQ
@@ -39,9 +43,13 @@ trial <- function(param) {
   }
 
   # Combine the results from multiple replications into just two dataframes
-  if (param[["number_of_runs"]] > 1) {
-    all_arrivals <- do.call(rbind, lapply(results, function(x) x$arrivals))
-    all_resources <- do.call(rbind, lapply(results, function(x) x$resources))
+  if (param[["number_of_runs"]] > 1L) {
+    all_arrivals <- do.call(
+      rbind, lapply(results, function(x) x[["arrivals"]])
+    )
+    all_resources <- do.call(
+      rbind, lapply(results, function(x) x[["resources"]])
+    )
     results <- list(arrivals = all_arrivals, resources = all_resources)
   }
 

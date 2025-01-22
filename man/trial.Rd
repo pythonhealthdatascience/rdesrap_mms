@@ -13,5 +13,7 @@ trial(param)
 Named list with two tables: monitored arrivals and resources.
 }
 \description{
-Run simulation for multiple replications, sequentially or in parallel.
+Note: The parallel processing is implemented using `parLapply` because
+`mcLapply`` does not work on Windows and `future_lapply`` would often get
+stuck.
 }
