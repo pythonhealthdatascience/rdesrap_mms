@@ -3,13 +3,12 @@
 # Simple Reproducible R<br>Discrete-Event Simulation (DES) Template
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml)
-![R](https://img.shields.io/badge/-R-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
+![R 4.4.1](https://img.shields.io/badge/-R_4.4.1-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
 ![MIT Licence](https://img.shields.io/badge/Licence-MIT-green.svg?labelColor=gray)
+[![R-CMD-check](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml)
+[![Lint](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml)
 <!-- badges: end -->
-
 <!-- TODO: Add DOI -->
-<!-- TODO: Add CI tests badge -->
 
 A simple template for creating DES models in R, within a **reproducible analytical pipeline (RAP)** <br>
 Click on <kbd>Use this template</kbd> to initialise new repository.<br>
@@ -18,11 +17,6 @@ A `README` template is provided at the **end of this file**.
 </div>
 
 <br>
-
-<!--
-roxygen2::roxygenise()
-devtools::check()
--->
 
 Table of contents:
 
@@ -50,34 +44,35 @@ This repository provides a template for building discrete-event simulation (DES)
 * ["Levels of RAP" framework](https://nhsdigital.github.io/rap-community-of-practice/introduction_to_RAP/levels_of_RAP/) from the NHS RAP Community of Practice (as documented in `nhs_rap.md`).
 * Recommendations from [Heather et al. 2025](TODO:ADDLINK) "*On the reproducibility of discrete-event simulation studies in health research: a computational investigation using open models*" (as documented in `heather_2025.md`).
 
-TBC <!-- TODO: Finish writing introduction -->
+✨ **Design practices:** Functions are documented with `roxygen2` docstrings and `lintr` is used to lint `.R` and `.Rmd` files.
 
-<!-- TODO: Explain that structuring as package (as required by RAP) is beneficial in forcing you to keep model and analysis seperate, and so easily reuse that model in another analysis as all seperate, and as can use roxygen tools to ensure documentation is complete... devtools::check() to make sure files like DESCRIPTION are valid -->
+🧱 **Package structure:** The simulation code (`R/`) is structured as a little local R package. It is installed in our environment using `devtools::install()` and then `library(simulation)`. This means it can easily be used anywhere else in the directory - here, in `notebooks/` and `tests/` - without needing any additional code (e.g. no need to run `source()` with paths to the files).
 
-<!-- 
+<details markdown="1">
+<summary><b>More information about the package structure</b></summary>
 
-#' Provides option of parallel processing, implemented using parLapply (as
-#' mcLapply does not work on Windows and future_lapply would often get stuck).
-#'# TODO: Test that random seeds are working properly
-# e.g. consistent results, but unique between replications
+<br>
 
-# TODO: Check validity of approach to seeds...
-# https://www.r-bloggers.com/2020/09/future-1-19-1-making-sure-proper-random-numbers-are-produced-in-parallel-processing/)
+**Rationale:** As explained above, the package structure is helpful for sourcing the simulation code anywhere in the folder. Other benefits of this structure include:
 
-# TODO: Add methods that will get patient-level, trial-level and overall
-# results tables
+* Encourages well-organised repository following **standardised** established R package structure, which ensures that the model and analysis code are kept seperate.
+* Useful "built-in" features like **tests**, documentation of functions using **Roxygen**, documentation of data, and **package checks** (e.g. checking all imports are declared).
+* If your analysis has a short run time, the `.Rmd` files could be stored in a `vignettes/` folder which will mean they **re-run with every package build/check**, and so any new run issues will be identified. However, in this project, the analysis was instead stored in `notebooks/` as the file paths to save outputs cause errors in `vignettes/` (as they will differ between your runs of the notebook, and runs during the package build process).
+* Meet packaging **requirement** on the NHS "Levels of RAP" framework.
 
-# TODO: Look at lots of examples of simmer models, for how people typically
-# layout the model code (inc. the simmer documentation itself)
+For more information on the rationale behind structuring research as an R package, check out:
 
-# TODO: Set up package, with validity checks, and Roxygen
+* ["Open, Reproducible, and Distributable Research With R Packages"](https://dante-sttr.gitlab.io/r-open-science/) from the DANTE Project - for example, this page on [vignettes](https://dante-sttr.gitlab.io/r-open-science/reports-manuscripts.html).
+* ["Sharing and organizing research products as R packages"](https://doi.org/10.3758/s13428-020-01436-x) from Vuorre and Crump 2020
 
-# TODO: Look at how R scripts should be organised e.g. seperate scripts for
-# seperate functions?
+**Commands:** Helpful commands when working with the package include:
 
-# TODO: Add data with documentation based on https://dante-sttr.gitlab.io/r-open-science/embedding-data.html#storing-.rda-data
+* `devtools::document()` to reproduce documentation in `man/` after changes to the docstrings.
+* `devtools::check()` to build and check the package follows best practices.
+* `devtools::install()` to load the latest version of the package into your environment.
+* `devtools::test()` to run the tests in `tests/`.
 
--->
+</details>
 
 ## 🧐 What are we modelling?
 
@@ -131,7 +126,72 @@ cd repo
 
 ### Step 2: Set-up the development environment
 
-TBC <!-- TODO: Finish writing instructions -->
+<!-- TODO: Test and consider options here, as not happy with this. Given I struggled with backdating R and packages, I think it would be appropriate here to divide this into two things:
+(a) The exact environment we used (which we would encourage for RAP)
+(b) Considerations re-running later, if not possible to rebuild that exact environment (e.g. which R, which packages, are compatible, maintenance, DESCRIPTION, etc). -->
+
+Load the R environment described in the `renv.lock` file (though note this won't fetch the version of R used - you would need to switch to that manually first):
+
+```
+renv::init()
+renv::restore()
+```
+
+If facing issues with restoring this environment, an alternative is to set up a fresh environment based on the `DESCRIPTION`, but note that this may then install more recent package versions.
+
+```
+renv::init()
+renv::install()
+renv::snapshot()
+```
+
+There may also be system dependencies. The exact requirements will depend on your operating system, whether you have used R before, and what packages you have used. For example, when developing the template, we had to install the following for `igraph` (as explained [in their documentation](https://r.igraph.org/articles/installation-troubleshooting.html)):
+
+```
+sudo apt install build-essential gfortran
+sudo apt install libglpk-dev libxml2-dev
+```
+
+### Step 3: Explore and modify
+
+🔎 Choose your desired licence (e.g. <https://choosealicense.com/>). If keeping an MIT licence, just modify the copyright holder in `LICENSE` and `LICENSE.md`.
+
+🔎 Review the example DES implementation in `R/` and `notebooks/`. Modify and extend the code as needed for your specific use case.
+
+🔎 Check you still fulfil the criteria in `docs/nhs_rap.md` and `docs/heather_2025.md`.
+
+🔎 Adapt the template `README` provided at the end of this file.
+
+🔎 Create your own `CITATION.cff` file using [cff-init](https://citation-file-format.github.io/cff-initializer-javascript/#/).
+
+🔎 Update `DESCRIPTION` and entries in the current `NEWS.md` with your own details, versions, and create GitHub releases.
+
+🔎 Archive your repository (e.g. [Zenodo](https://zenodo.org/)).
+
+🔎 Complete the Strengthening The Reporting of Empirical Simulation Studies (STRESS) checklist (`stress_des.md`) and use this to support writing publication/report, and attach as an appendice to report.
+
+🔎 **Tests**
+
+To run tests:
+
+```
+devtools::test()
+```
+
+The repository contains a GitHub action `R-CMD-check.yaml` which will automatically run tests with new commits to GitHub, as part of the `devtools::check()` operation. This is continuous integration, helping to catch bugs early and keep the code stable. It will run the tests on three operating systems: Ubuntu, Windows and Mac.
+
+<!--TODO: Double check this CI definitely flags test failures-->
+
+🔎 **Linting**
+
+You can lint the `.R` and `.Rmd` files by running:
+
+```
+lintr::lint_package()
+lintr::lint_dir("notebooks")
+```
+
+The `lint_package()` function will run on files typically included in a package (i.e. `R/`, `tests/`). This will not include `notebooks/` as it is not typical/excluded from our package build, and so we can lint that by specifying the directory for `lint_dir()`.
 
 <br>
 
@@ -139,17 +199,50 @@ TBC <!-- TODO: Finish writing instructions -->
 
 TBC <!-- TODO: Write this section -->
 
+**Note:** This template does not include a **warm-up period**, as it is not natively supported by simmer and was not possible to implement. This was explored - as the simulation results returned by `get_mon_arrivals()` can be filtered to only include patients arriving after a warm-up period. This isn't possible for the `get_mon_resources()` results (which we use to derive utilisation). This is because it provides times for each resource, but doesn't specify whether each time is a start or end time. We examine results per resource, and when there are multiple resources, it wouldn't be possible to match the resource times to the patient items (to identify which are start and end times), as the patients end time may be later if they had other resources to visit (and vice versa, their start time may be earlier if they visited other resources prior).
+
 <br>
 
 ## 📂 Repository structure
 
-TBC <!-- TODO: Write this section -->
+<!-- TODO: Finish writing this section - missing comments below -->
+
+```
+repo/
+├── .github/workflows/          # GitHub actions
+├── docs/                       # Documentation
+├── images/                     # Image files and GIFs
+├── man/                        # Function documentation generated by roxygen
+├── notebooks/                  # Run DES model and analyse results
+├── outputs/                    # Folder to save any outputs from model
+├── R/                          # Local package containing code for the DES model
+├── renv/                       # Instructions for creation of R environment
+├── tests/                      # Unit and back testing of the DES model
+├── .gitignore                  # Untracked files
+├── .lintr                      # Lintr settings
+├── .Rbuildignore               # Files and directories to exclude when building the package
+├── .Rprofile                   # R session configuration file
+├── CITATION.cff                # How to cite the repository
+├── CONTRIBUTING.md             # Contribution instructions
+├── DESCRIPTION                 # Metadata for the R package, including dependencies
+├── LICENSE                     # Licence file for the R package
+├── LICENSE.md                  # MIT licence for the repository
+├── NAMESPACE                   # Defines the exported functions and objects for the R package
+├── NEWS.md                     # Describes changes between releases (equivalent to a changelog for R packages)
+├── rap_template_r_des.Rproject # Project settings
+├── README.md                   # This file! Describes the repository
+└── renv.lock                   # Lists R version and all packages in the R environment
+```
 
 <br>
 
 ## ⏰ Run time and machine specification
 
-TBC <!-- TODO: Write this section -->
+The overall run time will vary depending on how the template model is used. A few example implementations are provided in `notebooks/` and the run times for these were:
+
+* TBC <!--TODO: Add run times from each .Rmd file -->
+
+These times were obtained on an Intel Core i7-12700H with 32GB RAM running Ubuntu 24.04.1 Linux.
 
 <br>
 
@@ -174,7 +267,7 @@ This template is licensed under the MIT License.
 ```
 MIT License
 
-Copyright (c) 2024 STARS Project Team
+Copyright (c) 2025 STARS Project Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

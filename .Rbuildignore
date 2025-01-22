@@ -10,3 +10,4 @@
 ^\.lintr$
 ^outputs$
 ^notebooks$
+^CITATION\.cff$
