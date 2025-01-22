@@ -10,7 +10,6 @@
 #'
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
-#' @rdname model
 
 model <- function(run_number, param) {
 
@@ -28,15 +27,35 @@ model <- function(run_number, param) {
     }) %>%
     release("nurse", 1L)
 
-  # Create simmer environment
-  env <- simmer("simulation", verbose = param[["verbose"]]) %>%
-    # Add nurse resource and patient generator
-    add_resource("nurse", param[["number_of_nurses"]]) %>%
-    add_generator("patient", patient, function() {
-      rexp(n = 1L, rate = 1L / param[["patient_inter"]])
-    }) %>%
-    simmer::run(param[["data_collection_period"]]) %>%
-    wrap()
+  # Determine whether to get verbose activity logs
+  verbose <- any(c(param[["log_to_console"]], param[["log_to_file"]]))
+
+  # Create simmer environment, add nurse resource and patient generator, and
+  # run the simulation. Capture output, which will save a log if verbose=TRUE
+  log <- capture.output(
+    env <- simmer("simulation", verbose = verbose) %>%
+      add_resource("nurse", param[["number_of_nurses"]]) %>%
+      add_generator("patient", patient, function() {
+        rexp(n = 1L, rate = 1L / param[["patient_inter"]])
+      }) %>%
+      simmer::run(param[["data_collection_period"]]) %>%
+      wrap()
+  )
+
+  # Save and/or display the log
+  if (isTRUE(verbose)) {
+    # Create full log message by adding parameters
+    param_string <- paste(names(param), param, sep="=",collapse="; " )
+    full_log <- append(c("Parameters:", param_string, "Log:"), log)
+    # Print to console
+    if (isTRUE(param[["log_to_console"]])) {
+      print(full_log)
+    }
+    # Save to file
+    if (isTRUE(param[["log_to_file"]])) {
+      writeLines(full_log, param[["file_path"]])
+    }
+  }
 
   # Extract the monitored arrivals and resources information from the simmer
   # environment object
@@ -53,13 +72,12 @@ model <- function(run_number, param) {
 }
 
 
-#' Check validity of inputs to `model()`
+#' Check validity of input parameters
 #'
 #' @param run_number Integer representing index of current simulation run.
 #' @param param List containing parameters for the simulation.
 #'
 #' @export
-#' @rdname model
 
 valid_inputs <- function(run_number, param) {
 
@@ -87,12 +105,3 @@ valid_inputs <- function(run_number, param) {
     }
   }
 }
-
-# TODO: Save output of verbose=TRUE to a .log file
-
-# TODO: Alternative to use of R6 class would be to have validation rule within
-# model function that checks that param only contains allowed names? That
-# might be a simpler solution?
-
-# TODO: Check validity of approach to seeds...
-# https://www.r-bloggers.com/2020/09/future-1-19-1-making-sure-proper-random-numbers-are-produced-in-parallel-processing/)

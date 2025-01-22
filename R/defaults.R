@@ -21,7 +21,9 @@
 #'   \item \code{scenario_name}: Label for the scenario (int|float|string).
 #'   \item \code{cores}: Number of cores to use for parallel execution
 #'   (integer).
-#'   \item \code{verbose}: Whether to print activity information (logical).
+#'   \item \code{log_to_console}: Whether to print activity log to console.
+#'   \item \code{log_to_file}: Whether to save activity log to file.
+#'   \item \code{file_path}: Path to save log to file.
 #' }
 #'
 #' @docType class
@@ -41,7 +43,9 @@ Defaults <- R6Class( # nolint
       number_of_runs = 100L,
       scenario_name = NULL,
       cores = 1L,
-      verbose = FALSE
+      log_to_console = FALSE,
+      log_to_file = FALSE,
+      file_path = NULL
     ),
     allowed_keys = NULL
   ),
@@ -110,4 +114,3 @@ defaults <- function() {
 get_param <- function(param_class) {
   return(param_class[["get"]]())
 }
-

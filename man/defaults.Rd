@@ -35,7 +35,9 @@ The returned list contains the following parameters:
   \item \code{scenario_name}: Label for the scenario (int|float|string).
   \item \code{cores}: Number of cores to use for parallel execution
   (integer).
-  \item \code{verbose}: Whether to print activity information (logical).
+  \item \code{log_to_console}: Whether to print activity log to console.
+  \item \code{log_to_file}: Whether to save activity log to file.
+  \item \code{file_path}: Path to save log to file.
 }
 
 `defaults()` is a wrapper which enables us to create a new instance of

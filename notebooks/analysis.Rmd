@@ -3,9 +3,13 @@ title: "Analysis"
 output: html_document
 ---
 
-To knit this vignette, will first need to run `devtools::install()` to fetch the latest version of our `simulation` model code.
-
 ## Set up
+
+Install the latest version of the local simulation package.
+
+```{r}
+devtools::install()
+```
 
 Import required packages.
 
@@ -39,7 +43,6 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ```{r}
-# envs <- trial(param = Defaults[["new"]]()[["get"]]())
 envs <- trial(param = get_param(defaults()))
 ```
 
@@ -345,22 +348,22 @@ Note: In this model, if patients are still waiting to be seen at the end of the 
 ```{r}
 param_class <- defaults()
 param_class[["update"]](list(patient_inter = 0.5))
-result = model(run_number = 0L, param = get_param(param_class))
+result <- model(run_number = 0L, param = get_param(param_class))
 tail(result[["arrivals"]])
 ```
 
 ## Example run with logs
 
-The `verbose` parameter set in our parameter list is used to control whether simmer runs the model with `verbose` set to TRUE or FALSE.
+Simmer has a `verbose` setting which will output activity information if set to TRUE. Currently, this would be information on each patient as they arrive and then see the nurse. Therefore, it is only best used when running the simulation for a short time with few patients.
 
-If TRUE, this will output lots of information to the screen - currently set to give information on each patient as they arrive and then see the nurse. Therefore, it is only best used when running the simulation for a short time with few patients.
+In this example, the log prints to screen as we have set `log_to_console` to TRUE. This could also be saved to a file by setting `log_to_file` to TRUE and providing a `file_path` in `param`.
 
 ```{r}
 param_class <- defaults()
 param_class[["update"]](list(data_collection_period = 100L,
                              number_of_runs = 1L,
                              cores = 1L,
-                             verbose = TRUE))
+                             log_to_console = TRUE))
 verbose_run <- model(run_number = 0L, param = get_param(param_class))
 ```
 
@@ -368,7 +371,7 @@ This will align with the recorded results of each patient.
 
 ```{r}
 # Compare to patient-level results
-get_mon_arrivals(verbose_run)
+verbose_run[["arrivals"]]
 ```
 
 ## Calculate run time
