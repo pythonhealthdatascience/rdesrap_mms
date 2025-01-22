@@ -23,7 +23,8 @@ Imports:
     purrr,
     rlang,
     tidyr,
-    R6
+    R6,
+    tidyselect
 Suggests:
     testthat (>= 3.0.0),
     lintr

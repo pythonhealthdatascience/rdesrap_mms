@@ -7,6 +7,7 @@
 #' @importFrom simmer add_generator run wrap get_mon_arrivals
 #' @importFrom magrittr %>%
 #' @importFrom stats rexp
+#' @importFrom utils capture.output
 #'
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
@@ -33,7 +34,7 @@ model <- function(run_number, param) {
   # Create simmer environment, add nurse resource and patient generator, and
   # run the simulation. Capture output, which will save a log if verbose=TRUE
   log <- capture.output(
-    env = simmer("simulation", verbose = verbose) %>%
+    env <- simmer("simulation", verbose = verbose) %>% # nolint
       add_resource("nurse", param[["number_of_nurses"]]) %>%
       add_generator("patient", patient, function() {
         rexp(n = 1L, rate = 1L / param[["patient_inter"]])

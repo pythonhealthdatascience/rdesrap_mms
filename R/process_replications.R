@@ -24,6 +24,7 @@
 #' @importFrom rlang .data
 #' @importFrom simmer get_mon_resources get_mon_arrivals
 #' @importFrom tidyr pivot_wider drop_na
+#' @importFrom tidyselect any_of
 #'
 #' @return Tibble with results from each replication.
 #' @export
@@ -32,7 +33,7 @@ process_replications <- function(results) {
 
   # Remove patients who were still waiting and had not completed
   results[["arrivals"]] <- results[["arrivals"]] %>%
-    drop_na(.data[["end_time"]])
+    drop_na(any_of("end_time"))
 
   # Calculate the number of arrivals
   calc_arr <- results[["arrivals"]] %>%
