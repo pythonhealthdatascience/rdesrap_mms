@@ -10,8 +10,12 @@
 #'
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
+#' @rdname model
 
 model <- function(run_number, param) {
+
+  # Check all inputs are valid
+  valid_inputs(run_number, param)
 
   # Set random seed based on run number
   set.seed(run_number)
@@ -48,10 +52,47 @@ model <- function(run_number, param) {
   return(result)
 }
 
-# TODO: Save output of verbose=TRUE to a .log file
 
-# TODO: Add some validation rules for parameters to check not 0 / negative
+#' Check validity of inputs to `model()`
+#'
+#' @param run_number Integer representing index of current simulation run.
+#' @param param List containing parameters for the simulation.
+#'
+#' @export
+#' @rdname model
+
+valid_inputs <- function(run_number, param) {
+
+  # Check that the run number is an non-negative integer
+  if (run_number < 0L || run_number %% 1L != 0L) {
+    stop("The run number must be a non-negative integer. Provided: ",
+         run_number)
+  }
+
+  # Check that listed parameters are always positive
+  p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
+  for (p in p_list) {
+    if (param[[p]] <= 0L) {
+      stop("The parameter '", p,
+           "' must be positive. Provided: ", param[[p]])
+    }
+  }
+
+  # Check that listed parameters are non-negative integers
+  n_list <- c("data_collection_period", "number_of_nurses")
+  for (n in n_list) {
+    if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
+      stop("The parameter '", n,
+           "' must not be a non-negative integer. Provided: ", param[[n]])
+    }
+  }
+}
+
+# TODO: Save output of verbose=TRUE to a .log file
 
 # TODO: Alternative to use of R6 class would be to have validation rule within
 # model function that checks that param only contains allowed names? That
 # might be a simpler solution?
+
+# TODO: Check validity of approach to seeds...
+# https://www.r-bloggers.com/2020/09/future-1-19-1-making-sure-proper-random-numbers-are-produced-in-parallel-processing/)

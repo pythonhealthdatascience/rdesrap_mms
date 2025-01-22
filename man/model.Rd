@@ -2,9 +2,12 @@
 % Please edit documentation in R/model.R
 \name{model}
 \alias{model}
+\alias{valid_inputs}
 \title{Run simulation}
 \usage{
 model(run_number, param)
+
+valid_inputs(run_number, param)
 }
 \arguments{
 \item{run_number}{Integer representing index of current simulation run.}
@@ -16,4 +19,6 @@ Named list with two tables: monitored arrivals and resources
 }
 \description{
 Run simulation
+
+Check validity of inputs to `model()`
 }
