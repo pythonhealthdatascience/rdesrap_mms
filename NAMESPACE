@@ -2,7 +2,6 @@
 
 export(Defaults)
 export(defaults)
-export(get_param)
 export(model)
 export(process_replications)
 export(trial)

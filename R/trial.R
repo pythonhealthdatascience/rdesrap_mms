@@ -4,7 +4,7 @@
 #' `mcLapply`` does not work on Windows and `future_lapply`` would often get
 #' stuck.
 #'
-#' @param param List containing parameters for the simulations.
+#' @param param_class Instance of Defaults containing model parameters.
 #'
 #' @importFrom parallel detectCores makeCluster stopCluster clusterEvalQ
 #' @importFrom parallel clusterExport parLapply
@@ -12,23 +12,27 @@
 #' @return Named list with two tables: monitored arrivals and resources.
 #' @export
 
-trial <- function(param) {
-  if (param[["cores"]] == 1L) {
+trial <- function(param_class) {
+  # Get specified number of cores
+  n_cores <- param_class[["get"]]()[["cores"]]
+  n_runs <- param_class[["get"]]()[["number_of_runs"]]
+
+  if (n_cores == 1L) {
 
     # Sequential execution
     results <- lapply(
-      1L:param[["number_of_runs"]],
-      function(i) simulation::model(run_number = i, param = param)
+      1L:n_runs,
+      function(i) simulation::model(run_number = i, param_class = param_class)
     )
 
   } else {
     # Parallel execution
 
     # Create a cluster with specified number of cores
-    if (param[["cores"]] == -1L) {
+    if (n_cores == -1L) {
       cores <- detectCores() - 1L
     } else {
-      cores <- param[["cores"]]
+      cores <- n_cores
     }
     cl <- makeCluster(cores)
 
@@ -37,13 +41,13 @@ trial <- function(param) {
 
     # Run simulations in parallel
     results <- parLapply(
-      cl, 1L:param[["number_of_runs"]],
-      function(i) simulation::model(run_number = i, param = param)
+      cl, 1L:n_runs,
+      function(i) simulation::model(run_number = i, param_class = param_class)
     )
   }
 
   # Combine the results from multiple replications into just two dataframes
-  if (param[["number_of_runs"]] > 1L) {
+  if (n_runs > 1L) {
     all_arrivals <- do.call(
       rbind, lapply(results, function(x) x[["arrivals"]])
     )

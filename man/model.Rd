@@ -4,12 +4,12 @@
 \alias{model}
 \title{Run simulation}
 \usage{
-model(run_number, param)
+model(run_number, param_class)
 }
 \arguments{
 \item{run_number}{Integer representing index of current simulation run.}
 
-\item{param}{List containing parameters for the simulation.}
+\item{param_class}{Instance of Defaults containing model parameters.}
 }
 \value{
 Named list with two tables: monitored arrivals and resources

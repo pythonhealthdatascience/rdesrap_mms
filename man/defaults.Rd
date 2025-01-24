@@ -4,15 +4,12 @@
 \name{Defaults}
 \alias{Defaults}
 \alias{defaults}
-\alias{get_param}
 \title{R6 class returning list of default model parameters}
 \usage{
 defaults()
-
-get_param(param_class)
 }
-\arguments{
-\item{param_class}{Instance of the Defaults parameter class.}
+\value{
+Instance of the Defaults class.
 }
 \description{
 `Defaults` is an R6 class instead of a function because this allows us to
@@ -42,11 +39,6 @@ The returned list contains the following parameters:
 
 `defaults()` is a wrapper which enables us to create a new instance of
 the class without needing to run `Defaults[["new"]]()` every time.
-
-`get_param()` is a wrapper which enables us to extract the list of
-parameters from the class more easily. For example, if we create
-`param_class <- defaults()`, we can then run `get_param(param_class)`
-instead of `param_class[["get]]()`.
 }
 \section{Methods}{
 \subsection{Public methods}{
