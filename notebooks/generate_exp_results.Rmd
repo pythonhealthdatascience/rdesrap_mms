@@ -1,6 +1,12 @@
 ---
 title: "Generate expected results"
-output: html_document
+author: "Amy Heather"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_float: true
 ---
 
 This notebook is used to run a specific version of the model and save each results dataframe as a csv. These are used in `test-backtest.R` to verify that the model produces consistent results.
@@ -10,6 +16,12 @@ The `.Rmd` file is provided as it is possible that results may change due to alt
 The run time is provided at the end of this notebook.
 
 ## Set-up
+
+Install the latest version of the local simulation package.
+
+```{r}
+devtools::install()
+```
 
 Load required packages.
 
