@@ -205,8 +205,6 @@ TBC <!-- TODO: Write this section -->
 
 ## 📂 Repository structure
 
-<!-- TODO: Finish writing this section - missing comments below -->
-
 ```
 repo/
 ├── .github/workflows/          # GitHub actions
@@ -240,7 +238,11 @@ repo/
 
 The overall run time will vary depending on how the template model is used. A few example implementations are provided in `notebooks/` and the run times for these were:
 
-* TBC <!--TODO: Add run times from each .Rmd file -->
+* `analysis.Rmd`: 42s
+* `choosing_parameters.Rmd`: 56s
+* `generate_exp_results.Rmd`: 0s
+
+<!--TODO: Check these are up to date -->
 
 These times were obtained on an Intel Core i7-12700H with 32GB RAM running Ubuntu 24.04.1 Linux.
 
