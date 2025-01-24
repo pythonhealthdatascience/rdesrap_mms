@@ -379,6 +379,17 @@
       ],
       "Hash": "cdc4a473222b0112d4df0bcfbed12d44"
     },
+    "data.table": {
+      "Package": "data.table",
+      "Version": "1.16.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "methods"
+      ],
+      "Hash": "38bbf05fc2503143db4c734a7e5cab66"
+    },
     "desc": {
       "Package": "desc",
       "Version": "1.4.3",
