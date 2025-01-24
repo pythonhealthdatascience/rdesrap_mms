@@ -27,5 +27,9 @@ Imports:
     tidyselect
 Suggests:
     testthat (>= 3.0.0),
-    lintr
+    lintr,
+    devtools,
+    ggplot2,
+    xtable,
+    data.table
 Config/testthat/edition: 3

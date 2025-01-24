@@ -21,22 +21,15 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxml2-dev libglpk-dev
-
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-renv@v2
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::lintr, local::.
+          needs: lint
 
       - name: Lint package
         run: lintr::lint_package()
         shell: Rscript {0}
-        env:
-          LINTR_ERROR_ON_LINT: true
 
       - name: Lint notebooks
         run: lintr::lint_dir("notebooks")
         shell: Rscript {0}
-        env:
-          LINTR_ERROR_ON_LINT: true
