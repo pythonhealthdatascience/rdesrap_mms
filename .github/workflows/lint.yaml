@@ -21,6 +21,11 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-dev libglpk-dev
+
       - name: Install R dependencies
         uses: r-lib/actions/setup-renv@v2
 
