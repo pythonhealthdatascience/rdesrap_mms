@@ -78,7 +78,8 @@ plot_results_spread <- function(column, x_label, file) {
   print(p)
 
   # Save plot
-  ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4L)
+  ggsave(filename = file.path(output_dir, file),
+         width = 6.5, height = 4L, bg = "white")
 }
 ```
 
@@ -233,7 +234,8 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   print(p)
 
   # Save plot
-  ggsave(filename = file.path(output_dir, file), width = 6.5, height = 4L)
+  ggsave(filename = file.path(output_dir, file),
+         width = 6.5, height = 4L, bg = "white")
 
   # Return the results dataframe
   return(df)
