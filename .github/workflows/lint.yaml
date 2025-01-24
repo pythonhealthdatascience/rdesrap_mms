@@ -21,10 +21,8 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::lintr, local::.
-          needs: lint
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-renv@v2
 
       - name: Lint package
         run: lintr::lint_package()
