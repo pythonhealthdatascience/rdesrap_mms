@@ -4,10 +4,10 @@
 \alias{trial}
 \title{Run simulation for multiple replications, sequentially or in parallel.}
 \usage{
-trial(param)
+trial(param_class)
 }
 \arguments{
-\item{param}{List containing parameters for the simulations.}
+\item{param_class}{Instance of Defaults containing model parameters.}
 }
 \value{
 Named list with two tables: monitored arrivals and resources.

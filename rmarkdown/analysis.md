@@ -45,12 +45,11 @@ devtools::install()
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ## ─  checking for empty or unneeded directories
-    ##      Removed empty directory ‘simulation/tests/testthat/_snaps’
-    ##    Omitted ‘LazyData’ from DESCRIPTION
+    ##      Omitted ‘LazyData’ from DESCRIPTION
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpRZdNqo/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/Rtmpbqk15J/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -423,7 +422,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Jan 27 15:52:00 2025
+    ## % Mon Jan 27 16:03:02 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -532,7 +531,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Jan 27 15:52:05 2025
+    ## % Mon Jan 27 16:03:07 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -574,12 +573,12 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient104   51.17679       NA            NA    nurse           0
-    ## 161 patient110   53.57293       NA            NA    nurse           0
-    ## 162 patient148   74.24750       NA            NA    nurse           0
-    ## 163 patient149   74.50965       NA            NA    nurse           0
+    ## 160  patient97   47.84534       NA            NA    nurse           0
+    ## 161 patient155   77.41953       NA            NA    nurse           0
+    ## 162  patient66   35.72669       NA            NA    nurse           0
+    ## 163  patient52   27.21852       NA            NA    nurse           0
     ## 164 patient156   77.59569       NA            NA    nurse           0
-    ## 165 patient158   78.34954       NA            NA    nurse           0
+    ## 165 patient160   78.41585       NA            NA    nurse           0
 
 ## Example run with logs
 
@@ -818,8 +817,8 @@ verbose_run[["arrivals"]]
     ## 22 patient12 46.4500010 86.039329    39.5893285    nurse           0
     ## 23 patient22 77.2295939 87.175152     9.9455579    nurse           0
     ## 24 patient25 86.1477594 91.726053     5.5782935    nurse           0
-    ## 25 patient24 84.4587897        NA            NA    nurse           0
-    ## 26 patient26 99.0189155        NA            NA    nurse           0
+    ## 25 patient26 99.0189155        NA            NA    nurse           0
+    ## 26 patient24 84.4587897        NA            NA    nurse           0
     ## 27 patient23 82.4020925        NA            NA    nurse           0
 
 ## Calculate run time
@@ -835,4 +834,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 18s"
+    ## [1] "Notebook run time: 0m 17s"

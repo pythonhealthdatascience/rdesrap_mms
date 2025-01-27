@@ -28,7 +28,7 @@ model <- function(run_number, param_class, set_seed = TRUE) {
   valid_inputs(run_number, param)
 
   # Set random seed based on run number
-  if (set_seed == TRUE) {
+  if (set_seed) {
     set.seed(run_number)
   }
 

@@ -4,12 +4,16 @@
 \alias{model}
 \title{Run simulation}
 \usage{
-model(run_number, param_class)
+model(run_number, param_class, set_seed = TRUE)
 }
 \arguments{
 \item{run_number}{Integer representing index of current simulation run.}
 
 \item{param_class}{Instance of Defaults containing model parameters.}
+
+\item{set_seed}{Whether to set seed within the model function (which we
+may not wish to do if being set elsewhere - such as done in trial()).
+Default is TRUE.}
 }
 \value{
 Named list with two tables: monitored arrivals and resources

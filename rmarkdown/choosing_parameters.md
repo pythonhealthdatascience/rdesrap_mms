@@ -41,12 +41,11 @@ devtools::install()
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ## ─  checking for empty or unneeded directories
-    ##      Removed empty directory ‘simulation/tests/testthat/_snaps’
-    ##    Omitted ‘LazyData’ from DESCRIPTION
+    ##      Omitted ‘LazyData’ from DESCRIPTION
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpETGOea/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpaECLM8/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -211,7 +210,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     warning("Running ", replications, " replications did not reach ",
             "desired precision (", desired_precision, ").")
   }
-  
+
   # Plot the cumulative mean and confidence interval
   p <- ggplot(cumulative, aes(x = .data[["replications"]],
                               y = .data[["cumulative_mean"]])) +
@@ -231,7 +230,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
 
   # Save the plot
   ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
-  
+
   return(cumulative)
 }
 ```
@@ -259,8 +258,8 @@ ci_df <- confidence_interval_method(
 ``` r
 # View first ten rows were percentage deviation is below 5
 ci_df %>%
-  filter(perc_deviation < 5) %>%
-  head(10)
+  filter(perc_deviation < 5L) %>%
+  head(10L)
 ```
 
     ##    replications cumulative_mean cumulative_std ci_lower ci_upper perc_deviation
@@ -303,8 +302,8 @@ ci_df <- confidence_interval_method(
 ``` r
 # View first ten rows were percentage deviation is below 5
 ci_df %>%
-  filter(perc_deviation < 5) %>%
-  head(10)
+  filter(perc_deviation < 5L) %>%
+  head(10L)
 ```
 
     ##    replications cumulative_mean cumulative_std ci_lower ci_upper perc_deviation
@@ -351,8 +350,9 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     param_class[["update"]](list(cores = i))
     invisible(trial(param_class))
 
-    # Record time taken
-    cores_time <- as.numeric(Sys.time() - cores_start, units = "secs")
+    # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
+    cores_time <- round(
+      as.numeric(Sys.time() - cores_start, units = "secs")*2)/2
     speed[[i]] <- list(cores = i, run_time = round(cores_time, 3L))
   }
 
@@ -362,7 +362,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
   # Generate plot
   p <- ggplot(speed_df, aes(x = .data[["cores"]], y = .data[["run_time"]])) +
     geom_line() +
-    labs(x = "Cores", y = "Run time (seconds)") +
+    labs(x = "Cores", y = "Run time (rounded to nearest .5 seconds)") +
     theme_minimal()
 
   # Save plot
@@ -380,7 +380,7 @@ tasks or few iterations, this extra time can be more than the time saved
 by running in parallel.
 
 ``` r
-run_cores(5, "cores1.png")
+run_cores(5L, "cores1.png")
 ```
 
     ## [1] "Running with cores: 1"
@@ -404,7 +404,7 @@ The optimal number of cores will vary depending on your model parameters
 and machine.
 
 ``` r
-run_cores(5, "cores2.png", list(data_collection_period = 100000L))
+run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
 ```
 
     ## [1] "Running with cores: 1"
@@ -428,4 +428,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 1m 18s"
+    ## [1] "Notebook run time: 1m 19s"
