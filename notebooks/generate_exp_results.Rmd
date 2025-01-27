@@ -2,11 +2,7 @@
 title: "Generate expected results"
 author: "Amy Heather"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    toc: true
-    number_sections: true
-    toc_float: true
+output: rmarkdown::github_document
 ---
 
 This notebook is used to run a specific version of the model and save each results dataframe as a csv. These are used in `test-backtest.R` to verify that the model produces consistent results.
@@ -57,7 +53,7 @@ param_class[["update"]](list(patient_inter = 4L,
                              cores = 1L))
 
 # Run the trial
-raw_results <- trial(param = get_param(param_class))
+raw_results <- trial(param_class)
 ```
 
 ```{r}
