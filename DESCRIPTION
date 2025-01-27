@@ -24,7 +24,9 @@ Imports:
     rlang,
     tidyr,
     R6,
-    tidyselect
+    tidyselect,
+    future,
+    future.apply
 Suggests:
     testthat (>= 3.0.0),
     lintr,

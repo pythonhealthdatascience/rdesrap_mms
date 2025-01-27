@@ -38,7 +38,7 @@ devtools::install()
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpfNXwLp/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpVSwa65/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -101,12 +101,12 @@ head(results)
     ## # A tibble: 6 × 5
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1       15                  0                          8.92
-    ## 2           2       16                  0                          7.73
-    ## 3           3       14                  0                          7.56
-    ## 4           4       19                  1.54                       8.06
-    ## 5           5       21                  0.0520                     9.35
-    ## 6           6       29                  0.384                      8.21
+    ## 1           1       21                  0.173                     10.7 
+    ## 2           2       16                  0                          7.10
+    ## 3           3       13                  0                          6.89
+    ## 4           4       16                  0.0177                     9.29
+    ## 5           5       17                  0                          4.79
+    ## 6           6       18                  0.393                      8.12
     ## # ℹ 1 more variable: utilisation_nurse <dbl>
 
 ``` r

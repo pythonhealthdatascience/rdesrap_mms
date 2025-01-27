@@ -69,11 +69,11 @@ When selecting the number of replications you should repeat the analysis for all
 #' @param desired_precision Desired mean deviation from confidence interval.
 #' @param metric Name of performance metric to assess.
 #' @param yaxis_title Label for y axis.
-#' @param file Filename to save figure to.
+#' @param path Path inc. filename to save figure to.
 #' @param min_rep A suggested minimum number of replications (default=NULL).
 
 confidence_interval_method <- function(replications, desired_precision, metric,
-                                       yaxis_title, file, min_rep = NULL) {
+                                       yaxis_title, path, min_rep = NULL) {
   # Run model for specified number of replications
   param_class <- defaults()
   param_class[["update"]](list(number_of_runs = replications))
@@ -164,63 +164,73 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     theme_minimal()
 
   # Save the plot
-  full_path <- file.path(output_dir, file)
-  ggsave(filename = full_path, width = 6.5, height = 4L, bg = "white")
+  ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
 
-  # View the plot
-  include_graphics(full_path)
+  return(cumulative)
 }
 ```
 
+It's important to check ahead, to check that the 5% precision is maintained - which is fine in this case - it doesn't go back up to future deviation.
+
 ```{r}
-confidence_interval_method(
-  replications = 70L,
+path <- file.path(output_dir, "choose_param_conf_int_1.png")
+
+# Run calculations and produce plot
+ci_df <- confidence_interval_method(
+  replications = 150L,
   desired_precision = 0.05,
   metric = "mean_activity_time_nurse",
   yaxis_title = "Mean time with nurse",
-  file = "choose_param_conf_int_1.png",
-  min_rep = 66L
+  path = path,
+  min_rep = 98L
 )
+
+# View first ten rows were percentage deviation is below 5
+ci_df %>%
+  filter(perc_deviation < 5L) %>%
+  head(10L)
+
+# View plot
+include_graphics(path)
 ```
 
-It's important to check ahead, to check that the 5% precision is maintained.
+It is also important to check across multiple metrics.
 
 ```{r}
-confidence_interval_method(
-  replications = 100L,
-  desired_precision = 0.05,
-  metric = "mean_activity_time_nurse",
-  yaxis_title = "Mean time with nurse",
-  file = "choose_param_conf_int_2.png",
-  min_rep = 66L
-)
-```
+path <- file.path(output_dir, "choose_param_conf_int_3.png")
 
-Also, to check across multiple metrics.
-
-```{r}
-confidence_interval_method(
+# Run calculations and produce plot
+ci_df <- confidence_interval_method(
   replications = 200L,
   desired_precision = 0.05,
   metric = "utilisation_nurse",
   yaxis_title = "Mean nurse utilisation",
-  file = "choose_param_conf_int_3.png",
-  min_rep = 136L
+  path = path,
+  min_rep = 148L
 )
+
+# View first ten rows were percentage deviation is below 5
+ci_df %>%
+  filter(perc_deviation < 5L) %>%
+  head(10L)
+
+# View plot
+include_graphics(path)
 ```
 
 ## Run time with varying number of CPU cores
 
 ```{r}
-#' Run model with 1 to 8 CPU cores and examine run times
+#' Run model with varying number of CPU cores and examine run times
 #'
+#' @param n_cores Number of cores to test up to
 #' @param file Filename to save figure to.
 #' @param model_param List of parameters for the model.
 
-run_cores <- function(file, model_param = NULL) {
+run_cores <- function(n_cores, file, model_param = NULL) {
   # Run model with 1 to 8 cores
   speed <- list()
-  for (i in 1L:8L){
+  for (i in 1L:n_cores){
     print(paste("Running with cores:", i))
     cores_start <- Sys.time()
 
@@ -233,8 +243,9 @@ run_cores <- function(file, model_param = NULL) {
     param_class[["update"]](list(cores = i))
     invisible(trial(param_class))
 
-    # Record time taken
-    cores_time <- as.numeric(Sys.time() - cores_start, units = "secs")
+    # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
+    cores_time <- round(
+      as.numeric(Sys.time() - cores_start, units = "secs")*2)/2
     speed[[i]] <- list(cores = i, run_time = round(cores_time, 3L))
   }
 
@@ -244,7 +255,7 @@ run_cores <- function(file, model_param = NULL) {
   # Generate plot
   p <- ggplot(speed_df, aes(x = .data[["cores"]], y = .data[["run_time"]])) +
     geom_line() +
-    labs(x = "Cores", y = "Run time (seconds)") +
+    labs(x = "Cores", y = "Run time (rounded to nearest .5 seconds)") +
     theme_minimal()
 
   # Save plot
@@ -260,17 +271,17 @@ run_cores <- function(file, model_param = NULL) {
 Setting up and managing a parallel cluster takes extra time. For small tasks or few iterations, this extra time can be more than the time saved by running in parallel.
 
 ```{r}
-run_cores("cores1.png")
+run_cores(5L, "cores1.png")
 ```
 
-Having increased the simulation length, we now see that parallelisation is increasing the model run time.
+Having increased the simulation length, we now see that parallelisation is decreasing the model run time.
 
 However, when you use more cores, the data needs to be divided and sent to more workers. For small tasks, this extra work is small, but as the number of workers increases, the time spent managing and communicating with them can grow too much. At some point, this overhead becomes larger than the time saved by using more cores.
 
 The optimal number of cores will vary depending on your model parameters and machine.
 
 ```{r}
-run_cores("cores2.png", list(data_collection_period = 10000L))
+run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
 ```
 
 ## Run time

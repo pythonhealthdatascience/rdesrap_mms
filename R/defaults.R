@@ -93,7 +93,7 @@ Defaults <- R6Class( # nolint
 #' the class without needing to run `Defaults[["new"]]()` every time.
 #'
 #' @return Instance of the Defaults class.
-#' 
+#'
 #' @export
 #' @rdname defaults
 

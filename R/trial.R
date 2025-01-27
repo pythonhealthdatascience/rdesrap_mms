@@ -1,13 +1,9 @@
 #' Run simulation for multiple replications, sequentially or in parallel.
 #'
-#' Note: The parallel processing is implemented using `parLapply` because
-#' `mcLapply`` does not work on Windows and `future_lapply`` would often get
-#' stuck.
-#'
 #' @param param_class Instance of Defaults containing model parameters.
 #'
-#' @importFrom parallel detectCores makeCluster stopCluster clusterEvalQ
-#' @importFrom parallel clusterExport parLapply
+#' @importFrom future plan multisession sequential
+#' @importFrom future.apply future_lapply
 #'
 #' @return Named list with two tables: monitored arrivals and resources.
 #' @export
@@ -17,34 +13,30 @@ trial <- function(param_class) {
   n_cores <- param_class[["get"]]()[["cores"]]
   n_runs <- param_class[["get"]]()[["number_of_runs"]]
 
+  # Determine the parallel execution plan
   if (n_cores == 1L) {
-
-    # Sequential execution
-    results <- lapply(
-      1L:n_runs,
-      function(i) simulation::model(run_number = i, param_class = param_class)
-    )
-
+    plan(sequential)  # Sequential execution
   } else {
-    # Parallel execution
-
-    # Create a cluster with specified number of cores
     if (n_cores == -1L) {
-      cores <- detectCores() - 1L
+      cores <- future::availableCores() - 1L
     } else {
       cores <- n_cores
     }
-    cl <- makeCluster(cores)
-
-    # Ensure the cluster is stopped upon exit
-    on.exit(stopCluster(cl))
-
-    # Run simulations in parallel
-    results <- parLapply(
-      cl, 1L:n_runs,
-      function(i) simulation::model(run_number = i, param_class = param_class)
-    )
+    plan(multisession, workers = cores)  # Parallel execution
   }
+
+  # Run simulations (sequentially or in parallel)
+  # Mark set_seed as FALSE as we handle this using future.seed(), rather than
+  # within the function, and we don't want to override future.seed
+  results <- future_lapply(
+    1L:n_runs,
+    function(i) {
+      simulation::model(run_number = i,
+                        param_class = param_class,
+                        set_seed = FALSE)
+    },
+    future.seed = 123456L
+  )
 
   # Combine the results from multiple replications into just two dataframes
   if (n_runs > 1L) {
