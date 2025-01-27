@@ -4,16 +4,14 @@
 \alias{trial}
 \title{Run simulation for multiple replications, sequentially or in parallel.}
 \usage{
-trial(param_class)
+trial(param)
 }
 \arguments{
-\item{param_class}{Instance of Defaults containing model parameters.}
+\item{param}{List containing parameters for the simulations.}
 }
 \value{
 Named list with two tables: monitored arrivals and resources.
 }
 \description{
-Note: The parallel processing is implemented using `parLapply` because
-`mcLapply`` does not work on Windows and `future_lapply`` would often get
-stuck.
+Run simulation for multiple replications, sequentially or in parallel.
 }

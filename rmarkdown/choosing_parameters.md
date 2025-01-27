@@ -40,12 +40,12 @@ devtools::install()
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
-    ##   ─  checking for empty or unneeded directories
-    ##    Omitted ‘LazyData’ from DESCRIPTION
+    ## ─  checking for empty or unneeded directories
+    ##      Omitted ‘LazyData’ from DESCRIPTION
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpeOwgfX/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/Rtmpscm9Nf/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -238,6 +238,10 @@ confidence_interval_method <- function(replications, desired_precision, metric,
 ```
 
 ``` r
+param_class <- defaults()
+```
+
+``` r
 confidence_interval_method(
   replications = 70L,
   desired_precision = 0.05,
@@ -248,7 +252,7 @@ confidence_interval_method(
 )
 ```
 
-    ## [1] "Reached desired precision (0.05) in 66 replications."
+    ## [1] "Reached desired precision (0.05) in 3 replications."
 
 ![](../outputs/choose_param_conf_int_1.png)<!-- -->
 
@@ -266,7 +270,7 @@ confidence_interval_method(
 )
 ```
 
-    ## [1] "Reached desired precision (0.05) in 66 replications."
+    ## [1] "Reached desired precision (0.05) in 3 replications."
 
 ![](../outputs/choose_param_conf_int_2.png)<!-- -->
 
@@ -283,22 +287,23 @@ confidence_interval_method(
 )
 ```
 
-    ## [1] "Reached desired precision (0.05) in 136 replications."
+    ## [1] "Reached desired precision (0.05) in 142 replications."
 
 ![](../outputs/choose_param_conf_int_3.png)<!-- -->
 
 ## Run time with varying number of CPU cores
 
 ``` r
-#' Run model with 1 to 8 CPU cores and examine run times
+#' Run model with varying number of CPU cores and examine run times
 #'
+#' @param n_cores Number of cores to test up to
 #' @param file Filename to save figure to.
 #' @param model_param List of parameters for the model.
 
-run_cores <- function(file, model_param = NULL) {
+run_cores <- function(n_cores, file, model_param = NULL) {
   # Run model with 1 to 8 cores
   speed <- list()
-  for (i in 1L:8L){
+  for (i in 1L:n_cores){
     print(paste("Running with cores:", i))
     cores_start <- Sys.time()
 
@@ -340,22 +345,18 @@ tasks or few iterations, this extra time can be more than the time saved
 by running in parallel.
 
 ``` r
-run_cores("cores1.png")
+run_cores(4, "cores1.png")
 ```
 
     ## [1] "Running with cores: 1"
     ## [1] "Running with cores: 2"
     ## [1] "Running with cores: 3"
     ## [1] "Running with cores: 4"
-    ## [1] "Running with cores: 5"
-    ## [1] "Running with cores: 6"
-    ## [1] "Running with cores: 7"
-    ## [1] "Running with cores: 8"
 
 ![](../outputs/cores1.png)<!-- -->
 
 Having increased the simulation length, we now see that parallelisation
-is increasing the model run time.
+is decreasing the model run time.
 
 However, when you use more cores, the data needs to be divided and sent
 to more workers. For small tasks, this extra work is small, but as the
@@ -367,17 +368,13 @@ The optimal number of cores will vary depending on your model parameters
 and machine.
 
 ``` r
-run_cores("cores2.png", list(data_collection_period = 10000L))
+run_cores(4, "cores2.png", list(data_collection_period = 100000L))
 ```
 
     ## [1] "Running with cores: 1"
     ## [1] "Running with cores: 2"
     ## [1] "Running with cores: 3"
     ## [1] "Running with cores: 4"
-    ## [1] "Running with cores: 5"
-    ## [1] "Running with cores: 6"
-    ## [1] "Running with cores: 7"
-    ## [1] "Running with cores: 8"
 
 ![](../outputs/cores2.png)<!-- -->
 
@@ -394,4 +391,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 2m 41s"
+    ## [1] "Notebook run time: 0m 59s"
