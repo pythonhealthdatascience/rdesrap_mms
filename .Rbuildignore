@@ -9,5 +9,5 @@
 ^\.github$
 ^\.lintr$
 ^outputs$
-^notebooks$
+^rmarkdown$
 ^CITATION\.cff$

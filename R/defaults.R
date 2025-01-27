@@ -92,25 +92,11 @@ Defaults <- R6Class( # nolint
 #' `defaults()` is a wrapper which enables us to create a new instance of
 #' the class without needing to run `Defaults[["new"]]()` every time.
 #'
+#' @return Instance of the Defaults class.
+#' 
 #' @export
 #' @rdname defaults
 
 defaults <- function() {
   return(Defaults[["new"]]())
-}
-
-#' Wrapper for Defaults() R6 class, to get the list of parameters.
-#'
-#' `get_param()` is a wrapper which enables us to extract the list of
-#' parameters from the class more easily. For example, if we create
-#' `param_class <- defaults()`, we can then run `get_param(param_class)`
-#' instead of `param_class[["get]]()`.
-#'
-#' @param param_class Instance of the Defaults parameter class.
-#'
-#' @export
-#' @rdname defaults
-
-get_param <- function(param_class) {
-  return(param_class[["get"]]())
 }

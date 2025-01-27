@@ -3,6 +3,8 @@
 
 on:
   push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
 name: lint
@@ -30,6 +32,6 @@ jobs:
         run: lintr::lint_package()
         shell: Rscript {0}
 
-      - name: Lint notebooks
-        run: lintr::lint_dir("notebooks")
+      - name: Lint rmarkdown
+        run: lintr::lint_dir("rmarkdown")
         shell: Rscript {0}

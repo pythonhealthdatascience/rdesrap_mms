@@ -1,18 +1,28 @@
----
-title: "Choosing parameters"
-author: "Amy Heather"
-date: "`r Sys.Date()`"
-output:
-  html_document:
-    toc: true
-    number_sections: true
-    toc_float: true
----
+Choosing parameters
+================
+Amy Heather
+2025-01-27
+
+- [Set up](#set-up)
+- [Choosing the number of
+  replications](#choosing-the-number-of-replications)
+- [Run time with varying number of CPU
+  cores](#run-time-with-varying-number-of-cpu-cores)
+- [Run time](#run-time)
 
 This notebook documents the choice of simulation parameters including:
 
-* Number of replications
-* Number of CPU cores
+- Number of replications
+- Number of CPU cores
+
+The generated images are saved and then loaded, so that we view the
+image as saved (i.e. with the dimensions set in `ggsave()`). This also
+avoids the creation of a `_files/` directory when knitting the document
+(which would save all previewed images into that folder also, so they
+can be rendered and displayed within the output `.md` file, even if we
+had not specifically saved them). These are viewed using
+`include_graphics()`, which must be the last command in the cell (or
+last in the plotting function).
 
 The run time is provided at the end of the notebook.
 
@@ -20,17 +30,62 @@ The run time is provided at the end of the notebook.
 
 Install the latest version of the local simulation package.
 
-```{r}
+``` r
 devtools::install()
 ```
 
+    ## 
+    ## ── R CMD build ─────────────────────────────────────────────────────────────────
+    ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
+    ##   ─  preparing ‘simulation’:
+    ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+    ##   ─  checking for LF line-endings in source and make files and shell scripts
+    ##   ─  checking for empty or unneeded directories
+    ##    Omitted ‘LazyData’ from DESCRIPTION
+    ##   ─  building ‘simulation_0.1.0.tar.gz’
+    ##      
+    ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
+    ##   /tmp/RtmpeOwgfX/simulation_0.1.0.tar.gz --install-tests 
+    ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
+    ## * installing *source* package ‘simulation’ ...
+    ## ** using staged installation
+    ## ** R
+    ## ** tests
+    ## ** byte-compile and prepare package for lazy loading
+    ## ** help
+    ## *** installing help indices
+    ## ** building package indices
+    ## ** testing if installed package can be loaded from temporary location
+    ## ** testing if installed package can be loaded from final location
+    ## ** testing if installed package keeps a record of temporary installation path
+    ## * DONE (simulation)
+
 Load required packages.
 
-```{r}
+``` r
 # nolint start: undesirable_function_linter.
 library(data.table)
 library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:data.table':
+    ## 
+    ##     between, first, last
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library(ggplot2)
+library(knitr)
 library(simulation)
 library(tidyr)
 
@@ -41,27 +96,38 @@ options(dplyr.summarise.inform = FALSE)
 
 Start timer.
 
-```{r}
+``` r
 start_time <- Sys.time()
 ```
 
 Define path to outputs folder.
 
-```{r}
+``` r
 output_dir <- file.path("..", "outputs")
 ```
 
 ## Choosing the number of replications
 
-The **confidence interval method** can be used to select the number of replications to run. The more replications you run, the narrower your confidence interval becomes, leading to a more precise estimate of the model's mean performance.
+The **confidence interval method** can be used to select the number of
+replications to run. The more replications you run, the narrower your
+confidence interval becomes, leading to a more precise estimate of the
+model’s mean performance.
 
-First, you select a desired confidence interval - for example, 95%. Then, run the model with an increasing number of replications, and identify the number required to achieve that precision in the estimate of a given metric - and also, to maintain that precision (as the intervals may converge or expand again later on).
+First, you select a desired confidence interval - for example, 95%.
+Then, run the model with an increasing number of replications, and
+identify the number required to achieve that precision in the estimate
+of a given metric - and also, to maintain that precision (as the
+intervals may converge or expand again later on).
 
-This method is less useful for values very close to zero - so, for example, when using utilisation (which ranges from 0 to 1) it is recommended to multiple values by 100.
+This method is less useful for values very close to zero - so, for
+example, when using utilisation (which ranges from 0 to 1) it is
+recommended to multiple values by 100.
 
-When selecting the number of replications you should repeat the analysis for all performance measures and select the highest value as your number of replications.
+When selecting the number of replications you should repeat the analysis
+for all performance measures and select the highest value as your number
+of replications.
 
-```{r}
+``` r
 #' Use the confidence interval method to select the number of replications.
 #'
 #' @param replications Number of times to run the model.
@@ -76,7 +142,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
   # Run model for specified number of replications
   param_class <- defaults()
   param_class[["update"]](list(number_of_runs = replications))
-  envs <- trial(param = get_param(param_class))
+  envs <- trial(param_class)
   results <- process_replications(envs)
 
   # If mean of metric is less than 1, multiply by 100
@@ -162,16 +228,16 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     labs(x = "Replications", y = yaxis_title) +
     theme_minimal()
 
-  # Show plot
-  print(p)
+  # Save the plot
+  full_path <- file.path(output_dir, file)
+  ggsave(filename = full_path, width = 6.5, height = 4L, bg = "white")
 
-  # Save plot
-  ggsave(filename = file.path(output_dir, file),
-         width = 6.5, height = 4L, bg = "white")
+  # View the plot
+  include_graphics(full_path)
 }
 ```
 
-```{r}
+``` r
 confidence_interval_method(
   replications = 70L,
   desired_precision = 0.05,
@@ -182,9 +248,14 @@ confidence_interval_method(
 )
 ```
 
-It's important to check ahead, to check that the 5% precision is maintained.
+    ## [1] "Reached desired precision (0.05) in 66 replications."
 
-```{r}
+![](../outputs/choose_param_conf_int_1.png)<!-- -->
+
+It’s important to check ahead, to check that the 5% precision is
+maintained.
+
+``` r
 confidence_interval_method(
   replications = 100L,
   desired_precision = 0.05,
@@ -195,9 +266,13 @@ confidence_interval_method(
 )
 ```
 
+    ## [1] "Reached desired precision (0.05) in 66 replications."
+
+![](../outputs/choose_param_conf_int_2.png)<!-- -->
+
 Also, to check across multiple metrics.
 
-```{r}
+``` r
 confidence_interval_method(
   replications = 200L,
   desired_precision = 0.05,
@@ -208,9 +283,13 @@ confidence_interval_method(
 )
 ```
 
+    ## [1] "Reached desired precision (0.05) in 136 replications."
+
+![](../outputs/choose_param_conf_int_3.png)<!-- -->
+
 ## Run time with varying number of CPU cores
 
-```{r}
+``` r
 #' Run model with 1 to 8 CPU cores and examine run times
 #'
 #' @param file Filename to save figure to.
@@ -230,7 +309,7 @@ run_cores <- function(file, model_param = NULL) {
       param_class[["update"]](model_param)
     }
     param_class[["update"]](list(cores = i))
-    invisible(trial(param = get_param(param_class)))
+    invisible(trial(param_class))
 
     # Record time taken
     cores_time <- as.numeric(Sys.time() - cores_start, units = "secs")
@@ -246,34 +325,65 @@ run_cores <- function(file, model_param = NULL) {
     labs(x = "Cores", y = "Run time (seconds)") +
     theme_minimal()
 
-  # Show plot
-  print(p)
-
   # Save plot
-  ggsave(filename = file.path(output_dir, file),
+  full_path <- file.path(output_dir, file)
+  ggsave(filename = full_path, plot = p,
          width = 6.5, height = 4L, bg = "white")
+
+  # View the plot
+  include_graphics(full_path)
 }
 ```
 
-Setting up and managing a parallel cluster takes extra time. For small tasks or few iterations, this extra time can be more than the time saved by running in parallel.
+Setting up and managing a parallel cluster takes extra time. For small
+tasks or few iterations, this extra time can be more than the time saved
+by running in parallel.
 
-```{r}
+``` r
 run_cores("cores1.png")
 ```
 
-Having increased the simulation length, we now see that parallelisation is increasing the model run time.
+    ## [1] "Running with cores: 1"
+    ## [1] "Running with cores: 2"
+    ## [1] "Running with cores: 3"
+    ## [1] "Running with cores: 4"
+    ## [1] "Running with cores: 5"
+    ## [1] "Running with cores: 6"
+    ## [1] "Running with cores: 7"
+    ## [1] "Running with cores: 8"
 
-However, when you use more cores, the data needs to be divided and sent to more workers. For small tasks, this extra work is small, but as the number of workers increases, the time spent managing and communicating with them can grow too much. At some point, this overhead becomes larger than the time saved by using more cores.
+![](../outputs/cores1.png)<!-- -->
 
-The optimal number of cores will vary depending on your model parameters and machine.
+Having increased the simulation length, we now see that parallelisation
+is increasing the model run time.
 
-```{r}
+However, when you use more cores, the data needs to be divided and sent
+to more workers. For small tasks, this extra work is small, but as the
+number of workers increases, the time spent managing and communicating
+with them can grow too much. At some point, this overhead becomes larger
+than the time saved by using more cores.
+
+The optimal number of cores will vary depending on your model parameters
+and machine.
+
+``` r
 run_cores("cores2.png", list(data_collection_period = 10000L))
 ```
 
+    ## [1] "Running with cores: 1"
+    ## [1] "Running with cores: 2"
+    ## [1] "Running with cores: 3"
+    ## [1] "Running with cores: 4"
+    ## [1] "Running with cores: 5"
+    ## [1] "Running with cores: 6"
+    ## [1] "Running with cores: 7"
+    ## [1] "Running with cores: 8"
+
+![](../outputs/cores2.png)<!-- -->
+
 ## Run time
 
-```{r end_timer}
+``` r
 # Get run time in seconds
 end_time <- Sys.time()
 runtime <- as.numeric(end_time - start_time, units = "secs")
@@ -283,3 +393,5 @@ minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
+
+    ## [1] "Notebook run time: 2m 41s"

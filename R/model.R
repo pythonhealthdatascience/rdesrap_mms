@@ -1,7 +1,7 @@
 #' Run simulation
 #'
 #' @param run_number Integer representing index of current simulation run.
-#' @param param List containing parameters for the simulation.
+#' @param param_class Instance of Defaults containing model parameters.
 #'
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
 #' @importFrom simmer add_generator run wrap get_mon_arrivals
@@ -12,7 +12,14 @@
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
 
-model <- function(run_number, param) {
+model <- function(run_number, param_class) {
+
+  # Extract parameter list from the parameter class
+  # It is important to do this within the model function (rather than
+  # beforehand), to ensure any updates to the parameter list undergo
+  # checks from the Defaults R6 class (i.e. ensuring they are replacing
+  # existing keys in the list)
+  param <- param_class[["get"]]()
 
   # Check all inputs are valid
   valid_inputs(run_number, param)
