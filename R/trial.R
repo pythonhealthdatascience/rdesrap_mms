@@ -26,10 +26,13 @@ trial <- function(param_class) {
   }
 
   # Run simulations (sequentially or in parallel)
+  # Mark set_seed as FALSE as we handle this using future.seed(), rather than
+  # within the function, and we don't want to override future.seed
   results <- future_lapply(
     1L:n_runs,
-    function(i) simulation::model(run_number = i, param_class = param_class),
-    future.seed = TRUE
+    function(i) simulation::model(
+      run_number = i, param_class = param_class, set_seed = FALSE),
+    future.seed = 123456
   )
 
   # Combine the results from multiple replications into just two dataframes

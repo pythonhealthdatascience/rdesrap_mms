@@ -2,6 +2,9 @@
 #'
 #' @param run_number Integer representing index of current simulation run.
 #' @param param_class Instance of Defaults containing model parameters.
+#' @param set_seed Whether to set seed within the model function (which we
+#' may not wish to do if being set elsewhere - such as done in trial()).
+#' Default is TRUE.
 #'
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
 #' @importFrom simmer add_generator run wrap get_mon_arrivals
@@ -12,7 +15,7 @@
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
 
-model <- function(run_number, param_class) {
+model <- function(run_number, param_class, set_seed = TRUE) {
 
   # Extract parameter list from the parameter class
   # It is important to do this within the model function (rather than
@@ -25,7 +28,9 @@ model <- function(run_number, param_class) {
   valid_inputs(run_number, param)
 
   # Set random seed based on run number
-  set.seed(run_number)
+  if (set_seed == TRUE) {
+    set.seed(run_number)
+  }
 
   # Define the patient trajectory
   patient <- trajectory("appointment") %>%
