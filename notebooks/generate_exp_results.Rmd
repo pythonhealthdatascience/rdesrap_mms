@@ -2,7 +2,9 @@
 title: "Generate expected results"
 author: "Amy Heather"
 date: "`r Sys.Date()`"
-output: rmarkdown::github_document
+output:
+  github_document:
+      toc: true
 ---
 
 This notebook is used to run a specific version of the model and save each results dataframe as a csv. These are used in `test-backtest.R` to verify that the model produces consistent results.

@@ -1,7 +1,11 @@
 Generate expected results
 ================
 Amy Heather
-2025-01-24
+2025-01-27
+
+- [Set-up](#set-up)
+- [Run model and save results](#run-model-and-save-results)
+- [Calculate run time](#calculate-run-time)
 
 This notebook is used to run a specific version of the model and save
 each results dataframe as a csv. These are used in `test-backtest.R` to
@@ -28,13 +32,13 @@ devtools::install()
     ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts (400ms)
-    ##   ─  checking for empty or unneeded directories
-    ##    Omitted ‘LazyData’ from DESCRIPTION
+    ##   ─  checking for LF line-endings in source and make files and shell scripts
+    ## ─  checking for empty or unneeded directories
+    ##      Omitted ‘LazyData’ from DESCRIPTION
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/Rtmp5NS8BR/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpfNXwLp/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
