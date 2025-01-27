@@ -170,10 +170,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
 }
 ```
 
-It's important to check ahead, to check that the 5% precision is maintained - as evident in this case, where we see:
-
-* < 5% at 3 replications, but this is not maintained.
-* Consistently <5% from 99 replications onwards (hence suggested `min_rep = 100`).
+It's important to check ahead, to check that the 5% precision is maintained - which is fine in this case - it doesn't go back up to future deviation.
 
 ```{r}
 path <- file.path(output_dir, "choose_param_conf_int_1.png")
@@ -185,7 +182,7 @@ ci_df <- confidence_interval_method(
   metric = "mean_activity_time_nurse",
   yaxis_title = "Mean time with nurse",
   path = path,
-  min_rep = 100L
+  min_rep = 98L
 )
 
 # View first ten rows were percentage deviation is below 5
@@ -209,7 +206,7 @@ ci_df <- confidence_interval_method(
   metric = "utilisation_nurse",
   yaxis_title = "Mean nurse utilisation",
   path = path,
-  min_rep = 142L
+  min_rep = 148L
 )
 
 # View first ten rows were percentage deviation is below 5
@@ -273,7 +270,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
 Setting up and managing a parallel cluster takes extra time. For small tasks or few iterations, this extra time can be more than the time saved by running in parallel.
 
 ```{r}
-run_cores(4, "cores1.png")
+run_cores(5, "cores1.png")
 ```
 
 Having increased the simulation length, we now see that parallelisation is decreasing the model run time.
@@ -283,7 +280,7 @@ However, when you use more cores, the data needs to be divided and sent to more 
 The optimal number of cores will vary depending on your model parameters and machine.
 
 ```{r}
-run_cores(4, "cores2.png", list(data_collection_period = 100000L))
+run_cores(5, "cores2.png", list(data_collection_period = 100000L))
 ```
 
 ## Run time
