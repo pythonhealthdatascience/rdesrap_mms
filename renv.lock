@@ -1104,7 +1104,7 @@
     },
     "parallelly": {
       "Package": "parallelly",
-      "Version": "1.41.0",
+      "Version": "1.42.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1112,7 +1112,7 @@
         "tools",
         "utils"
       ],
-      "Hash": "f5ae11e8e15ee84950752e7b01c55295"
+      "Hash": "78f830734a4b488f2c72bf00cde6381e"
     },
     "pillar": {
       "Package": "pillar",
