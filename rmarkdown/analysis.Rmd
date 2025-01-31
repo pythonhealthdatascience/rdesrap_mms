@@ -22,7 +22,8 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ```{r}
-devtools::install()
+# devtools::install()
+devtools::load_all()
 ```
 
 Import required packages.
@@ -58,7 +59,7 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ```{r}
-envs <- trial(param = defaults())
+envs <- trial(param = parameters())
 ```
 
 Process results and save to `.csv`.
@@ -148,13 +149,13 @@ run_scenarios <- function(scenarios) {
     )
     print(paste0("Scenario: ", formatted_scenario))
 
-    # Overwrite defaults with scenario-specific values
-    param_class <- defaults()
-    param_class[["update"]](list(scenario_name = index))
-    param_class[["update"]](scenario_to_run)
+    # Create parameter list with scenario-specific values
+    args <- c(scenario_to_run,
+              list(scenario_name = index))
+    param <- do.call(parameters, args)
 
     # Run the trial for the current scenario
-    envs <- trial(param_class)
+    envs <- trial(param)
 
     # Extract results
     scenario_result <- process_replications(envs)
@@ -380,9 +381,8 @@ Note: In this model, if patients are still waiting to be seen at the end of the 
 <!-- TODO: Do we handle these appropriately in analysis of results within this template and python template? Could do with including an example to show why this matters, to show importance of that backlog, and how to incorporate into analysis, and not just dropping those NaN? -->
 
 ```{r}
-param_class <- defaults()
-param_class[["update"]](list(patient_inter = 0.5))
-result <- model(run_number = 0L, param_class = param_class)
+param <- parameters(patient_inter = 0.5)
+result <- model(run_number = 0L, param = param)
 tail(result[["arrivals"]])
 ```
 
@@ -393,12 +393,13 @@ Simmer has a `verbose` setting which will output activity information if set to 
 In this example, the log prints to screen as we have set `log_to_console` to TRUE. This could also be saved to a file by setting `log_to_file` to TRUE and providing a `file_path` in `param`.
 
 ```{r}
-param_class <- defaults()
-param_class[["update"]](list(data_collection_period = 100L,
-                             number_of_runs = 1L,
-                             cores = 1L,
-                             log_to_console = TRUE))
-verbose_run <- model(run_number = 0L, param_class = param_class)
+param <- parameters(
+  data_collection_period = 100L,
+  number_of_runs = 1L,
+  cores = 1L,
+  log_to_console = TRUE
+)
+verbose_run <- model(run_number = 0L, param = param)
 ```
 
 This will align with the recorded results of each patient.

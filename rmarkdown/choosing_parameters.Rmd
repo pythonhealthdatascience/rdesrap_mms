@@ -21,7 +21,8 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ```{r}
-devtools::install()
+# devtools::install()
+devtools::load_all()
 ```
 
 Load required packages.
@@ -75,9 +76,8 @@ When selecting the number of replications you should repeat the analysis for all
 confidence_interval_method <- function(replications, desired_precision, metric,
                                        yaxis_title, path, min_rep = NULL) {
   # Run model for specified number of replications
-  param_class <- defaults()
-  param_class[["update"]](list(number_of_runs = replications))
-  envs <- trial(param_class)
+  param <- parameters(number_of_runs = replications)
+  envs <- trial(param)
   results <- process_replications(envs)
 
   # If mean of metric is less than 1, multiply by 100
@@ -236,16 +236,18 @@ run_cores <- function(n_cores, file, model_param = NULL) {
 
     # Run model with specified number of cores
     # If specified, also set to provided model parameters
-    param_class <- defaults()
     if (!is.null(model_param)) {
-      param_class[["update"]](model_param)
+      param <- do.call(parameters, model_param)
+    } else {
+      param <- parameters()
     }
-    param_class[["update"]](list(cores = i))
-    invisible(trial(param_class))
+    param[["cores"]] = i
+    invisible(trial(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
     cores_time <- round(
-      as.numeric(Sys.time() - cores_start, units = "secs")*2)/2
+      as.numeric(Sys.time() - cores_start, units = "secs") * 2L
+    ) / 2L
     speed[[i]] <- list(cores = i, run_time = round(cores_time, 3L))
   }
 

@@ -1,7 +1,7 @@
 #' Run simulation
 #'
 #' @param run_number Integer representing index of current simulation run.
-#' @param param_class Instance of Defaults containing model parameters.
+#' @param param Named list of model parameters.
 #' @param set_seed Whether to set seed within the model function (which we
 #' may not wish to do if being set elsewhere - such as done in trial()).
 #' Default is TRUE.
@@ -15,14 +15,7 @@
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
 
-model <- function(run_number, param_class, set_seed = TRUE) {
-
-  # Extract parameter list from the parameter class
-  # It is important to do this within the model function (rather than
-  # beforehand), to ensure any updates to the parameter list undergo
-  # checks from the Defaults R6 class (i.e. ensuring they are replacing
-  # existing keys in the list)
-  param <- param_class[["get"]]()
+model <- function(run_number, param, set_seed = TRUE) {
 
   # Check all inputs are valid
   valid_inputs(run_number, param)
@@ -93,6 +86,31 @@ model <- function(run_number, param_class, set_seed = TRUE) {
 #' @export
 
 valid_inputs <- function(run_number, param) {
+
+  # Get valid argument names from the function, and names in input list
+  valid_names <- names(formals(parameters))
+  input_names <- names(param)
+
+  # Find missing keys (i.e. are there things in valid_names not in input)
+  # and extra keys (i.e. are there things in input not in valid_names)
+  missing_keys <- setdiff(valid_names, input_names)
+  extra_keys <- setdiff(input_names, valid_names)
+
+  # If there are any missing or extra keys, throw an error
+  if (length(missing_keys) > 0L || length(extra_keys) > 0L) {
+    error_message <- ""
+    if (length(missing_keys) > 0L) {
+      error_message <- paste0(
+        error_message, "Missing keys: ", toString(missing_keys), ". "
+      )
+    }
+    if (length(extra_keys) > 0L) {
+      error_message <- paste0(
+        error_message, "Extra keys: ", toString(extra_keys), ". "
+      )
+    }
+    stop(error_message)
+  }
 
   # Check that the run number is an non-negative integer
   if (run_number < 0L || run_number %% 1L != 0L) {

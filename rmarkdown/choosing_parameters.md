@@ -1,7 +1,7 @@
 Choosing parameters
 ================
 Amy Heather
-2025-01-27
+2025-01-31
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -31,34 +31,11 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-devtools::install()
+# devtools::install()
+devtools::load_all()
 ```
 
-    ## 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
-    ##   ─  preparing ‘simulation’:
-    ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts
-    ## ─  checking for empty or unneeded directories
-    ##      Omitted ‘LazyData’ from DESCRIPTION
-    ##   ─  building ‘simulation_0.1.0.tar.gz’
-    ##      
-    ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpaECLM8/simulation_0.1.0.tar.gz --install-tests 
-    ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
-    ## * installing *source* package ‘simulation’ ...
-    ## ** using staged installation
-    ## ** R
-    ## ** tests
-    ## ** byte-compile and prepare package for lazy loading
-    ## ** help
-    ## *** installing help indices
-    ## ** building package indices
-    ## ** testing if installed package can be loaded from temporary location
-    ## ** testing if installed package can be loaded from final location
-    ## ** testing if installed package keeps a record of temporary installation path
-    ## * DONE (simulation)
+    ## ℹ Loading simulation
 
 Load required packages.
 
@@ -75,6 +52,10 @@ library(dplyr)
     ## 
     ##     between, first, last
 
+    ## The following object is masked from 'package:testthat':
+    ## 
+    ##     matches
+
     ## The following objects are masked from 'package:stats':
     ## 
     ##     filter, lag
@@ -88,7 +69,16 @@ library(ggplot2)
 library(knitr)
 library(simulation)
 library(tidyr)
+```
 
+    ## 
+    ## Attaching package: 'tidyr'
+
+    ## The following object is masked from 'package:testthat':
+    ## 
+    ##     matches
+
+``` r
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
 # nolint end
@@ -140,9 +130,8 @@ of replications.
 confidence_interval_method <- function(replications, desired_precision, metric,
                                        yaxis_title, path, min_rep = NULL) {
   # Run model for specified number of replications
-  param_class <- defaults()
-  param_class[["update"]](list(number_of_runs = replications))
-  envs <- trial(param_class)
+  param <- parameters(number_of_runs = replications)
+  envs <- trial(param)
   results <- process_replications(envs)
 
   # If mean of metric is less than 1, multiply by 100
@@ -343,16 +332,18 @@ run_cores <- function(n_cores, file, model_param = NULL) {
 
     # Run model with specified number of cores
     # If specified, also set to provided model parameters
-    param_class <- defaults()
     if (!is.null(model_param)) {
-      param_class[["update"]](model_param)
+      param <- do.call(parameters, model_param)
+    } else {
+      param <- parameters()
     }
-    param_class[["update"]](list(cores = i))
-    invisible(trial(param_class))
+    param[["cores"]] = i
+    invisible(trial(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
     cores_time <- round(
-      as.numeric(Sys.time() - cores_start, units = "secs")*2)/2
+      as.numeric(Sys.time() - cores_start, units = "secs") * 2L
+    ) / 2L
     speed[[i]] <- list(cores = i, run_time = round(cores_time, 3L))
   }
 
@@ -428,4 +419,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 1m 19s"
+    ## [1] "Notebook run time: 2m 15s"

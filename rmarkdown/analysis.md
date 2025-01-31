@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-01-27
+2025-01-31
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -35,34 +35,11 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-devtools::install()
+# devtools::install()
+devtools::load_all()
 ```
 
-    ## 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
-    ##   ─  preparing ‘simulation’:
-    ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts
-    ## ─  checking for empty or unneeded directories
-    ##      Omitted ‘LazyData’ from DESCRIPTION
-    ##   ─  building ‘simulation_0.1.0.tar.gz’
-    ##      
-    ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/Rtmpbqk15J/simulation_0.1.0.tar.gz --install-tests 
-    ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
-    ## * installing *source* package ‘simulation’ ...
-    ## ** using staged installation
-    ## ** R
-    ## ** tests
-    ## ** byte-compile and prepare package for lazy loading
-    ## ** help
-    ## *** installing help indices
-    ## ** building package indices
-    ## ** testing if installed package can be loaded from temporary location
-    ## ** testing if installed package can be loaded from final location
-    ## ** testing if installed package keeps a record of temporary installation path
-    ## * DONE (simulation)
+    ## ℹ Loading simulation
 
 Import required packages.
 
@@ -97,7 +74,7 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ``` r
-envs <- trial(param = defaults())
+envs <- trial(param = parameters())
 ```
 
 Process results and save to `.csv`.
@@ -214,13 +191,13 @@ run_scenarios <- function(scenarios) {
     )
     print(paste0("Scenario: ", formatted_scenario))
 
-    # Overwrite defaults with scenario-specific values
-    param_class <- defaults()
-    param_class[["update"]](list(scenario_name = index))
-    param_class[["update"]](scenario_to_run)
+    # Create parameter list with scenario-specific values
+    args <- c(scenario_to_run,
+              list(scenario_name = index))
+    param <- do.call(parameters, args)
 
     # Run the trial for the current scenario
-    envs <- trial(param_class)
+    envs <- trial(param)
 
     # Extract results
     scenario_result <- process_replications(envs)
@@ -422,7 +399,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Jan 27 16:03:02 2025
+    ## % Fri Jan 31 15:54:31 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -531,7 +508,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Jan 27 16:03:07 2025
+    ## % Fri Jan 31 15:54:41 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -566,18 +543,17 @@ included in the results as we set `ongoing = TRUE` for
 <!-- TODO: Do we handle these appropriately in analysis of results within this template and python template? Could do with including an example to show why this matters, to show importance of that backlog, and how to incorporate into analysis, and not just dropping those NaN? -->
 
 ``` r
-param_class <- defaults()
-param_class[["update"]](list(patient_inter = 0.5))
-result <- model(run_number = 0L, param_class = param_class)
+param <- parameters(patient_inter = 0.5)
+result <- model(run_number = 0L, param = param)
 tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160  patient97   47.84534       NA            NA    nurse           0
+    ## 160 patient154   76.80434       NA            NA    nurse           0
     ## 161 patient155   77.41953       NA            NA    nurse           0
-    ## 162  patient66   35.72669       NA            NA    nurse           0
-    ## 163  patient52   27.21852       NA            NA    nurse           0
-    ## 164 patient156   77.59569       NA            NA    nurse           0
+    ## 162 patient156   77.59569       NA            NA    nurse           0
+    ## 163 patient157   77.98085       NA            NA    nurse           0
+    ## 164 patient158   78.34954       NA            NA    nurse           0
     ## 165 patient160   78.41585       NA            NA    nurse           0
 
 ## Example run with logs
@@ -592,12 +568,13 @@ In this example, the log prints to screen as we have set
 `log_to_file` to TRUE and providing a `file_path` in `param`.
 
 ``` r
-param_class <- defaults()
-param_class[["update"]](list(data_collection_period = 100L,
-                             number_of_runs = 1L,
-                             cores = 1L,
-                             log_to_console = TRUE))
-verbose_run <- model(run_number = 0L, param_class = param_class)
+param <- parameters(
+  data_collection_period = 100L,
+  number_of_runs = 1L,
+  cores = 1L,
+  log_to_console = TRUE
+)
+verbose_run <- model(run_number = 0L, param = param)
 ```
 
     ##   [1] "Parameters:"                                                                                                                                                                                   
@@ -834,4 +811,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 17s"
+    ## [1] "Notebook run time: 0m 35s"

@@ -1,6 +1,6 @@
 #' Run simulation for multiple replications, sequentially or in parallel.
 #'
-#' @param param_class Instance of Defaults containing model parameters.
+#' @param param Named list of model parameters.
 #'
 #' @importFrom future plan multisession sequential
 #' @importFrom future.apply future_lapply
@@ -8,19 +8,15 @@
 #' @return Named list with two tables: monitored arrivals and resources.
 #' @export
 
-trial <- function(param_class) {
-  # Get specified number of cores
-  n_cores <- param_class[["get"]]()[["cores"]]
-  n_runs <- param_class[["get"]]()[["number_of_runs"]]
-
+trial <- function(param) {
   # Determine the parallel execution plan
-  if (n_cores == 1L) {
+  if (param[["cores"]] == 1L) {
     plan(sequential)  # Sequential execution
   } else {
-    if (n_cores == -1L) {
+    if (param[["cores"]] == -1L) {
       cores <- future::availableCores() - 1L
     } else {
-      cores <- n_cores
+      cores <- param[["cores"]]
     }
     plan(multisession, workers = cores)  # Parallel execution
   }
@@ -29,17 +25,17 @@ trial <- function(param_class) {
   # Mark set_seed as FALSE as we handle this using future.seed(), rather than
   # within the function, and we don't want to override future.seed
   results <- future_lapply(
-    1L:n_runs,
+    1L:param[["number_of_runs"]],
     function(i) {
       simulation::model(run_number = i,
-                        param_class = param_class,
+                        param = param,
                         set_seed = FALSE)
     },
     future.seed = 123456L
   )
 
   # Combine the results from multiple replications into just two dataframes
-  if (n_runs > 1L) {
+  if (param[["number_of_runs"]] > 1L) {
     all_arrivals <- do.call(
       rbind, lapply(results, function(x) x[["arrivals"]])
     )

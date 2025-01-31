@@ -1,6 +1,6 @@
 <div align="center">
 
-# Simple Reproducible R<br>Discrete-Event Simulation (DES) Template
+# R DES RAP Template
 
 <!-- badges: start -->
 ![R 4.4.1](https://img.shields.io/badge/-R_4.4.1-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
@@ -10,7 +10,7 @@
 <!-- badges: end -->
 <!-- TODO: Add DOI -->
 
-A simple template for creating DES models in R, within a **reproducible analytical pipeline (RAP)** <br>
+A template for creating **discrete-event simulation (DES)** models in R within a **reproducible analytical pipeline (RAP)**.<br><br>s
 Click on <kbd>Use this template</kbd> to initialise new repository.<br>
 A `README` template is provided at the **end of this file**.
 
