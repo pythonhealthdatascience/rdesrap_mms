@@ -8,6 +8,8 @@ Amy Heather
 - [View spread of results across
   replication](#view-spread-of-results-across-replication)
 - [Scenario analysis](#scenario-analysis)
+  - [Running a basic example (which can compare to Python
+    template)](#running-a-basic-example-which-can-compare-to-python-template)
 - [Sensitivity analysis](#sensitivity-analysis)
 - [NaN results](#nan-results)
 - [Example run with logs](#example-run-with-logs)
@@ -167,10 +169,12 @@ plot_results_spread(column = "utilisation_nurse",
 #'
 #' @param scenarios List where key is name of parameter and value is a list of
 #' different values to run in scenarios
+#' @param base_list List of parameters to use as base for scenarios, which can
+#' be partial (as will input to parameters() function).
 #'
 #' @return Tibble with results from each replication for each scenario.
 
-run_scenarios <- function(scenarios) {
+run_scenarios <- function(scenarios, base_list) {
   # Generate all permutations of the scenarios
   all_scenarios <- expand.grid(scenarios)
 
@@ -192,9 +196,15 @@ run_scenarios <- function(scenarios) {
     print(paste0("Scenario: ", formatted_scenario))
 
     # Create parameter list with scenario-specific values
-    args <- c(scenario_to_run,
-              list(scenario_name = index))
-    param <- do.call(parameters, args)
+    args <- c(scenario_to_run, list(scenario_name = index))
+
+    # Create instance of parameter class with specified base parameters
+    param <- do.call(parameters, base_list)
+
+    # Update parameter list with the scenario parameters
+    for (name in names(args)) {
+      param[[name]] <- args[[name]]
+    }
 
     # Run the trial for the current scenario
     envs <- trial(param)
@@ -222,7 +232,7 @@ scenarios <- list(
   number_of_nurses = c(5L, 6L, 7L, 8L)
 )
 
-scenario_results <- run_scenarios(scenarios)
+scenario_results <- run_scenarios(scenarios, base_list=parameters())
 ```
 
     ## [1] "There are 20 scenarios. Running:"
@@ -399,7 +409,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Feb  3 10:37:02 2025
+    ## % Mon Feb  3 12:15:42 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -421,6 +431,123 @@ print(table_latex,
       file = file.path(output_dir, "scenario_nurse_util.tex"))
 ```
 
+### Running a basic example (which can compare to Python template)
+
+To enable comparison between the templates, this section runs the model
+with a simple set of base case parameters (matched to Python), and then
+running some scenarios on top of that base case.
+
+``` r
+# Define the base param for this altered run
+new_base <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  # No warm-up (not possible in R, but set to 0 in Python)
+  data_collection_period = 1440, 
+  number_of_runs = 10,
+  cores = 1
+)
+
+# Define scenarios
+scenarios <- list(
+  patient_inter = c(3L, 4L, 5L, 6L, 7L),
+  number_of_nurses = c(5L, 6L, 7L, 8L)
+)
+
+# Run scenarios
+compare_template_results <- run_scenarios(scenarios, new_base)
+```
+
+    ## [1] "There are 20 scenarios. Running:"
+    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 5"
+    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 5"
+    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 5"
+    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 5"
+    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 5"
+    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 6"
+    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 6"
+    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 6"
+    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 6"
+    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 6"
+    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 7"
+    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 7"
+    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 7"
+    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 7"
+    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 7"
+    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 8"
+    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 8"
+    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 8"
+    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 8"
+    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 8"
+
+``` r
+# Preview scenario results dataframe
+print(dim(compare_template_results))
+```
+
+    ## [1] 200   8
+
+``` r
+head(compare_template_results)
+```
+
+    ## # A tibble: 6 × 8
+    ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
+    ##         <int>    <int>                   <dbl>                    <dbl>
+    ## 1           1      471                    1.69                    10.3 
+    ## 2           2      502                    3.36                    10.3 
+    ## 3           3      483                    1.86                    10.1 
+    ## 4           4      461                    2.73                    10.6 
+    ## 5           5      466                    1.25                     9.71
+    ## 6           6      466                    2.13                    10.3 
+    ## # ℹ 4 more variables: utilisation_nurse <dbl>, scenario <int>,
+    ## #   patient_inter <int>, number_of_nurses <int>
+
+``` r
+# Define path
+path <- file.path(output_dir, "scenario_nurse_wait_compare_templates.png")
+
+# Calculate results and generate plot
+result <- plot_scenario(
+  results = compare_template_results,
+  x_var = "patient_inter",
+  result_var = "mean_waiting_time_nurse",
+  colour_var = "number_of_nurses",
+  xaxis_title = "Patient inter-arrival time",
+  yaxis_title = "Mean wait time for nurse (minutes)",
+  legend_title = "Nurses",
+  path = path
+)
+
+# View plot
+include_graphics(path)
+```
+
+![](../outputs/scenario_nurse_wait_compare_templates.png)<!-- -->
+
+``` r
+# Define path
+path <- file.path(output_dir, "scenario_nurse_util_compare_templates.png")
+
+# Calculate results and generate plot
+result <- plot_scenario(
+  results = compare_template_results,
+  x_var = "patient_inter",
+  result_var = "utilisation_nurse",
+  colour_var = "number_of_nurses",
+  xaxis_title = "Patient inter-arrival time",
+  yaxis_title = "Mean nurse utilisation",
+  legend_title = "Nurses",
+  path = path
+)
+
+# View plot
+include_graphics(path)
+```
+
+![](../outputs/scenario_nurse_util_compare_templates.png)<!-- -->
+
 ## Sensitivity analysis
 
 Can use similar code to perform sensitivity analyses.
@@ -440,7 +567,7 @@ Can use similar code to perform sensitivity analyses.
 ``` r
 # Run sensitivity analysis
 consult <- list(mean_n_consult_time = c(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L))
-sensitivity_consult <- run_scenarios(consult)
+sensitivity_consult <- run_scenarios(consult, base_list = parameters())
 ```
 
     ## [1] "There are 8 scenarios. Running:"
@@ -508,7 +635,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Feb  3 10:37:08 2025
+    ## % Mon Feb  3 12:15:49 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -549,12 +676,12 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient148   74.24750       NA            NA    nurse           0
-    ## 161 patient152   76.34230       NA            NA    nurse           0
-    ## 162 patient143   72.44633       NA            NA    nurse           0
-    ## 163 patient145   72.73566       NA            NA    nurse           0
-    ## 164 patient153   76.74319       NA            NA    nurse           0
-    ## 165 patient156   77.59569       NA            NA    nurse           0
+    ## 160 patient151   75.76834       NA            NA    nurse           0
+    ## 161 patient154   76.80434       NA            NA    nurse           0
+    ## 162 patient157   77.98085       NA            NA    nurse           0
+    ## 163 patient158   78.34954       NA            NA    nurse           0
+    ## 164 patient159   78.37804       NA            NA    nurse           0
+    ## 165 patient160   78.41585       NA            NA    nurse           0
 
 ## Example run with logs
 
@@ -811,4 +938,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 18s"
+    ## [1] "Notebook run time: 0m 19s"
