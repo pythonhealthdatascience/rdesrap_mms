@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-01-31
+2025-02-03
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -399,7 +399,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Fri Jan 31 15:54:31 2025
+    ## % Mon Feb  3 10:37:02 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -508,7 +508,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Fri Jan 31 15:54:41 2025
+    ## % Mon Feb  3 10:37:08 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -549,12 +549,12 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient154   76.80434       NA            NA    nurse           0
-    ## 161 patient155   77.41953       NA            NA    nurse           0
-    ## 162 patient156   77.59569       NA            NA    nurse           0
-    ## 163 patient157   77.98085       NA            NA    nurse           0
-    ## 164 patient158   78.34954       NA            NA    nurse           0
-    ## 165 patient160   78.41585       NA            NA    nurse           0
+    ## 160 patient148   74.24750       NA            NA    nurse           0
+    ## 161 patient152   76.34230       NA            NA    nurse           0
+    ## 162 patient143   72.44633       NA            NA    nurse           0
+    ## 163 patient145   72.73566       NA            NA    nurse           0
+    ## 164 patient153   76.74319       NA            NA    nurse           0
+    ## 165 patient156   77.59569       NA            NA    nurse           0
 
 ## Example run with logs
 
@@ -811,4 +811,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 35s"
+    ## [1] "Notebook run time: 0m 18s"

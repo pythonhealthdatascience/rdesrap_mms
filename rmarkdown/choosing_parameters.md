@@ -1,7 +1,7 @@
 Choosing parameters
 ================
 Amy Heather
-2025-01-31
+2025-02-03
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -419,4 +419,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 2m 15s"
+    ## [1] "Notebook run time: 1m 16s"
