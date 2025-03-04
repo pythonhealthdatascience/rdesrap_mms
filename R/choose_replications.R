@@ -20,8 +20,8 @@ confidence_interval_method <- function(replications, desired_precision, metric,
                                        yaxis_title, path, min_rep = NULL) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
-  envs <- runner(param)
-  results <- process_replications(envs)
+  raw_results <- runner(param)
+  results <- process_replications(raw_results)
 
   # If mean of metric is less than 1, multiply by 100
   if (mean(results[[metric]]) < 1L) {

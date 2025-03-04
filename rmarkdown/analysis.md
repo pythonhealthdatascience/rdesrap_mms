@@ -76,13 +76,13 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ``` r
-envs <- runner(param = parameters())
+raw_results <- runner(param = parameters())
 ```
 
 Process results and save to `.csv`.
 
 ``` r
-run_results <- process_replications(envs)
+run_results <- process_replications(raw_results)
 head(run_results)
 ```
 
@@ -348,7 +348,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 10:13:15 2025
+    ## % Tue Mar  4 15:30:46 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -574,7 +574,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 10:13:23 2025
+    ## % Tue Mar  4 15:30:53 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -615,12 +615,12 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160  patient42   20.41508       NA            NA    nurse           0
-    ## 161 patient154   76.80434       NA            NA    nurse           0
-    ## 162 patient156   77.59569       NA            NA    nurse           0
-    ## 163 patient157   77.98085       NA            NA    nurse           0
-    ## 164 patient159   78.37804       NA            NA    nurse           0
-    ## 165 patient160   78.41585       NA            NA    nurse           0
+    ## 160 patient156   77.59569       NA            NA    nurse           0
+    ## 161 patient109   53.05827       NA            NA    nurse           0
+    ## 162 patient157   77.98085       NA            NA    nurse           0
+    ## 163 patient158   78.34954       NA            NA    nurse           0
+    ## 164  patient64   34.31794       NA            NA    nurse           0
+    ## 165 patient159   78.37804       NA            NA    nurse           0
 
 ## Example run with logs
 
@@ -877,4 +877,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 20s"
+    ## [1] "Notebook run time: 0m 19s"

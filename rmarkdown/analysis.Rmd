@@ -60,13 +60,13 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ```{r}
-envs <- runner(param = parameters())
+raw_results <- runner(param = parameters())
 ```
 
 Process results and save to `.csv`.
 
 ```{r}
-run_results <- process_replications(envs)
+run_results <- process_replications(raw_results)
 head(run_results)
 
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))

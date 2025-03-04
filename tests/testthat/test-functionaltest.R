@@ -5,8 +5,8 @@
 
 test_that("values are non-negative", {
   # Run model with standard parameters
-  env <- model(run_number = 0L, param = parameters())
-  results <- process_replications(env)
+  raw_results <- model(run_number = 0L, param = parameters())
+  results <- process_replications(raw_results)
 
   # Check that at least one patient was processed
   expect_gt(results[["arrivals"]], 0L)
@@ -27,36 +27,38 @@ test_that("under high demand, utilisation is valid and last patient is unseen",
       patient_inter = 0.1,
       number_of_runs = 1,
       cores = 1)
-    env <- runner(param)
-    results <- process_replications(env)
+    raw_results <- runner(param)
+    results <- process_replications(raw_results)
 
     # Check that utilisation does not exceed 1 or drop below 0
     expect_lte(results[["utilisation_nurse"]], 1)
     expect_gte(results[["utilisation_nurse"]], 0)
 
     # Check that final patient is not seen by the nurse
-    expect_equal(tail(env[["arrivals"]], 1)[["end_time"]], NA_real_)
-    expect_equal(tail(env[["arrivals"]], 1)[["activity_time"]], NA_real_)
+    expect_equal(
+      tail(raw_results[["arrivals"]], 1)[["end_time"]], NA_real_)
+    expect_equal(
+      tail(raw_results[["arrivals"]], 1)[["activity_time"]], NA_real_)
   }
 )
 
 test_that("the same seed returns the same result", {
   # Run model twice using same run number (which will set the seed)
-  env1 <- model(run_number = 0L, param = parameters())
-  env2 <- model(run_number = 0L, param = parameters())
-  expect_identical(process_replications(env1), process_replications(env2))
+  raw1 <- model(run_number = 0L, param = parameters())
+  raw2 <- model(run_number = 0L, param = parameters())
+  expect_identical(process_replications(raw1), process_replications(raw2))
 
   # Conversely, if run with different run number, expect different
-  env1 <- model(run_number = 0L, param = parameters())
-  env2 <- model(run_number = 1L, param = parameters())
+  raw1 <- model(run_number = 0L, param = parameters())
+  raw2 <- model(run_number = 1L, param = parameters())
   expect_failure(
-    expect_identical(process_replications(env1), process_replications(env2))
+    expect_identical(process_replications(raw1), process_replications(raw2))
   )
 
   # Repeat experiment, but with multiple replications
-  envs1 <- runner(param = parameters())
-  envs2 <- runner(param = parameters())
-  expect_identical(process_replications(envs1), process_replications(envs2))
+  raw1 <- runner(param = parameters())
+  raw2 <- runner(param = parameters())
+  expect_identical(process_replications(raw1), process_replications(raw2))
 })
 
 test_that("runner outputs a named list with length 2 and correct names", {

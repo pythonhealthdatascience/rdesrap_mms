@@ -15,8 +15,8 @@ test_that("results from a new run match those previously generated", {
   )
 
   # Run the replications then get the monitored arrivals and resources
-  envs <- runner(param)
-  results <- as.data.frame(process_replications(envs))
+  raw_results <- runner(param)
+  results <- as.data.frame(process_replications(raw_results))
 
   # Import the expected results
   exp_results <- read.csv(test_path("testdata", "results.csv"))
