@@ -157,8 +157,7 @@ check_param_values <- function(param) {
   p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
   for (p in p_list) {
     if (param[[p]] <= 0L) {
-      stop("The parameter '", p,
-           "' must be positive. Provided: ", param[[p]])
+      stop('The parameter "', p, '" must be greater than 0.')
     }
   }
 
@@ -166,8 +165,8 @@ check_param_values <- function(param) {
   n_list <- c("data_collection_period", "number_of_nurses")
   for (n in n_list) {
     if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
-      stop("The parameter '", n,
-           "' must not be a non-negative integer. Provided: ", param[[n]])
+      stop('The parameter "', n,
+           '" must be an integer greater than or equal to 0.')
     }
   }
 }
