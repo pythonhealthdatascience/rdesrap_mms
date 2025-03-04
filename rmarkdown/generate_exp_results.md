@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-01-27
+2025-03-04
 
 - [Set-up](#set-up)
 - [Run model and save results](#run-model-and-save-results)
@@ -24,34 +24,10 @@ The run time is provided at the end of this notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-devtools::install()
+devtools::load_all()
 ```
 
-    ## 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
-    ##   ─  preparing ‘simulation’:
-    ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts
-    ## ─  checking for empty or unneeded directories
-    ##      Omitted ‘LazyData’ from DESCRIPTION
-    ##   ─  building ‘simulation_0.1.0.tar.gz’
-    ##      
-    ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpVSwa65/simulation_0.1.0.tar.gz --install-tests 
-    ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
-    ## * installing *source* package ‘simulation’ ...
-    ## ** using staged installation
-    ## ** R
-    ## ** tests
-    ## ** byte-compile and prepare package for lazy loading
-    ## ** help
-    ## *** installing help indices
-    ## ** building package indices
-    ## ** testing if installed package can be loaded from temporary location
-    ## ** testing if installed package can be loaded from final location
-    ## ** testing if installed package keeps a record of temporary installation path
-    ## * DONE (simulation)
+    ## ℹ Loading simulation
 
 Load required packages.
 
@@ -77,22 +53,22 @@ testdata_dir <- file.path("..", "tests", "testthat", "testdata")
 
 ``` r
 # Define model parameters
-param_class <- defaults()
-param_class[["update"]](list())
-param_class[["update"]](list(patient_inter = 4L,
-                             mean_n_consult_time = 10L,
-                             number_of_nurses = 5L,
-                             data_collection_period = 80L,
-                             number_of_runs = 10L,
-                             cores = 1L))
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  data_collection_period = 80L,
+  number_of_runs = 10L,
+  cores = 1L
+)
 
-# Run the trial
-raw_results <- trial(param_class)
+# Run the replications
+raw_results <- runner(param)
 ```
 
 ``` r
 # Process results
-results <- process_replications(raw_results)
+results <- get_run_results(raw_results)
 
 # Preview
 head(results)

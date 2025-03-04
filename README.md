@@ -1,6 +1,6 @@
 <div align="center">
 
-# Simple Reproducible R<br>Discrete-Event Simulation (DES) Template
+# R DES RAP Template
 
 <!-- badges: start -->
 ![R 4.4.1](https://img.shields.io/badge/-R_4.4.1-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
@@ -10,7 +10,7 @@
 <!-- badges: end -->
 <!-- TODO: Add DOI -->
 
-A simple template for creating DES models in R, within a **reproducible analytical pipeline (RAP)** <br>
+A template for creating **discrete-event simulation (DES)** models in R within a **reproducible analytical pipeline (RAP)**.<br><br>
 Click on <kbd>Use this template</kbd> to initialise new repository.<br>
 A `README` template is provided at the **end of this file**.
 
@@ -170,6 +170,14 @@ sudo apt install libglpk-dev libxml2-dev
 
 🔎 Complete the Strengthening The Reporting of Empirical Simulation Studies (STRESS) checklist (`stress_des.md`) and use this to support writing publication/report, and attach as an appendice to report.
 
+📔 **RMarkdown**
+
+Several Rmarkdown files are provided which give examples running the models, choosing parameters, and explaining how things work. If you wish to knit all rmarkdown files from the command line, you can use the provided bash script by running:
+
+```
+bash run_rmarkdown.sh
+```
+
 🔎 **Tests**
 
 To run tests:
@@ -239,7 +247,8 @@ repo/
 The overall run time will vary depending on how the template model is used. A few example implementations are provided in `rmarkdown/` and the run times for these were:
 
 * `analysis.Rmd`: 42s
-* `choosing_parameters.Rmd`: 56s
+* `choosing_cores.Rmd`: 1m 14s
+* `choosing_replications.Rmd`: 2s
 * `generate_exp_results.Rmd`: 0s
 
 <!--TODO: Check these are up to date -->
@@ -250,7 +259,7 @@ These times were obtained on an Intel Core i7-12700H with 32GB RAM running Ubunt
 
 ## 📝 Citation
 
-<!-- TODO: Add Zenodo critation once archived -->
+<!-- TODO: Add Zenodo citation once archived -->
 
 > Heather, A. (2025). Simple Reproducible R Discrete-Event Simulation (DES) Template. GitHub. https://github.com/pythonhealthdatascience/rap_template_r_des.
 

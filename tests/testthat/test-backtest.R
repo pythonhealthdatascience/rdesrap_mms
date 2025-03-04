@@ -4,18 +4,19 @@
 
 test_that("results from a new run match those previously generated", {
   # Choose a specific set of parameters (ensuring test remains on the same
-  # set, regardless of any changes to Defaults)
-  param_class <- defaults()
-  param_class[["update"]](list(patient_inter = 4L,
-                               mean_n_consult_time = 10L,
-                               number_of_nurses = 5L,
-                               data_collection_period = 80L,
-                               number_of_runs = 10L,
-                               cores = 1L))
+  # set, regardless of any changes to parameters())
+  param <- parameters(
+    patient_inter = 4L,
+    mean_n_consult_time = 10L,
+    number_of_nurses = 5L,
+    data_collection_period = 80L,
+    number_of_runs = 10L,
+    cores = 1L
+  )
 
-  # Run the trial then get the monitored arrivals and resources
-  envs <- trial(param_class)
-  results <- as.data.frame(process_replications(envs))
+  # Run the replications then get the monitored arrivals and resources
+  raw_results <- runner(param)
+  results <- as.data.frame(get_run_results(raw_results))
 
   # Import the expected results
   exp_results <- read.csv(test_path("testdata", "results.csv"))

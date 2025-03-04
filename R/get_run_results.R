@@ -1,4 +1,4 @@
-#' Process results from each replication.
+#' Get results from each replication.
 #'
 #' For each replication (there can be one or many), calculate the: (1) number
 #' of arrivals, (2) mean wait time for each resource, (3) mean activity time
@@ -22,14 +22,14 @@
 #' @importFrom dplyr group_by summarise n_distinct mutate lead full_join
 #' @importFrom purrr reduce
 #' @importFrom rlang .data
-#' @importFrom simmer get_mon_resources get_mon_arrivals
+#' @importFrom simmer get_mon_resources get_mon_arrivals now
 #' @importFrom tidyr pivot_wider drop_na
 #' @importFrom tidyselect any_of
 #'
 #' @return Tibble with results from each replication.
 #' @export
 
-process_replications <- function(results) {
+get_run_results <- function(results) {
 
   # Remove patients who were still waiting and had not completed
   results[["arrivals"]] <- results[["arrivals"]] %>%

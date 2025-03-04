@@ -1,0 +1,121 @@
+---
+title: "Choosing replications"
+author: "Amy Heather"
+date: "`r Sys.Date()`"
+output:
+  github_document:
+      toc: true
+      html_preview: false
+---
+
+This notebook documents the choice of the number of replications.
+
+The generated images are saved and then loaded, so that we view the image as saved (i.e. with the dimensions set in `ggsave()`). This also avoids the creation of a `_files/` directory when knitting the document (which would save all previewed images into that folder also, so they can be rendered and displayed within the output `.md` file, even if we had not specifically saved them). These are viewed using `include_graphics()`, which must be the last command in the cell (or last in the plotting function).
+
+The run time is provided at the end of the notebook.
+
+## Set up
+
+Install the latest version of the local simulation package.
+
+```{r}
+devtools::load_all()
+```
+
+Load required packages.
+
+```{r}
+# nolint start: undesirable_function_linter.
+library(data.table)
+library(dplyr)
+library(knitr)
+library(simulation)
+library(tidyr)
+
+options(data.table.summarise.inform = FALSE)
+options(dplyr.summarise.inform = FALSE)
+# nolint end
+```
+
+Start timer.
+
+```{r}
+start_time <- Sys.time()
+```
+
+Define path to outputs folder.
+
+```{r}
+output_dir <- file.path("..", "outputs")
+```
+
+## Choosing the number of replications
+
+The **confidence interval method** can be used to select the number of replications to run. The more replications you run, the narrower your confidence interval becomes, leading to a more precise estimate of the model's mean performance.
+
+First, you select a desired confidence interval - for example, 95%. Then, run the model with an increasing number of replications, and identify the number required to achieve that precision in the estimate of a given metric - and also, to maintain that precision (as the intervals may converge or expand again later on).
+
+This method is less useful for values very close to zero - so, for example, when using utilisation (which ranges from 0 to 1) it is recommended to multiple values by 100.
+
+When selecting the number of replications you should repeat the analysis for all performance measures and select the highest value as your number of replications.
+
+It's important to check ahead, to check that the 5% precision is maintained - which is fine in this case - it doesn't go back up to future deviation.
+
+```{r}
+path <- file.path(output_dir, "choose_param_conf_int_1.png")
+
+# Run calculations and produce plot
+ci_df <- confidence_interval_method(
+  replications = 150L,
+  desired_precision = 0.05,
+  metric = "mean_activity_time_nurse",
+  yaxis_title = "Mean time with nurse",
+  path = path,
+  min_rep = 98L
+)
+
+# View first ten rows were percentage deviation is below 5
+ci_df %>%
+  filter(perc_deviation < 5L) %>%
+  head(10L)
+
+# View plot
+include_graphics(path)
+```
+
+It is also important to check across multiple metrics.
+
+```{r}
+path <- file.path(output_dir, "choose_param_conf_int_3.png")
+
+# Run calculations and produce plot
+ci_df <- confidence_interval_method(
+  replications = 200L,
+  desired_precision = 0.05,
+  metric = "utilisation_nurse",
+  yaxis_title = "Mean nurse utilisation",
+  path = path,
+  min_rep = 148L
+)
+
+# View first ten rows were percentage deviation is below 5
+ci_df %>%
+  filter(perc_deviation < 5L) %>%
+  head(10L)
+
+# View plot
+include_graphics(path)
+```
+
+## Run time
+
+```{r end_timer}
+# Get run time in seconds
+end_time <- Sys.time()
+runtime <- as.numeric(end_time - start_time, units = "secs")
+
+# Display converted to minutes and seconds
+minutes <- as.integer(runtime / 60L)
+seconds <- as.integer(runtime %% 60L)
+print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+```

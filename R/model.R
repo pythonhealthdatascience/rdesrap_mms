@@ -1,9 +1,9 @@
-#' Run simulation
+#' Run simulation.
 #'
 #' @param run_number Integer representing index of current simulation run.
-#' @param param_class Instance of Defaults containing model parameters.
+#' @param param Named list of model parameters.
 #' @param set_seed Whether to set seed within the model function (which we
-#' may not wish to do if being set elsewhere - such as done in trial()).
+#' may not wish to do if being set elsewhere - such as done in runner()).
 #' Default is TRUE.
 #'
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
@@ -15,14 +15,7 @@
 #' @return Named list with two tables: monitored arrivals and resources
 #' @export
 
-model <- function(run_number, param_class, set_seed = TRUE) {
-
-  # Extract parameter list from the parameter class
-  # It is important to do this within the model function (rather than
-  # beforehand), to ensure any updates to the parameter list undergo
-  # checks from the Defaults R6 class (i.e. ensuring they are replacing
-  # existing keys in the list)
-  param <- param_class[["get"]]()
+model <- function(run_number, param, set_seed = TRUE) {
 
   # Check all inputs are valid
   valid_inputs(run_number, param)
@@ -76,36 +69,102 @@ model <- function(run_number, param_class, set_seed = TRUE) {
     arrivals = get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE),
     resources = get_mon_resources(env)
   )
+
   # Replace replication with appropriate run number (as these functions
   # assume, if not supplied with list of envs, that there was one replication)
   result[["arrivals"]][["replication"]] <- run_number
   result[["resources"]][["replication"]] <- run_number
 
+  # Add a column with the wait time of patients who remained unseen at the end
+  # of the simulation
+  result[["arrivals"]] <- result[["arrivals"]] %>%
+    mutate(q_time_unseen = ifelse(is.na(.data[["activity_time"]]),
+                                  now(env) - .data[["start_time"]],
+                                  NA))
   return(result)
 }
 
-
-#' Check validity of input parameters
+#' Validate input parameters for the simulation.
 #'
 #' @param run_number Integer representing index of current simulation run.
 #' @param param List containing parameters for the simulation.
 #'
+#' @return Throws an error if any parameter is invalid.
 #' @export
 
 valid_inputs <- function(run_number, param) {
+  check_run_number(run_number)
+  check_param_names(param)
+  check_param_values(param)
+}
 
-  # Check that the run number is an non-negative integer
+#' Checks if the run number is a non-negative integer.
+#'
+#' @param run_number Integer representing index of current simulation run.
+#'
+#' @return Throws an error if the run number is invalid.
+
+check_run_number <- function(run_number) {
   if (run_number < 0L || run_number %% 1L != 0L) {
     stop("The run number must be a non-negative integer. Provided: ",
          run_number)
   }
+}
+
+#' Validate parameter names.
+#'
+#' Ensure that all required parameters are present, and no extra parameters are
+#' provided.
+#'
+#' @param param List containing parameters for the simulation.
+#'
+#' @return Throws an error if there are missing or extra parameters.
+
+check_param_names <- function(param) {
+  # Get valid argument names from the function
+  valid_names <- names(formals(parameters))
+
+  # Get names from input parameter list
+  input_names <- names(param)
+
+  # Find missing keys (i.e. are there things in valid_names not in input)
+  # and extra keys (i.e. are there things in input not in valid_names)
+  missing_keys <- setdiff(valid_names, input_names)
+  extra_keys <- setdiff(input_names, valid_names)
+
+  # If there are any missing or extra keys, throw an error
+  if (length(missing_keys) > 0L || length(extra_keys) > 0L) {
+    error_message <- ""
+    if (length(missing_keys) > 0L) {
+      error_message <- paste0(
+        error_message, "Missing keys: ", toString(missing_keys), ". "
+      )
+    }
+    if (length(extra_keys) > 0L) {
+      error_message <- paste0(
+        error_message, "Extra keys: ", toString(extra_keys), ". "
+      )
+    }
+    stop(error_message)
+  }
+}
+
+#' Validate parameter values.
+#'
+#' Ensure that specific parameters are positive numbers, or non-negative
+#' integers.
+#'
+#' @param param List containing parameters for the simulation.
+#'
+#' @return Throws an error if any specified parameter value is invalid.
+
+check_param_values <- function(param) {
 
   # Check that listed parameters are always positive
   p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
   for (p in p_list) {
     if (param[[p]] <= 0L) {
-      stop("The parameter '", p,
-           "' must be positive. Provided: ", param[[p]])
+      stop('The parameter "', p, '" must be greater than 0.')
     }
   }
 
@@ -113,8 +172,8 @@ valid_inputs <- function(run_number, param) {
   n_list <- c("data_collection_period", "number_of_nurses")
   for (n in n_list) {
     if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
-      stop("The parameter '", n,
-           "' must not be a non-negative integer. Provided: ", param[[n]])
+      stop('The parameter "', n,
+           '" must be an integer greater than or equal to 0.')
     }
   }
 }

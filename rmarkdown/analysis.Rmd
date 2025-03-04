@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   github_document:
       toc: true
+      html_preview: false
 ---
 
 This notebook presents execution and results from:
@@ -22,7 +23,7 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ```{r}
-devtools::install()
+devtools::load_all()
 ```
 
 Import required packages.
@@ -58,16 +59,16 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ```{r}
-envs <- trial(param = defaults())
+raw_results <- runner(param = parameters())
 ```
 
 Process results and save to `.csv`.
 
 ```{r}
-trial_results <- process_replications(envs)
-head(trial_results)
+run_results <- get_run_results(raw_results)
+head(run_results)
 
-write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
+write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
 ## View spread of results across replication
@@ -84,7 +85,7 @@ write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
 plot_results_spread <- function(column, x_label, file) {
 
   # Generate plot
-  p <- ggplot(trial_results, aes(.data[[column]])) +
+  p <- ggplot(run_results, aes(.data[[column]])) +
     geom_histogram(bins = 10L) +
     labs(x = x_label, y = "Frequency") +
     theme_minimal()
@@ -120,66 +121,13 @@ plot_results_spread(column = "utilisation_nurse",
 ## Scenario analysis
 
 ```{r}
-#' Run a set of scenarios
-#'
-#' @param scenarios List where key is name of parameter and value is a list of
-#' different values to run in scenarios
-#'
-#' @return Tibble with results from each replication for each scenario.
-
-run_scenarios <- function(scenarios) {
-  # Generate all permutations of the scenarios
-  all_scenarios <- expand.grid(scenarios)
-
-  # Preview the number of scenarios
-  print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
-
-  results <- list()
-
-  # Iterate through each scenario
-  for (index in seq_len(nrow(all_scenarios))) {
-
-    # Filter to one of the scenarios
-    scenario_to_run <- all_scenarios[index, , drop = FALSE]
-
-    # Print the scenario parameters
-    formatted_scenario <- toString(
-      paste0(names(scenario_to_run), " = ", scenario_to_run)
-    )
-    print(paste0("Scenario: ", formatted_scenario))
-
-    # Overwrite defaults with scenario-specific values
-    param_class <- defaults()
-    param_class[["update"]](list(scenario_name = index))
-    param_class[["update"]](scenario_to_run)
-
-    # Run the trial for the current scenario
-    envs <- trial(param_class)
-
-    # Extract results
-    scenario_result <- process_replications(envs)
-
-    # Append scenario parameters to the results
-    scenario_result[["scenario"]] <- index
-    for (key in names(scenario_to_run)) {
-      scenario_result[[key]] <- scenario_to_run[[key]]
-    }
-
-    # Append to results list
-    results[[index]] <- scenario_result
-  }
-  return(do.call(rbind, results))
-}
-```
-
-```{r}
 # Run scenario analysis
 scenarios <- list(
   patient_inter = c(3L, 4L, 5L, 6L, 7L),
   number_of_nurses = c(5L, 6L, 7L, 8L)
 )
 
-scenario_results <- run_scenarios(scenarios)
+scenario_results <- run_scenarios(scenarios, base_list = parameters())
 ```
 
 ```{r}
@@ -315,6 +263,76 @@ print(table_latex,
       file = file.path(output_dir, "scenario_nurse_util.tex"))
 ```
 
+### Running a basic example (which can compare to Python template)
+
+To enable comparison between the templates, this section runs the model with a simple set of base case parameters (matched to Python), and then running some scenarios on top of that base case.
+
+```{r}
+# Define the base param for this altered run
+new_base <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  # No warm-up (not possible in R, but set to 0 in Python)
+  data_collection_period = 1440L,
+  number_of_runs = 10L,
+  cores = 1L
+)
+
+# Define scenarios
+scenarios <- list(
+  patient_inter = c(3L, 4L, 5L, 6L, 7L),
+  number_of_nurses = c(5L, 6L, 7L, 8L)
+)
+
+# Run scenarios
+compare_template_results <- run_scenarios(scenarios, new_base)
+```
+
+```{r}
+# Preview scenario results dataframe
+print(dim(compare_template_results))
+head(compare_template_results)
+```
+
+```{r}
+# Define path
+path <- file.path(output_dir, "scenario_nurse_wait_compare_templates.png")
+
+# Calculate results and generate plot
+result <- plot_scenario(
+  results = compare_template_results,
+  x_var = "patient_inter",
+  result_var = "mean_waiting_time_nurse",
+  colour_var = "number_of_nurses",
+  xaxis_title = "Patient inter-arrival time",
+  yaxis_title = "Mean wait time for nurse (minutes)",
+  legend_title = "Nurses",
+  path = path
+)
+
+# View plot
+include_graphics(path)
+
+# Define path
+path <- file.path(output_dir, "scenario_nurse_util_compare_templates.png")
+
+# Calculate results and generate plot
+result <- plot_scenario(
+  results = compare_template_results,
+  x_var = "patient_inter",
+  result_var = "utilisation_nurse",
+  colour_var = "number_of_nurses",
+  xaxis_title = "Patient inter-arrival time",
+  yaxis_title = "Mean nurse utilisation",
+  legend_title = "Nurses",
+  path = path
+)
+
+# View plot
+include_graphics(path)
+```
+
 ## Sensitivity analysis
 
 Can use similar code to perform sensitivity analyses.
@@ -327,7 +345,7 @@ Can use similar code to perform sensitivity analyses.
 ```{r}
 # Run sensitivity analysis
 consult <- list(mean_n_consult_time = c(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L))
-sensitivity_consult <- run_scenarios(consult)
+sensitivity_consult <- run_scenarios(consult, base_list = parameters())
 ```
 
 ```{r}
@@ -380,9 +398,8 @@ Note: In this model, if patients are still waiting to be seen at the end of the 
 <!-- TODO: Do we handle these appropriately in analysis of results within this template and python template? Could do with including an example to show why this matters, to show importance of that backlog, and how to incorporate into analysis, and not just dropping those NaN? -->
 
 ```{r}
-param_class <- defaults()
-param_class[["update"]](list(patient_inter = 0.5))
-result <- model(run_number = 0L, param_class = param_class)
+param <- parameters(patient_inter = 0.5)
+result <- model(run_number = 0L, param = param)
 tail(result[["arrivals"]])
 ```
 
@@ -393,12 +410,13 @@ Simmer has a `verbose` setting which will output activity information if set to 
 In this example, the log prints to screen as we have set `log_to_console` to TRUE. This could also be saved to a file by setting `log_to_file` to TRUE and providing a `file_path` in `param`.
 
 ```{r}
-param_class <- defaults()
-param_class[["update"]](list(data_collection_period = 100L,
-                             number_of_runs = 1L,
-                             cores = 1L,
-                             log_to_console = TRUE))
-verbose_run <- model(run_number = 0L, param_class = param_class)
+param <- parameters(
+  data_collection_period = 100L,
+  number_of_runs = 1L,
+  cores = 1L,
+  log_to_console = TRUE
+)
+verbose_run <- model(run_number = 0L, param = param)
 ```
 
 This will align with the recorded results of each patient.

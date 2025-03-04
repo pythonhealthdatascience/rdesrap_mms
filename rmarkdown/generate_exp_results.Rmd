@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   github_document:
       toc: true
+      html_preview: false
 ---
 
 This notebook is used to run a specific version of the model and save each results dataframe as a csv. These are used in `test-backtest.R` to verify that the model produces consistent results.
@@ -18,7 +19,7 @@ The run time is provided at the end of this notebook.
 Install the latest version of the local simulation package.
 
 ```{r}
-devtools::install()
+devtools::load_all()
 ```
 
 Load required packages.
@@ -45,22 +46,22 @@ testdata_dir <- file.path("..", "tests", "testthat", "testdata")
 
 ```{r}
 # Define model parameters
-param_class <- defaults()
-param_class[["update"]](list())
-param_class[["update"]](list(patient_inter = 4L,
-                             mean_n_consult_time = 10L,
-                             number_of_nurses = 5L,
-                             data_collection_period = 80L,
-                             number_of_runs = 10L,
-                             cores = 1L))
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  data_collection_period = 80L,
+  number_of_runs = 10L,
+  cores = 1L
+)
 
-# Run the trial
-raw_results <- trial(param_class)
+# Run the replications
+raw_results <- runner(param)
 ```
 
 ```{r}
 # Process results
-results <- process_replications(raw_results)
+results <- get_run_results(raw_results)
 
 # Preview
 head(results)

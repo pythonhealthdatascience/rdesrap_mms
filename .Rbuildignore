@@ -11,3 +11,4 @@
 ^outputs$
 ^rmarkdown$
 ^CITATION\.cff$
+^run_rmarkdown\.sh$

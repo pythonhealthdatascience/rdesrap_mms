@@ -2,22 +2,22 @@
 % Please edit documentation in R/model.R
 \name{model}
 \alias{model}
-\title{Run simulation}
+\title{Run simulation.}
 \usage{
-model(run_number, param_class, set_seed = TRUE)
+model(run_number, param, set_seed = TRUE)
 }
 \arguments{
 \item{run_number}{Integer representing index of current simulation run.}
 
-\item{param_class}{Instance of Defaults containing model parameters.}
+\item{param}{Named list of model parameters.}
 
 \item{set_seed}{Whether to set seed within the model function (which we
-may not wish to do if being set elsewhere - such as done in trial()).
+may not wish to do if being set elsewhere - such as done in runner()).
 Default is TRUE.}
 }
 \value{
 Named list with two tables: monitored arrivals and resources
 }
 \description{
-Run simulation
+Run simulation.
 }

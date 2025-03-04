@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{valid_inputs}
 \alias{valid_inputs}
-\title{Check validity of input parameters}
+\title{Validate input parameters for the simulation.}
 \usage{
 valid_inputs(run_number, param)
 }
@@ -11,6 +11,9 @@ valid_inputs(run_number, param)
 
 \item{param}{List containing parameters for the simulation.}
 }
+\value{
+Throws an error if any parameter is invalid.
+}
 \description{
-Check validity of input parameters
+Validate input parameters for the simulation.
 }
