@@ -26,7 +26,6 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-# devtools::install()
 devtools::load_all()
 ```
 
@@ -60,7 +59,6 @@ library(dplyr)
     ##     intersect, setdiff, setequal, union
 
 ``` r
-library(ggplot2)
 library(knitr)
 library(simulation)
 library(tidyr)
@@ -215,4 +213,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 2s"
+    ## [1] "Notebook run time: 0m 5s"

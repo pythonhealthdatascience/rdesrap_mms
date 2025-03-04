@@ -37,7 +37,6 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-# devtools::install()
 devtools::load_all()
 ```
 
@@ -82,7 +81,7 @@ raw_results <- runner(param = parameters())
 Process results and save to `.csv`.
 
 ``` r
-run_results <- process_replications(raw_results)
+run_results <- get_run_results(raw_results)
 head(run_results)
 ```
 
@@ -348,7 +347,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 15:30:46 2025
+    ## % Tue Mar  4 15:50:08 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -574,7 +573,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 15:30:53 2025
+    ## % Tue Mar  4 15:50:24 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -615,12 +614,19 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient156   77.59569       NA            NA    nurse           0
-    ## 161 patient109   53.05827       NA            NA    nurse           0
-    ## 162 patient157   77.98085       NA            NA    nurse           0
-    ## 163 patient158   78.34954       NA            NA    nurse           0
-    ## 164  patient64   34.31794       NA            NA    nurse           0
-    ## 165 patient159   78.37804       NA            NA    nurse           0
+    ## 160 patient148   74.24750       NA            NA    nurse           0
+    ## 161 patient151   75.76834       NA            NA    nurse           0
+    ## 162 patient153   76.74319       NA            NA    nurse           0
+    ## 163 patient159   78.37804       NA            NA    nurse           0
+    ## 164  patient43   20.56980       NA            NA    nurse           0
+    ## 165 patient160   78.41585       NA            NA    nurse           0
+    ##     q_time_unseen
+    ## 160      5.752504
+    ## 161      4.231663
+    ## 162      3.256809
+    ## 163      1.621961
+    ## 164     59.430201
+    ## 165      1.584149
 
 ## Example run with logs
 
@@ -863,6 +869,34 @@ verbose_run[["arrivals"]]
     ## 25 patient26 99.0189155        NA            NA    nurse           0
     ## 26 patient24 84.4587897        NA            NA    nurse           0
     ## 27 patient23 82.4020925        NA            NA    nurse           0
+    ##    q_time_unseen
+    ## 1             NA
+    ## 2             NA
+    ## 3             NA
+    ## 4             NA
+    ## 5             NA
+    ## 6             NA
+    ## 7             NA
+    ## 8             NA
+    ## 9             NA
+    ## 10            NA
+    ## 11            NA
+    ## 12            NA
+    ## 13            NA
+    ## 14            NA
+    ## 15            NA
+    ## 16            NA
+    ## 17            NA
+    ## 18            NA
+    ## 19            NA
+    ## 20            NA
+    ## 21            NA
+    ## 22            NA
+    ## 23            NA
+    ## 24            NA
+    ## 25     0.9810845
+    ## 26    15.5412103
+    ## 27    17.5979075
 
 ## Calculate run time
 
@@ -877,4 +911,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 19s"
+    ## [1] "Notebook run time: 0m 43s"

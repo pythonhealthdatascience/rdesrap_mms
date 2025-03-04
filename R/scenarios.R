@@ -42,7 +42,7 @@ run_scenarios <- function(scenarios, base_list) {
 
     # Run replications for the current scenario and process results
     raw_results <- runner(param)
-    scenario_result <- process_replications(raw_results)
+    scenario_result <- get_run_results(raw_results)
 
     # Append scenario parameters to the results
     scenario_result[["scenario"]] <- index

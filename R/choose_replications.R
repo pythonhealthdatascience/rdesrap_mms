@@ -21,7 +21,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
   raw_results <- runner(param)
-  results <- process_replications(raw_results)
+  results <- get_run_results(raw_results)
 
   # If mean of metric is less than 1, multiply by 100
   if (mean(results[[metric]]) < 1L) {

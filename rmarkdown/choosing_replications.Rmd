@@ -19,7 +19,6 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ```{r}
-# devtools::install()
 devtools::load_all()
 ```
 
@@ -29,7 +28,6 @@ Load required packages.
 # nolint start: undesirable_function_linter.
 library(data.table)
 library(dplyr)
-library(ggplot2)
 library(knitr)
 library(simulation)
 library(tidyr)

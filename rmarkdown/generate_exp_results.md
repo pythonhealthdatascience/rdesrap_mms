@@ -24,7 +24,6 @@ The run time is provided at the end of this notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-# devtools::install()
 devtools::load_all()
 ```
 
@@ -69,7 +68,7 @@ raw_results <- runner(param)
 
 ``` r
 # Process results
-results <- process_replications(raw_results)
+results <- get_run_results(raw_results)
 
 # Preview
 head(results)

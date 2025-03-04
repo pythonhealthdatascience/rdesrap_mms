@@ -26,7 +26,6 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package.
 
 ``` r
-# devtools::install()
 devtools::load_all()
 ```
 
@@ -63,17 +62,7 @@ library(dplyr)
 library(ggplot2)
 library(knitr)
 library(simulation)
-library(tidyr)
-```
 
-    ## 
-    ## Attaching package: 'tidyr'
-
-    ## The following object is masked from 'package:testthat':
-    ## 
-    ##     matches
-
-``` r
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
 # nolint end
@@ -196,4 +185,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 1m 14s"
+    ## [1] "Notebook run time: 2m 9s"
