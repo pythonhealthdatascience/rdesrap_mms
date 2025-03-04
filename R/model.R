@@ -77,18 +77,46 @@ model <- function(run_number, param, set_seed = TRUE) {
   return(result)
 }
 
-
-#' Check validity of input parameters
+#' Validate input parameters for the simulation.
 #'
 #' @param run_number Integer representing index of current simulation run.
 #' @param param List containing parameters for the simulation.
 #'
+#' @return Throws an error if any parameter is invalid.
 #' @export
 
 valid_inputs <- function(run_number, param) {
+  check_run_number(run_number)
+  check_param_names(param)
+  check_param_values(param)
+}
 
-  # Get valid argument names from the function, and names in input list
+#' Checks if the run number is a non-negative integer
+#'
+#' @param run_number Integer representing index of current simulation run.
+#'
+#' @return Throws an error if the run number is invalid.
+
+check_run_number <- function(run_number) {
+  if (run_number < 0L || run_number %% 1L != 0L) {
+    stop("The run number must be a non-negative integer. Provided: ",
+         run_number)
+  }
+}
+
+#' Validate parameter names
+#' Ensure that all required parameters are present, and no extra parameters are
+#' provided.
+#'
+#' @param param List containing parameters for the simulation.
+#'
+#' @return Throws an error if there are missing or extra parameters.
+
+check_param_names <- function(param) {
+  # Get valid argument names from the function
   valid_names <- names(formals(parameters))
+
+  # Get names from input parameter list
   input_names <- names(param)
 
   # Find missing keys (i.e. are there things in valid_names not in input)
@@ -111,12 +139,17 @@ valid_inputs <- function(run_number, param) {
     }
     stop(error_message)
   }
+}
 
-  # Check that the run number is an non-negative integer
-  if (run_number < 0L || run_number %% 1L != 0L) {
-    stop("The run number must be a non-negative integer. Provided: ",
-         run_number)
-  }
+#' Validate parameter values
+#' Ensure that specific parameters are positive numbers, or non-negative
+#' integers.
+#'
+#' @param param List containing parameters for the simulation.
+#'
+#' @return Throws an error if any specified parameter value is invalid.
+
+check_param_values <- function(param) {
 
   # Check that listed parameters are always positive
   p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
