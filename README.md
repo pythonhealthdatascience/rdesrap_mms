@@ -247,7 +247,8 @@ repo/
 The overall run time will vary depending on how the template model is used. A few example implementations are provided in `rmarkdown/` and the run times for these were:
 
 * `analysis.Rmd`: 42s
-* `choosing_parameters.Rmd`: 56s
+* `choosing_cores.Rmd`: 1m 14s
+* `choosing_replications.Rmd`: 2s
 * `generate_exp_results.Rmd`: 0s
 
 <!--TODO: Check these are up to date -->
@@ -258,7 +259,7 @@ These times were obtained on an Intel Core i7-12700H with 32GB RAM running Ubunt
 
 ## 📝 Citation
 
-<!-- TODO: Add Zenodo critation once archived -->
+<!-- TODO: Add Zenodo citation once archived -->
 
 > Heather, A. (2025). Simple Reproducible R Discrete-Event Simulation (DES) Template. GitHub. https://github.com/pythonhealthdatascience/rap_template_r_des.
 
