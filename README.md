@@ -170,6 +170,14 @@ sudo apt install libglpk-dev libxml2-dev
 
 🔎 Complete the Strengthening The Reporting of Empirical Simulation Studies (STRESS) checklist (`stress_des.md`) and use this to support writing publication/report, and attach as an appendice to report.
 
+📔 **RMarkdown**
+
+Several Rmarkdown files are provided which give examples running the models, choosing parameters, and explaining how things work. If you wish to knit all rmarkdown files from the command line, you can use the provided bash script by running:
+
+```
+bash run_rmarkdown.sh
+```
+
 🔎 **Tests**
 
 To run tests:
