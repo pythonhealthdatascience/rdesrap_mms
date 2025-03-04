@@ -35,7 +35,9 @@ runner <- function(param) {
   )
 
   # Combine the results from multiple replications into just two dataframes
-  if (param[["number_of_runs"]] > 1L) {
+  if (param[["number_of_runs"]] == 1L) {
+    results <- results[[1]]
+  } else {
     all_arrivals <- do.call(
       rbind, lapply(results, function(x) x[["arrivals"]])
     )
