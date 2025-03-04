@@ -241,7 +241,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     } else {
       param <- parameters()
     }
-    param[["cores"]] = i
+    param[["cores"]] <- i
     invisible(trial(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2

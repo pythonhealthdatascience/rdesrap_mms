@@ -23,7 +23,6 @@ Imports:
     purrr,
     rlang,
     tidyr,
-    R6,
     tidyselect,
     future,
     future.apply

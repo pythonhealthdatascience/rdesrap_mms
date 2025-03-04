@@ -188,7 +188,7 @@ scenarios <- list(
   number_of_nurses = c(5L, 6L, 7L, 8L)
 )
 
-scenario_results <- run_scenarios(scenarios, base_list=parameters())
+scenario_results <- run_scenarios(scenarios, base_list = parameters())
 ```
 
 ```{r}
@@ -335,9 +335,9 @@ new_base <- parameters(
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
   # No warm-up (not possible in R, but set to 0 in Python)
-  data_collection_period = 1440, 
-  number_of_runs = 10,
-  cores = 1
+  data_collection_period = 1440L,
+  number_of_runs = 10L,
+  cores = 1L
 )
 
 # Define scenarios

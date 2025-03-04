@@ -10,7 +10,7 @@
 <!-- badges: end -->
 <!-- TODO: Add DOI -->
 
-A template for creating **discrete-event simulation (DES)** models in R within a **reproducible analytical pipeline (RAP)**.<br><br>s
+A template for creating **discrete-event simulation (DES)** models in R within a **reproducible analytical pipeline (RAP)**.<br><br>
 Click on <kbd>Use this template</kbd> to initialise new repository.<br>
 A `README` template is provided at the **end of this file**.
 
