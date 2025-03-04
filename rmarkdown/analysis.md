@@ -165,67 +165,6 @@ plot_results_spread(column = "utilisation_nurse",
 ## Scenario analysis
 
 ``` r
-#' Run a set of scenarios
-#'
-#' @param scenarios List where key is name of parameter and value is a list of
-#' different values to run in scenarios
-#' @param base_list List of parameters to use as base for scenarios, which can
-#' be partial (as will input to parameters() function).
-#'
-#' @return Tibble with results from each replication for each scenario.
-
-run_scenarios <- function(scenarios, base_list) {
-  # Generate all permutations of the scenarios
-  all_scenarios <- expand.grid(scenarios)
-
-  # Preview the number of scenarios
-  print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
-
-  results <- list()
-
-  # Iterate through each scenario
-  for (index in seq_len(nrow(all_scenarios))) {
-
-    # Filter to one of the scenarios
-    scenario_to_run <- all_scenarios[index, , drop = FALSE]
-
-    # Print the scenario parameters
-    formatted_scenario <- toString(
-      paste0(names(scenario_to_run), " = ", scenario_to_run)
-    )
-    print(paste0("Scenario: ", formatted_scenario))
-
-    # Create parameter list with scenario-specific values
-    args <- c(scenario_to_run, list(scenario_name = index))
-
-    # Create instance of parameter class with specified base parameters
-    param <- do.call(parameters, base_list)
-
-    # Update parameter list with the scenario parameters
-    for (name in names(args)) {
-      param[[name]] <- args[[name]]
-    }
-
-    # Run replications for the current scenario
-    envs <- runner(param)
-
-    # Extract results
-    scenario_result <- process_replications(envs)
-
-    # Append scenario parameters to the results
-    scenario_result[["scenario"]] <- index
-    for (key in names(scenario_to_run)) {
-      scenario_result[[key]] <- scenario_to_run[[key]]
-    }
-
-    # Append to results list
-    results[[index]] <- scenario_result
-  }
-  return(do.call(rbind, results))
-}
-```
-
-``` r
 # Run scenario analysis
 scenarios <- list(
   patient_inter = c(3L, 4L, 5L, 6L, 7L),
@@ -409,7 +348,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 10:02:40 2025
+    ## % Tue Mar  4 10:13:15 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -635,7 +574,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 10:02:47 2025
+    ## % Tue Mar  4 10:13:23 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -676,12 +615,12 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient105   51.62957       NA            NA    nurse           0
+    ## 160  patient42   20.41508       NA            NA    nurse           0
     ## 161 patient154   76.80434       NA            NA    nurse           0
-    ## 162 patient155   77.41953       NA            NA    nurse           0
+    ## 162 patient156   77.59569       NA            NA    nurse           0
     ## 163 patient157   77.98085       NA            NA    nurse           0
-    ## 164  patient72   37.74368       NA            NA    nurse           0
-    ## 165 patient158   78.34954       NA            NA    nurse           0
+    ## 164 patient159   78.37804       NA            NA    nurse           0
+    ## 165 patient160   78.41585       NA            NA    nurse           0
 
 ## Example run with logs
 

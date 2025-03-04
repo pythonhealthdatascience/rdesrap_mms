@@ -25,12 +25,12 @@ Imports:
     tidyr,
     tidyselect,
     future,
-    future.apply
+    future.apply,
+    ggplot2
 Suggests:
     testthat (>= 3.0.0),
     lintr,
     devtools,
-    ggplot2,
     xtable,
     data.table
 Config/testthat/edition: 3
