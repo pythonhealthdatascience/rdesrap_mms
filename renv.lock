@@ -1114,6 +1114,22 @@
       ],
       "Hash": "78f830734a4b488f2c72bf00cde6381e"
     },
+    "patrick": {
+      "Package": "patrick",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "dplyr",
+        "glue",
+        "purrr",
+        "rlang",
+        "testthat",
+        "tibble"
+      ],
+      "Hash": "a1ab7291b1a3321ebacd438ebb73c650"
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.10.1",
@@ -1293,7 +1309,7 @@
     },
     "purrr": {
       "Package": "purrr",
-      "Version": "1.0.2",
+      "Version": "1.0.4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1304,7 +1320,7 @@
         "rlang",
         "vctrs"
       ],
-      "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
+      "Hash": "cc8b5d43f90551fa6df0a6be5d640a4f"
     },
     "ragg": {
       "Package": "ragg",
