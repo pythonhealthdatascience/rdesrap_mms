@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   github_document:
       toc: true
+      html_preview: false
 ---
 
 This notebook is used to run a specific version of the model and save each results dataframe as a csv. These are used in `test-backtest.R` to verify that the model produces consistent results.
@@ -55,8 +56,8 @@ param <- parameters(
   cores = 1L
 )
 
-# Run the trial
-raw_results <- trial(param)
+# Run the replications
+raw_results <- runner(param)
 ```
 
 ```{r}

@@ -2,9 +2,7 @@
 % Please edit documentation in R/model.R
 \name{check_param_values}
 \alias{check_param_values}
-\title{Validate parameter values
-Ensure that specific parameters are positive numbers, or non-negative
-integers.}
+\title{Validate parameter values.}
 \usage{
 check_param_values(param)
 }
@@ -15,7 +13,6 @@ check_param_values(param)
 Throws an error if any specified parameter value is invalid.
 }
 \description{
-Validate parameter values
 Ensure that specific parameters are positive numbers, or non-negative
 integers.
 }

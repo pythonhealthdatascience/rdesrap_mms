@@ -18,7 +18,7 @@ test_that("the same seed returns the same result", {
   )
 
   # Repeat experiment, but with multiple replications
-  envs1 <- trial(param = parameters())
-  envs2 <- trial(param = parameters())
+  envs1 <- runner(param = parameters())
+  envs2 <- runner(param = parameters())
   expect_identical(process_replications(envs1), process_replications(envs2))
 })

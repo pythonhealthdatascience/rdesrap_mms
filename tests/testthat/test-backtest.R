@@ -14,8 +14,8 @@ test_that("results from a new run match those previously generated", {
     cores = 1L
   )
 
-  # Run the trial then get the monitored arrivals and resources
-  envs <- trial(param)
+  # Run the replications then get the monitored arrivals and resources
+  envs <- runner(param)
   results <- as.data.frame(process_replications(envs))
 
   # Import the expected results

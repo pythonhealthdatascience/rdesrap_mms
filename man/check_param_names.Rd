@@ -2,9 +2,7 @@
 % Please edit documentation in R/model.R
 \name{check_param_names}
 \alias{check_param_names}
-\title{Validate parameter names
-Ensure that all required parameters are present, and no extra parameters are
-provided.}
+\title{Validate parameter names.}
 \usage{
 check_param_names(param)
 }
@@ -15,7 +13,6 @@ check_param_names(param)
 Throws an error if there are missing or extra parameters.
 }
 \description{
-Validate parameter names
 Ensure that all required parameters are present, and no extra parameters are
 provided.
 }

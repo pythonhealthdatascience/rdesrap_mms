@@ -1,7 +1,7 @@
 Choosing parameters
 ================
 Amy Heather
-2025-02-03
+2025-03-04
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -131,7 +131,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
                                        yaxis_title, path, min_rep = NULL) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
-  envs <- trial(param)
+  envs <- runner(param)
   results <- process_replications(envs)
 
   # If mean of metric is less than 1, multiply by 100
@@ -337,8 +337,8 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     } else {
       param <- parameters()
     }
-    param[["cores"]] = i
-    invisible(trial(param))
+    param[["cores"]] <- i
+    invisible(runner(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
     cores_time <- round(

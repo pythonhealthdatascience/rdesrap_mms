@@ -8,7 +8,7 @@
 #' @return Named list with two tables: monitored arrivals and resources.
 #' @export
 
-trial <- function(param) {
+runner <- function(param) {
   # Determine the parallel execution plan
   if (param[["cores"]] == 1L) {
     plan(sequential)  # Sequential execution

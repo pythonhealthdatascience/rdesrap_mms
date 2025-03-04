@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-02-03
+2025-03-04
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -76,14 +76,14 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ``` r
-envs <- trial(param = parameters())
+envs <- runner(param = parameters())
 ```
 
 Process results and save to `.csv`.
 
 ``` r
-trial_results <- process_replications(envs)
-head(trial_results)
+run_results <- process_replications(envs)
+head(run_results)
 ```
 
     ## # A tibble: 6 × 5
@@ -98,7 +98,7 @@ head(trial_results)
     ## # ℹ 1 more variable: utilisation_nurse <dbl>
 
 ``` r
-write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
+write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
 ## View spread of results across replication
@@ -115,7 +115,7 @@ write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
 plot_results_spread <- function(column, x_label, file) {
 
   # Generate plot
-  p <- ggplot(trial_results, aes(.data[[column]])) +
+  p <- ggplot(run_results, aes(.data[[column]])) +
     geom_histogram(bins = 10L) +
     labs(x = x_label, y = "Frequency") +
     theme_minimal()
@@ -206,8 +206,8 @@ run_scenarios <- function(scenarios, base_list) {
       param[[name]] <- args[[name]]
     }
 
-    # Run the trial for the current scenario
-    envs <- trial(param)
+    # Run replications for the current scenario
+    envs <- runner(param)
 
     # Extract results
     scenario_result <- process_replications(envs)
@@ -232,7 +232,7 @@ scenarios <- list(
   number_of_nurses = c(5L, 6L, 7L, 8L)
 )
 
-scenario_results <- run_scenarios(scenarios, base_list=parameters())
+scenario_results <- run_scenarios(scenarios, base_list = parameters())
 ```
 
     ## [1] "There are 20 scenarios. Running:"
@@ -409,7 +409,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Feb  3 12:15:42 2025
+    ## % Tue Mar  4 10:02:40 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -444,9 +444,9 @@ new_base <- parameters(
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
   # No warm-up (not possible in R, but set to 0 in Python)
-  data_collection_period = 1440, 
-  number_of_runs = 10,
-  cores = 1
+  data_collection_period = 1440L,
+  number_of_runs = 10L,
+  cores = 1L
 )
 
 # Define scenarios
@@ -635,7 +635,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Feb  3 12:15:49 2025
+    ## % Tue Mar  4 10:02:47 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -676,12 +676,12 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient151   75.76834       NA            NA    nurse           0
+    ## 160 patient105   51.62957       NA            NA    nurse           0
     ## 161 patient154   76.80434       NA            NA    nurse           0
-    ## 162 patient157   77.98085       NA            NA    nurse           0
-    ## 163 patient158   78.34954       NA            NA    nurse           0
-    ## 164 patient159   78.37804       NA            NA    nurse           0
-    ## 165 patient160   78.41585       NA            NA    nurse           0
+    ## 162 patient155   77.41953       NA            NA    nurse           0
+    ## 163 patient157   77.98085       NA            NA    nurse           0
+    ## 164  patient72   37.74368       NA            NA    nurse           0
+    ## 165 patient158   78.34954       NA            NA    nurse           0
 
 ## Example run with logs
 
@@ -938,4 +938,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 19s"
+    ## [1] "Notebook run time: 0m 20s"

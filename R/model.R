@@ -1,9 +1,9 @@
-#' Run simulation
+#' Run simulation.
 #'
 #' @param run_number Integer representing index of current simulation run.
 #' @param param Named list of model parameters.
 #' @param set_seed Whether to set seed within the model function (which we
-#' may not wish to do if being set elsewhere - such as done in trial()).
+#' may not wish to do if being set elsewhere - such as done in runner()).
 #' Default is TRUE.
 #'
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
@@ -91,7 +91,7 @@ valid_inputs <- function(run_number, param) {
   check_param_values(param)
 }
 
-#' Checks if the run number is a non-negative integer
+#' Checks if the run number is a non-negative integer.
 #'
 #' @param run_number Integer representing index of current simulation run.
 #'
@@ -104,7 +104,8 @@ check_run_number <- function(run_number) {
   }
 }
 
-#' Validate parameter names
+#' Validate parameter names.
+#'
 #' Ensure that all required parameters are present, and no extra parameters are
 #' provided.
 #'
@@ -141,7 +142,8 @@ check_param_names <- function(param) {
   }
 }
 
-#' Validate parameter values
+#' Validate parameter values.
+#'
 #' Ensure that specific parameters are positive numbers, or non-negative
 #' integers.
 #'

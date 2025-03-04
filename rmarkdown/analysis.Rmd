@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   github_document:
       toc: true
+      html_preview: false
 ---
 
 This notebook presents execution and results from:
@@ -59,16 +60,16 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters.
 
 ```{r}
-envs <- trial(param = parameters())
+envs <- runner(param = parameters())
 ```
 
 Process results and save to `.csv`.
 
 ```{r}
-trial_results <- process_replications(envs)
-head(trial_results)
+run_results <- process_replications(envs)
+head(run_results)
 
-write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
+write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
 ## View spread of results across replication
@@ -85,7 +86,7 @@ write.csv(trial_results, file.path(output_dir, "base_trial.csv"))
 plot_results_spread <- function(column, x_label, file) {
 
   # Generate plot
-  p <- ggplot(trial_results, aes(.data[[column]])) +
+  p <- ggplot(run_results, aes(.data[[column]])) +
     geom_histogram(bins = 10L) +
     labs(x = x_label, y = "Frequency") +
     theme_minimal()
@@ -162,8 +163,8 @@ run_scenarios <- function(scenarios, base_list) {
       param[[name]] <- args[[name]]
     }
 
-    # Run the trial for the current scenario
-    envs <- trial(param)
+    # Run replications for the current scenario
+    envs <- runner(param)
 
     # Extract results
     scenario_result <- process_replications(envs)

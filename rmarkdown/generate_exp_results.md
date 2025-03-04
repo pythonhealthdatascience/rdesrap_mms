@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-01-31
+2025-03-04
 
 - [Set-up](#set-up)
 - [Run model and save results](#run-model-and-save-results)
@@ -63,8 +63,8 @@ param <- parameters(
   cores = 1L
 )
 
-# Run the trial
-raw_results <- trial(param)
+# Run the replications
+raw_results <- runner(param)
 ```
 
 ``` r
