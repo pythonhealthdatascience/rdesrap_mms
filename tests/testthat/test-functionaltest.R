@@ -1,7 +1,7 @@
-# Unit testing for the Discrete-Event Simulation (DES) Model.
+# Functional testing for the Discrete-Event Simulation (DES) Model.
 #
-# These check specific parts of the simulation and code, ensuring they work
-# correctly and as expected.
+# These verify that the system or components perform their intended
+# functionality.
 
 test_that("the same seed returns the same result", {
 
