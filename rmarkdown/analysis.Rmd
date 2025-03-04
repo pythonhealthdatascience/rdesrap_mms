@@ -403,29 +403,6 @@ result <- model(run_number = 0L, param = param)
 tail(result[["arrivals"]])
 ```
 
-## Example run with logs
-
-Simmer has a `verbose` setting which will output activity information if set to TRUE. Currently, this would be information on each patient as they arrive and then see the nurse. Therefore, it is only best used when running the simulation for a short time with few patients.
-
-In this example, the log prints to screen as we have set `log_to_console` to TRUE. This could also be saved to a file by setting `log_to_file` to TRUE and providing a `file_path` in `param`.
-
-```{r}
-param <- parameters(
-  data_collection_period = 100L,
-  number_of_runs = 1L,
-  cores = 1L,
-  log_to_console = TRUE
-)
-verbose_run <- model(run_number = 0L, param = param)
-```
-
-This will align with the recorded results of each patient.
-
-```{r}
-# Compare to patient-level results
-verbose_run[["arrivals"]]
-```
-
 ## Calculate run time
 
 ```{r end_timer}
