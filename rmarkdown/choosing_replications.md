@@ -131,6 +131,19 @@ ci_df <- confidence_interval_method(
     ## Reached desired precision (0.05) in 98 replications.
 
 ``` r
+# Preview dataframe
+head(ci_df)
+```
+
+    ##   replications cumulative_mean cumulative_std ci_lower  ci_upper perc_deviation
+    ## 1            1       10.740547             NA       NA        NA             NA
+    ## 2            2        8.920561             NA       NA        NA             NA
+    ## 3            3        8.242866       2.165677 2.863026 13.622707       65.26662
+    ## 4            4        8.504535       1.844086 5.570182 11.438888       34.50339
+    ## 5            5        7.760938       2.305467 4.898323 10.623553       36.88491
+    ## 6            6        7.820313       2.067195 5.650925  9.989701       27.74042
+
+``` r
 # View first ten rows were percentage deviation is below 5
 ci_df %>%
   filter(perc_deviation < 5L) %>%

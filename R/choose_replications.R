@@ -36,8 +36,8 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     # Calculate mean
     mean_value <- mean(subset_data)
 
-    # Some calculations require more than 1 observation else will error...
-    if (i == 1L) {
+    # Some calculations require a few observations else will error...
+    if (i < 3L) {
       # When only one observation, set to NA
       std_dev <- NA
       ci_lower <- NA
@@ -77,8 +77,8 @@ confidence_interval_method <- function(replications, desired_precision, metric,
       dplyr::slice_head() %>%
       dplyr::select(replications) %>%
       dplyr::pull()
-    message(paste0("Reached desired precision (", desired_precision, ") in ",
-                   n_reps, " replications."))
+    message("Reached desired precision (", desired_precision, ") in ",
+            n_reps, " replications.")
   } else {
     warning("Running ", replications, " replications did not reach ",
             "desired precision (", desired_precision, ").", call. = FALSE)

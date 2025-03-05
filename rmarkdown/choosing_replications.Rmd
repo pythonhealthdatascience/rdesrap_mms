@@ -74,6 +74,9 @@ ci_df <- confidence_interval_method(
   min_rep = 98L
 )
 
+# Preview dataframe
+head(ci_df)
+
 # View first ten rows were percentage deviation is below 5
 ci_df %>%
   filter(perc_deviation < 5L) %>%
