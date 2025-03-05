@@ -47,5 +47,5 @@ runner <- function(param) {
     results <- list(arrivals = all_arrivals, resources = all_resources)
   }
 
-  return(results)
+  return(results) # nolint
 }

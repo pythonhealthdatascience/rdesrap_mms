@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-03-04
+2025-03-05
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -128,7 +128,7 @@ ci_df <- confidence_interval_method(
 )
 ```
 
-    ## [1] "Reached desired precision (0.05) in 98 replications."
+    ## Reached desired precision (0.05) in 98 replications.
 
 ``` r
 # View first ten rows were percentage deviation is below 5
@@ -172,7 +172,7 @@ ci_df <- confidence_interval_method(
 )
 ```
 
-    ## [1] "Reached desired precision (0.05) in 148 replications."
+    ## Reached desired precision (0.05) in 148 replications.
 
 ``` r
 # View first ten rows were percentage deviation is below 5
@@ -213,4 +213,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 5s"
+    ## [1] "Notebook run time: 0m 2s"

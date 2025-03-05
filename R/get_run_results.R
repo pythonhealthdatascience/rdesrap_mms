@@ -68,10 +68,12 @@ get_run_results <- function(results) {
   # total time intervals considered (`dt`).
   calc_util <- results[["resources"]] %>%
     group_by(.data[["resource"]], .data[["replication"]]) %>%
+    # nolint start
     mutate(dt = lead(.data[["time"]]) - .data[["time"]]) %>%
     mutate(capacity = pmax(.data[["capacity"]], .data[["server"]])) %>%
     mutate(dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L)) %>%
     mutate(in_use = .data[["dt"]] * .data[["server"]] / .data[["capacity"]]) %>%
+    # nolint end
     summarise(
       utilisation = sum(.data[["in_use"]], na.rm = TRUE) /
         sum(.data[["dt"]], na.rm = TRUE)
@@ -84,5 +86,5 @@ get_run_results <- function(results) {
   processed_result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
     reduce(full_join, by = "replication")
 
-  return(processed_result)
+  return(processed_result) # nolint
 }

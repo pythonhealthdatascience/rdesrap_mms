@@ -38,7 +38,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
   # Create simmer environment, add nurse resource and patient generator, and
   # run the simulation. Capture output, which will save a log if verbose=TRUE
-  log <- capture.output(
+  sim_log <- capture.output(
     env <- simmer("simulation", verbose = verbose) %>% # nolint
       add_resource("nurse", param[["number_of_nurses"]]) %>%
       add_generator("patient", patient, function() {
@@ -52,7 +52,7 @@ model <- function(run_number, param, set_seed = TRUE) {
   if (isTRUE(verbose)) {
     # Create full log message by adding parameters
     param_string <- paste(names(param), param, sep = "=", collapse = "; ")
-    full_log <- append(c("Parameters:", param_string, "Log:"), log)
+    full_log <- append(c("Parameters:", param_string, "Log:"), sim_log)
     # Print to console
     if (isTRUE(param[["log_to_console"]])) {
       print(full_log)
@@ -107,7 +107,7 @@ valid_inputs <- function(run_number, param) {
 check_run_number <- function(run_number) {
   if (run_number < 0L || run_number %% 1L != 0L) {
     stop("The run number must be a non-negative integer. Provided: ",
-         run_number)
+         run_number, call. = FALSE)
   }
 }
 
@@ -145,7 +145,7 @@ check_param_names <- function(param) {
         error_message, "Extra keys: ", toString(extra_keys), ". "
       )
     }
-    stop(error_message)
+    stop(error_message, call. = FALSE)
   }
 }
 
@@ -164,7 +164,7 @@ check_param_values <- function(param) {
   p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
   for (p in p_list) {
     if (param[[p]] <= 0L) {
-      stop('The parameter "', p, '" must be greater than 0.')
+      stop('The parameter "', p, '" must be greater than 0.', call. = FALSE)
     }
   }
 
@@ -173,7 +173,7 @@ check_param_values <- function(param) {
   for (n in n_list) {
     if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
       stop('The parameter "', n,
-           '" must be an integer greater than or equal to 0.')
+           '" must be an integer greater than or equal to 0.', call. = FALSE)
     }
   }
 }

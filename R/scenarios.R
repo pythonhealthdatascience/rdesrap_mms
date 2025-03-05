@@ -13,7 +13,7 @@ run_scenarios <- function(scenarios, base_list) {
   all_scenarios <- expand.grid(scenarios)
 
   # Preview the number of scenarios
-  print(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
+  message(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
 
   results <- list()
 
@@ -27,21 +27,21 @@ run_scenarios <- function(scenarios, base_list) {
     formatted_scenario <- toString(
       paste0(names(scenario_to_run), " = ", scenario_to_run)
     )
-    print(paste0("Scenario: ", formatted_scenario))
+    message(paste0("Scenario: ", formatted_scenario))
 
     # Create parameter list with scenario-specific values
-    args <- c(scenario_to_run, list(scenario_name = index))
+    s_args <- c(scenario_to_run, list(scenario_name = index))
 
     # Create instance of parameter class with specified base parameters
-    param <- do.call(parameters, base_list)
+    s_param <- do.call(parameters, base_list)
 
     # Update parameter list with the scenario parameters
-    for (name in names(args)) {
-      param[[name]] <- args[[name]]
+    for (name in names(s_args)) {
+      s_param[[name]] <- s_args[[name]]
     }
 
     # Run replications for the current scenario and process results
-    raw_results <- runner(param)
+    raw_results <- runner(s_param)
     scenario_result <- get_run_results(raw_results)
 
     # Append scenario parameters to the results
@@ -53,5 +53,5 @@ run_scenarios <- function(scenarios, base_list) {
     # Append to results list
     results[[index]] <- scenario_result
   }
-  return(do.call(rbind, results))
+  return(do.call(rbind, results)) # nolint
 }

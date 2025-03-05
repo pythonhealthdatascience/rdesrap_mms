@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-04
+2025-03-05
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -172,27 +172,47 @@ scenarios <- list(
 scenario_results <- run_scenarios(scenarios, base_list = parameters())
 ```
 
-    ## [1] "There are 20 scenarios. Running:"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 8"
+    ## There are 20 scenarios. Running:
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 8
 
 ``` r
 # Preview scenario results dataframe
@@ -346,7 +366,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 16:26:41 2025
+    ## % Wed Mar  5 10:51:54 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -396,27 +416,47 @@ scenarios <- list(
 compare_template_results <- run_scenarios(scenarios, new_base)
 ```
 
-    ## [1] "There are 20 scenarios. Running:"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 5"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 6"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 7"
-    ## [1] "Scenario: patient_inter = 3, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 4, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 5, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 6, number_of_nurses = 8"
-    ## [1] "Scenario: patient_inter = 7, number_of_nurses = 8"
+    ## There are 20 scenarios. Running:
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 5
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 6
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 7
+
+    ## Scenario: patient_inter = 3, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 4, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 5, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 6, number_of_nurses = 8
+
+    ## Scenario: patient_inter = 7, number_of_nurses = 8
 
 ``` r
 # Preview scenario results dataframe
@@ -507,15 +547,23 @@ consult <- list(mean_n_consult_time = c(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L))
 sensitivity_consult <- run_scenarios(consult, base_list = parameters())
 ```
 
-    ## [1] "There are 8 scenarios. Running:"
-    ## [1] "Scenario: mean_n_consult_time = 8"
-    ## [1] "Scenario: mean_n_consult_time = 9"
-    ## [1] "Scenario: mean_n_consult_time = 10"
-    ## [1] "Scenario: mean_n_consult_time = 11"
-    ## [1] "Scenario: mean_n_consult_time = 12"
-    ## [1] "Scenario: mean_n_consult_time = 13"
-    ## [1] "Scenario: mean_n_consult_time = 14"
-    ## [1] "Scenario: mean_n_consult_time = 15"
+    ## There are 8 scenarios. Running:
+
+    ## Scenario: mean_n_consult_time = 8
+
+    ## Scenario: mean_n_consult_time = 9
+
+    ## Scenario: mean_n_consult_time = 10
+
+    ## Scenario: mean_n_consult_time = 11
+
+    ## Scenario: mean_n_consult_time = 12
+
+    ## Scenario: mean_n_consult_time = 13
+
+    ## Scenario: mean_n_consult_time = 14
+
+    ## Scenario: mean_n_consult_time = 15
 
 ``` r
 # Preview result
@@ -572,7 +620,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar  4 16:26:57 2025
+    ## % Wed Mar  5 10:52:02 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -613,19 +661,19 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160 patient154   76.80434       NA            NA    nurse           0
-    ## 161 patient155   77.41953       NA            NA    nurse           0
-    ## 162 patient114   55.80323       NA            NA    nurse           0
-    ## 163 patient156   77.59569       NA            NA    nurse           0
-    ## 164 patient100   50.11611       NA            NA    nurse           0
-    ## 165 patient157   77.98085       NA            NA    nurse           0
+    ## 160  patient86   44.32246       NA            NA    nurse           0
+    ## 161 patient156   77.59569       NA            NA    nurse           0
+    ## 162  patient87   45.24028       NA            NA    nurse           0
+    ## 163 patient107   51.75734       NA            NA    nurse           0
+    ## 164 patient157   77.98085       NA            NA    nurse           0
+    ## 165 patient160   78.41585       NA            NA    nurse           0
     ##     q_time_unseen
-    ## 160      3.195655
-    ## 161      2.580474
-    ## 162     24.196767
-    ## 163      2.404310
-    ## 164     29.883887
-    ## 165      2.019149
+    ## 160     35.677540
+    ## 161      2.404310
+    ## 162     34.759720
+    ## 163     28.242658
+    ## 164      2.019149
+    ## 165      1.584149
 
 ## Calculate run time
 
@@ -640,4 +688,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 44s"
+    ## [1] "Notebook run time: 0m 21s"

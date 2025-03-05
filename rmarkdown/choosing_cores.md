@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-03-04
+2025-03-05
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -185,4 +185,4 @@ seconds <- as.integer(runtime %% 60L)
 print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 2m 9s"
+    ## [1] "Notebook run time: 1m 9s"
