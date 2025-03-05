@@ -42,7 +42,7 @@ Define path to expected results.
 testdata_dir <- file.path("..", "tests", "testthat", "testdata")
 ```
 
-## Run model and save results
+## Base case
 
 ```{r}
 # Define model parameters
@@ -57,9 +57,7 @@ param <- parameters(
 
 # Run the replications
 raw_results <- runner(param)
-```
 
-```{r}
 # Process results
 results <- get_run_results(raw_results)
 
@@ -67,7 +65,36 @@ results <- get_run_results(raw_results)
 head(results)
 
 # Save to csv
-write.csv(results, file.path(testdata_dir, "results.csv"), row.names = FALSE)
+write.csv(results, file.path(testdata_dir, "base_results.csv"),
+          row.names = FALSE)
+```
+
+## Scenario analysis
+
+```{r}
+# Define model parameters
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  data_collection_period = 80L,
+  number_of_runs = 10L,
+  cores = 1L
+)
+
+# Run scenario analysis
+scenarios <- list(
+  patient_inter = c(3L, 4L, 5L),
+  number_of_nurses = c(6L, 7L)
+)
+scenario_results <- run_scenarios(scenarios, base_list = parameters())
+
+# Preview
+head(scenario_results)
+
+# Save to csv
+write.csv(scenario_results, file.path(testdata_dir, "scenario_results.csv"),
+          row.names = FALSE)
 ```
 
 ## Calculate run time
