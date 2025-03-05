@@ -18,6 +18,7 @@
 #' @param results Named list with `arrivals` containing output from
 #' `get_mon_arrivals()` and `resources` containing output from
 #' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
+#' @param param Named list of model parameters.
 #'
 #' @importFrom dplyr group_by summarise n_distinct mutate lead full_join
 #' @importFrom purrr reduce
@@ -29,62 +30,79 @@
 #' @return Tibble with results from each replication.
 #' @export
 
-get_run_results <- function(results) {
+get_run_results <- function(results, param) {
 
-  # Remove patients who were still waiting and had not completed
-  results[["arrivals"]] <- results[["arrivals"]] %>%
-    drop_na(any_of("end_time"))
+  # Create a tibble with all replication numbers
+  all_replications <- tibble::tibble(replication = 1:param[["number_of_runs"]])
 
-  # Calculate the number of arrivals
-  calc_arr <- results[["arrivals"]] %>%
-    group_by(.data[["replication"]]) %>%
-    summarise(arrivals = n_distinct(.data[["name"]]))
+  # If there are any arrivals in any replication...
+  if (nrow(results[["arrivals"]]) > 0) {
 
-  # Calculate the mean wait time for each resource
-  calc_wait <- results[["arrivals"]] %>%
-    mutate(
-      waiting_time = round(
-        .data[["end_time"]] - (
-          .data[["start_time"]] + .data[["activity_time"]]
-        ), 10L
-      )
-    ) %>%
-    group_by(.data[["resource"]], .data[["replication"]]) %>%
-    summarise(mean_waiting_time = mean(.data[["waiting_time"]])) %>%
-    pivot_wider(names_from = "resource",
-                values_from = "mean_waiting_time",
-                names_glue = "mean_waiting_time_{resource}")
+    # Remove patients who were still waiting and had not completed
+    results[["arrivals"]] <- results[["arrivals"]] %>%
+      drop_na(any_of("end_time"))
 
-  # Calculate the mean time spent with each resource
-  calc_act <- results[["arrivals"]] %>%
-    group_by(.data[["resource"]], .data[["replication"]]) %>%
-    summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
-    pivot_wider(names_from = "resource",
-                values_from = "mean_activity_time",
-                names_glue = "mean_activity_time_{resource}")
+    # Calculate the number of arrivals
+    calc_arr <- results[["arrivals"]] %>%
+      group_by(.data[["replication"]]) %>%
+      summarise(arrivals = n_distinct(.data[["name"]]))
 
-  # Calculate the mean resource utilisation
-  # Utilisation is given by the total effective usage time (`in_use`) over the
-  # total time intervals considered (`dt`).
-  calc_util <- results[["resources"]] %>%
-    group_by(.data[["resource"]], .data[["replication"]]) %>%
-    # nolint start
-    mutate(dt = lead(.data[["time"]]) - .data[["time"]]) %>%
-    mutate(capacity = pmax(.data[["capacity"]], .data[["server"]])) %>%
-    mutate(dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L)) %>%
-    mutate(in_use = .data[["dt"]] * .data[["server"]] / .data[["capacity"]]) %>%
-    # nolint end
-    summarise(
-      utilisation = sum(.data[["in_use"]], na.rm = TRUE) /
-        sum(.data[["dt"]], na.rm = TRUE)
-    ) %>%
-    pivot_wider(names_from = "resource",
-                values_from = "utilisation",
-                names_glue = "utilisation_{resource}")
+    # Calculate the mean wait time for each resource
+    calc_wait <- results[["arrivals"]] %>%
+      mutate(
+        waiting_time = round(
+          .data[["end_time"]] - (
+            .data[["start_time"]] + .data[["activity_time"]]
+          ), 10L
+        )
+      ) %>%
+      group_by(.data[["resource"]], .data[["replication"]]) %>%
+      summarise(mean_waiting_time = mean(.data[["waiting_time"]])) %>%
+      pivot_wider(names_from = "resource",
+                  values_from = "mean_waiting_time",
+                  names_glue = "mean_waiting_time_{resource}")
 
-  # Combine all calculated metrics into a single dataframe
-  processed_result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
-    reduce(full_join, by = "replication")
+    # Calculate the mean time spent with each resource
+    calc_act <- results[["arrivals"]] %>%
+      group_by(.data[["resource"]], .data[["replication"]]) %>%
+      summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
+      pivot_wider(names_from = "resource",
+                  values_from = "mean_activity_time",
+                  names_glue = "mean_activity_time_{resource}")
 
-  return(processed_result) # nolint
+    # Calculate the mean resource utilisation
+    # Utilisation is given by the total effective usage time (`in_use`) over the
+    # total time intervals considered (`dt`).
+    calc_util <- results[["resources"]] %>%
+      group_by(.data[["resource"]], .data[["replication"]]) %>%
+      # nolint start
+      mutate(dt = lead(.data[["time"]]) - .data[["time"]]) %>%
+      mutate(capacity = pmax(.data[["capacity"]], .data[["server"]])) %>%
+      mutate(dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L)) %>%
+      mutate(in_use = .data[["dt"]] * .data[["server"]] / .data[["capacity"]]) %>%
+      # nolint end
+      summarise(
+        utilisation = sum(.data[["in_use"]], na.rm = TRUE) /
+          sum(.data[["dt"]], na.rm = TRUE)
+      ) %>%
+      pivot_wider(names_from = "resource",
+                  values_from = "utilisation",
+                  names_glue = "utilisation_{resource}")
+
+    # Combine all calculated metrics into a single dataframe
+    processed_result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
+      reduce(full_join, by = "replication")
+
+    # Join with all_replications to ensure all runs are represented
+    processed_result <- dplyr::full_join(
+      all_replications, processed_result, by = "replication") %>%
+      # Replace NA in 'arrivals' column with 0
+      mutate(arrivals = ifelse(is.na(arrivals), 0, arrivals))
+
+  # If there were no patients in any replication, return NULL
+  } else {
+    processed_result <- NULL
+  }
+
+  return(processed_result)
 }

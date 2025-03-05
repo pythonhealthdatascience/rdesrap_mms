@@ -27,7 +27,7 @@ run_scenarios <- function(scenarios, base_list) {
     formatted_scenario <- toString(
       paste0(names(scenario_to_run), " = ", scenario_to_run)
     )
-    message(paste0("Scenario: ", formatted_scenario))
+    message("Scenario: ", formatted_scenario)
 
     # Create parameter list with scenario-specific values
     s_args <- c(scenario_to_run, list(scenario_name = index))
@@ -42,7 +42,7 @@ run_scenarios <- function(scenarios, base_list) {
 
     # Run replications for the current scenario and process results
     raw_results <- runner(s_param)
-    scenario_result <- get_run_results(raw_results)
+    scenario_result <- get_run_results(raw_results, s_param)
 
     # Append scenario parameters to the results
     scenario_result[["scenario"]] <- index

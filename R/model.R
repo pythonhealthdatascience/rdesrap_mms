@@ -70,17 +70,19 @@ model <- function(run_number, param, set_seed = TRUE) {
     resources = get_mon_resources(env)
   )
 
-  # Replace replication with appropriate run number (as these functions
-  # assume, if not supplied with list of envs, that there was one replication)
-  result[["arrivals"]][["replication"]] <- run_number
-  result[["resources"]][["replication"]] <- run_number
+  if (nrow(result[["arrivals"]]) > 0) {
+    # Replace replication with appropriate run number (as these functions
+    # assume, if not supplied with list of envs, that there was one replication)
+    result[["arrivals"]][["replication"]] <- run_number
+    result[["resources"]][["replication"]] <- run_number
 
-  # Add a column with the wait time of patients who remained unseen at the end
-  # of the simulation
-  result[["arrivals"]] <- result[["arrivals"]] %>%
-    mutate(q_time_unseen = ifelse(is.na(.data[["activity_time"]]),
-                                  now(env) - .data[["start_time"]],
-                                  NA))
+    # Add a column with the wait time of patients who remained unseen at the end
+    # of the simulation
+    result[["arrivals"]] <- result[["arrivals"]] %>%
+      mutate(q_time_unseen = ifelse(is.na(.data[["activity_time"]]),
+                                    now(env) - .data[["start_time"]],
+                                    NA))
+  }
   return(result)
 }
 
