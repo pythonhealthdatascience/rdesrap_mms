@@ -30,7 +30,11 @@ jobs:
       - name: Lint package
         run: lintr::lint_package()
         shell: Rscript {0}
+        env:
+          LINTR_ERROR_ON_LINT: true
 
       - name: Lint rmarkdown
         run: lintr::lint_dir("rmarkdown")
         shell: Rscript {0}
+        env:
+          LINTR_ERROR_ON_LINT: true
