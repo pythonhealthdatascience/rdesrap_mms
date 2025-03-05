@@ -156,11 +156,11 @@ test_that("the same seed returns the same result", {
 
 
 test_that("columns that are expected to be complete have no NA", {
-  # Run model with low resources
+  # Run model with low resources and definite arrivals
   param = parameters(
     number_of_nurses = 1L,
-    data_collection_period = 50L,
-    patient_inter = 3L)
+    data_collection_period = 300L,
+    patient_inter = 1L)
   raw_results <- runner(param)
 
   # Helper function to check for NA in data
