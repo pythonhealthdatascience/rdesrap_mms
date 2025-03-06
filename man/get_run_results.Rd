@@ -4,12 +4,14 @@
 \alias{get_run_results}
 \title{Get results from each replication.}
 \usage{
-get_run_results(results)
+get_run_results(results, param)
 }
 \arguments{
 \item{results}{Named list with `arrivals` containing output from
 `get_mon_arrivals()` and `resources` containing output from
 `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
+
+\item{param}{Named list of model parameters.}
 }
 \value{
 Tibble with results from each replication.
