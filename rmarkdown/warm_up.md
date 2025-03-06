@@ -9,6 +9,10 @@ Amy Heather
   - [Run the model](#run-the-model)
   - [Trim the `arrivals` and `resources` dataframes
     produced](#trim-the-arrivals-and-resources-dataframes-produced)
+- [Understanding the times in
+  arrivals](#understanding-the-times-in-arrivals)
+- [Inspired by `treat-sim-simmer`](#inspired-by-treat-sim-simmer)
+- [Attempt using `reset()`](#attempt-using-reset)
 
 ## Set up
 
@@ -1024,8 +1028,7 @@ arrivals_times %>%
     ## 4 patient15 nurse              1 dc     resource_start_…       61.5         61.5
 
 Does match in `arrivals` - interestingly, to `start_time` rather than
-`resource_start_time`. This indicates I had misunderstood something
-somewhere!
+`resource_start_time`.
 
 ``` r
 arrivals %>%
@@ -1040,3 +1043,304 @@ arrivals %>%
     ## 2 patient15       60.4     74.4          12.9 nurse              1 dc    
     ## 3 patient10       61.5     74.0          12.5 doctor             1 wu    
     ## # ℹ 1 more variable: resource_start_time <dbl>
+
+This is because that entry in resources is about someone joining the
+queue, and not about a resource being used.
+
+Can check this by seeing that `patient15` has matches for the
+resource_start_time and end_time…
+
+``` r
+matched_data[matched_data[["name"]] == "patient15",]
+```
+
+    ##      resource     time server queue capacity queue_size system limit
+    ## NA       <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## 47      nurse 61.45887      5     0        5        Inf      5   Inf
+    ## 62      nurse 74.38149      4     0        5        Inf      4   Inf
+    ## 63     doctor 74.38149      2     0        3        Inf      2   Inf
+    ## 67     doctor 79.95978      1     0        3        Inf      1   Inf
+    ## NA.1     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.2     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.3     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.4     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.5     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.6     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.7     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ## NA.8     <NA>       NA     NA    NA       NA         NA     NA    NA
+    ##      replication   time_r      name period           time_type time_value
+    ## NA            NA       NA      <NA>   <NA>                <NA>         NA
+    ## 47             1 61.45887 patient15     dc resource_start_time   61.45887
+    ## 62             1 74.38149 patient15     dc            end_time   74.38149
+    ## 63             1 74.38149 patient15     dc resource_start_time   74.38149
+    ## 67             1 79.95978 patient15     dc            end_time   79.95978
+    ## NA.1          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.2          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.3          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.4          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.5          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.6          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.7          NA       NA      <NA>   <NA>                <NA>         NA
+    ## NA.8          NA       NA      <NA>   <NA>                <NA>         NA
+
+Hence, the **solution** could be:
+
+- To have `start_time` as an additional `time_type` ONLY IF they
+  experienced a wait, or-
+- To filter `resources` to only contain rows from patients capturing or
+  releasing a resource and not joining the queue
+
+BUT: note that my plans could have unintended calculations if I remove
+rows (either from approach in general, or from the latter item) that are
+required by the calculations.
+
+## Understanding the times in arrivals
+
+``` r
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+arrivals %>%
+  mutate(total_time = end_time - start_time) %>%
+  filter(total_time > activity_time)
+```
+
+    ##         name start_time   end_time activity_time resource replication
+    ## 1   patient0   3.020727   4.477795      1.457067    nurse           1
+    ## 2   patient3  14.409821  15.880281      1.470460    nurse           1
+    ## 3   patient3  15.880281  23.500580      7.620299   doctor           1
+    ## 4   patient2  14.888401  28.795753     13.907351   doctor           1
+    ## 5  patient12  53.277449  63.504708     10.227259   doctor           1
+    ## 6  patient13  64.039645  67.052475      3.012830   doctor           1
+    ## 7  patient14  59.425075  70.223886     10.798811    nurse           1
+    ## 8  patient10  61.458873  73.989927     12.531054   doctor           1
+    ## 9  patient15  60.365185  74.381490     12.922616    nurse           1
+    ## 10 patient16  64.478172  74.423730      9.945558    nurse           1
+    ## 11  patient9  44.791170  84.380499     39.589329    nurse           1
+    ## 12 patient17  69.650671  89.728995     20.078324    nurse           1
+    ## 13 patient20  84.332042  92.073919      7.741878    nurse           1
+    ## 14 patient24 110.313986 115.906809      3.887868   doctor           1
+    ## 15 patient26 119.305847 127.451205      8.145358    nurse           1
+    ## 16 patient22 104.556807 128.573580     23.124716   doctor           1
+    ##    total_time
+    ## 1    1.457067
+    ## 2    1.470460
+    ## 3    7.620299
+    ## 4   13.907351
+    ## 5   10.227259
+    ## 6    3.012830
+    ## 7   10.798811
+    ## 8   12.531054
+    ## 9   14.016305
+    ## 10   9.945558
+    ## 11  39.589329
+    ## 12  20.078324
+    ## 13   7.741878
+    ## 14   5.592822
+    ## 15   8.145358
+    ## 16  24.016772
+
+## Inspired by `treat-sim-simmer`
+
+Calculate utilisation from `get_mon_arrivals()` (and do not use
+`get_mon_resources()`).
+
+``` r
+# Filter to patients who arrived after the warm-up period
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE) %>%
+  group_by(name) %>%
+  filter(all(start_time >= param[["warm_up_period"]])) %>%
+  ungroup()
+
+resource_counts <- tibble(
+  resource = c("doctor", "nurse"),
+  count = c(number_of_doctors, param[["number_of_nurses"]])
+)
+
+# Calculate utilisation
+arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time) %>%
+  group_by(resource) %>%
+  summarise(in_use = sum(activity_time, na.rm=TRUE)) %>%
+  merge(resource_counts, by = "resource", all=TRUE) %>%
+  mutate(utilisation = in_use / (param[["data_collection_period"]] * count))
+```
+
+    ##   resource    in_use count utilisation
+    ## 1   doctor  90.27633     3   0.3761514
+    ## 2    nurse 155.35557     5   0.3883889
+
+## Attempt using `reset()`
+
+``` r
+run_number <- 1
+param <- parameters(
+  patient_inter = 5,
+  mean_n_consult_time = 20,
+  number_of_nurses = 1,
+  warm_up_period = 80,
+  data_collection_period = 80
+)
+set_seed <- TRUE
+number_of_doctors <- 3
+
+# Check all inputs are valid
+valid_inputs(run_number, param)
+
+# Set random seed based on run number
+if (set_seed) {
+  set.seed(run_number)
+}
+
+# Define the patient trajectory
+patient <- trajectory("appointment") %>%
+  seize("nurse", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("nurse", 1L)
+
+# Create simmer environment, add nurse resource and patient generator
+env <- simmer("simulation", verbose = verbose) %>% # nolint
+  add_resource("nurse", param[["number_of_nurses"]]) %>%
+  add_generator("patient", patient, function() {
+    rexp(n = 1L, rate = 1L / param[["patient_inter"]])
+  })
+
+# Run the warm-up period
+env %>%
+  simmer::run(param[["warm_up_period"]])
+```
+
+    ## simmer environment: simulation | now: 80 | next: 80.610811387249
+    ## { Monitor: in memory }
+    ## { Resource: nurse | monitored: TRUE | server status: 1(1) | queue status: 6(Inf) }
+    ## { Source: patient | monitored: 1 | n_generated: 12 }
+
+``` r
+# Extract monitoring data *before* the reset
+wu_arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+wu_resources <- get_mon_resources(env)
+
+# Reset the environment to clear statistics
+env %>%
+  simmer::reset()
+```
+
+    ## simmer environment: simulation | now: 0 | next: 0
+    ## { Monitor: in memory }
+    ## { Resource: nurse | monitored: TRUE | server status: 0(1) | queue status: 0(Inf) }
+    ## { Source: patient | monitored: 1 | n_generated: 0 }
+
+``` r
+# Run the data collection period
+sim_log <- capture.output(
+  env %>%
+    simmer::run(param[["data_collection_period"]]) %>%
+    wrap()
+)
+
+# Extract monitoring data *after* the reset
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+resources <- get_mon_resources(env)
+
+# Display
+wu_arrivals %>% arrange(start_time)
+```
+
+    ##         name start_time  end_time activity_time resource replication
+    ## 1   patient0   3.775909  6.690044      2.914135    nurse           1
+    ## 2   patient1   9.684123 18.405496      8.721373    nurse           1
+    ## 3   patient2  10.383099 42.996737     24.591241    nurse           1
+    ## 4   patient3  24.857942 67.748808     24.752071    nurse           1
+    ## 5   patient4  27.556356        NA            NA    nurse           1
+    ## 6   patient5  32.339194        NA            NA    nurse           1
+    ## 7   patient6  33.074424        NA            NA    nurse           1
+    ## 8   patient7  40.028099        NA            NA    nurse           1
+    ## 9   patient8  43.838249        NA            NA    nurse           1
+    ## 10  patient9  65.957920        NA            NA    nurse           1
+    ## 11 patient10  71.230636        NA            NA    nurse           1
+
+``` r
+wu_resources
+```
+
+    ##    resource      time server queue capacity queue_size system limit replication
+    ## 1     nurse  3.775909      1     0        1        Inf      1   Inf           1
+    ## 2     nurse  6.690044      0     0        1        Inf      0   Inf           1
+    ## 3     nurse  9.684123      1     0        1        Inf      1   Inf           1
+    ## 4     nurse 10.383099      1     1        1        Inf      2   Inf           1
+    ## 5     nurse 18.405496      1     0        1        Inf      1   Inf           1
+    ## 6     nurse 24.857942      1     1        1        Inf      2   Inf           1
+    ## 7     nurse 27.556356      1     2        1        Inf      3   Inf           1
+    ## 8     nurse 32.339194      1     3        1        Inf      4   Inf           1
+    ## 9     nurse 33.074424      1     4        1        Inf      5   Inf           1
+    ## 10    nurse 40.028099      1     5        1        Inf      6   Inf           1
+    ## 11    nurse 42.996737      1     4        1        Inf      5   Inf           1
+    ## 12    nurse 43.838249      1     5        1        Inf      6   Inf           1
+    ## 13    nurse 65.957920      1     6        1        Inf      7   Inf           1
+    ## 14    nurse 67.748808      1     5        1        Inf      6   Inf           1
+    ## 15    nurse 71.230636      1     6        1        Inf      7   Inf           1
+
+``` r
+arrivals %>% arrange(start_time)
+```
+
+    ##         name start_time end_time activity_time resource replication
+    ## 1   patient0   3.273733 15.04333    11.7695944    nurse           1
+    ## 2   patient1   4.958401 27.88118    12.8378518    nurse           1
+    ## 3   patient2  16.780977 51.34742    23.4662421    nurse           1
+    ## 4   patient3  18.251579 52.09279     0.7453705    nurse           1
+    ## 5   patient4  21.080906 58.57300     6.4802031    nurse           1
+    ## 6   patient5  21.611270 62.64320     4.0702070    nurse           1
+    ## 7   patient6  21.908465       NA            NA    nurse           1
+    ## 8   patient7  24.802028       NA            NA    nurse           1
+    ## 9   patient8  44.596692       NA            NA    nurse           1
+    ## 10  patient9  49.580757       NA            NA    nurse           1
+    ## 11 patient10  56.757183       NA            NA    nurse           1
+    ## 12 patient11  63.359523       NA            NA    nurse           1
+    ## 13 patient12  64.868228       NA            NA    nurse           1
+    ## 14 patient13  68.494299       NA            NA    nurse           1
+    ## 15 patient14  72.252013       NA            NA    nurse           1
+    ## 16 patient15  73.427150       NA            NA    nurse           1
+    ## 17 patient16  78.826556       NA            NA    nurse           1
+
+``` r
+resources
+```
+
+    ##    resource      time server queue capacity queue_size system limit replication
+    ## 1     nurse  3.273733      1     0        1        Inf      1   Inf           1
+    ## 2     nurse  4.958401      1     1        1        Inf      2   Inf           1
+    ## 3     nurse 15.043328      1     0        1        Inf      1   Inf           1
+    ## 4     nurse 16.780977      1     1        1        Inf      2   Inf           1
+    ## 5     nurse 18.251579      1     2        1        Inf      3   Inf           1
+    ## 6     nurse 21.080906      1     3        1        Inf      4   Inf           1
+    ## 7     nurse 21.611270      1     4        1        Inf      5   Inf           1
+    ## 8     nurse 21.908465      1     5        1        Inf      6   Inf           1
+    ## 9     nurse 24.802028      1     6        1        Inf      7   Inf           1
+    ## 10    nurse 27.881179      1     5        1        Inf      6   Inf           1
+    ## 11    nurse 44.596692      1     6        1        Inf      7   Inf           1
+    ## 12    nurse 49.580757      1     7        1        Inf      8   Inf           1
+    ## 13    nurse 51.347421      1     6        1        Inf      7   Inf           1
+    ## 14    nurse 52.092792      1     5        1        Inf      6   Inf           1
+    ## 15    nurse 56.757183      1     6        1        Inf      7   Inf           1
+    ## 16    nurse 58.572995      1     5        1        Inf      6   Inf           1
+    ## 17    nurse 62.643202      1     4        1        Inf      5   Inf           1
+    ## 18    nurse 63.359523      1     5        1        Inf      6   Inf           1
+    ## 19    nurse 64.868228      1     6        1        Inf      7   Inf           1
+    ## 20    nurse 68.494299      1     7        1        Inf      8   Inf           1
+    ## 21    nurse 72.252013      1     8        1        Inf      9   Inf           1
+    ## 22    nurse 73.427150      1     9        1        Inf     10   Inf           1
+    ## 23    nurse 78.826556      1    10        1        Inf     11   Inf           1
+
+It appears that in `wu_arrivals`, patients `end_time` = NA in some cases
+as not yet seen but in others as they start being seen but not finished
+before end of simulation.
+
+**TODO:** Find a way to distinguish patients still waiting for a
+resource v.s. patients in ongoing session with resource (perhaps by
+matching with resource times).
+
+When we reset, these are no longer monitored so not included in the new
+dataframes. However, I am concerned they simply no longer exist, as the
+patients in `arrivals` should all be waiting and not seen immediately,
+but `patient0` seems to be seen as soon as they arrive.

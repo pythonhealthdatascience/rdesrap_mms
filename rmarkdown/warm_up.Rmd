@@ -201,7 +201,7 @@ arrivals_times %>%
   filter(time_value > 58 & time_value < 62)
 ```
 
-Does match in `arrivals` - interestingly, to `start_time` rather than `resource_start_time`. This indicates I had misunderstood something somewhere!
+Does match in `arrivals` - interestingly, to `start_time` rather than `resource_start_time`.
 
 ```{r}
 arrivals %>%
@@ -209,4 +209,124 @@ arrivals %>%
   filter(start_time > 58 & start_time < 62)
 ```
 
-  
+This is because that entry in resources is about someone joining the queue, and not about a resource being used.
+
+Can check this by seeing that `patient15` has matches for the resource_start_time and end_time...
+
+```{r}
+matched_data[matched_data[["name"]] == "patient15",]
+```
+
+Hence, the **solution** could be:
+
+* To have `start_time` as an additional `time_type` ONLY IF they experienced a wait, or-
+* To filter `resources` to only contain rows from patients capturing or releasing a resource and not joining the queue
+
+BUT: note that my plans could have unintended calculations if I remove rows (either from approach in general, or from the latter item) that are required by the calculations.
+
+## Understanding the times in arrivals
+
+```{r}
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+arrivals %>%
+  mutate(total_time = end_time - start_time) %>%
+  filter(total_time > activity_time)
+```
+
+## Inspired by `treat-sim-simmer`
+
+Calculate utilisation from `get_mon_arrivals()` (and do not use `get_mon_resources()`).
+
+```{r}
+# Filter to patients who arrived after the warm-up period
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE) %>%
+  group_by(name) %>%
+  filter(all(start_time >= param[["warm_up_period"]])) %>%
+  ungroup()
+
+resource_counts <- tibble(
+  resource = c("doctor", "nurse"),
+  count = c(number_of_doctors, param[["number_of_nurses"]])
+)
+
+# Calculate utilisation
+arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time) %>%
+  group_by(resource) %>%
+  summarise(in_use = sum(activity_time, na.rm=TRUE)) %>%
+  merge(resource_counts, by = "resource", all=TRUE) %>%
+  mutate(utilisation = in_use / (param[["data_collection_period"]] * count))
+```
+
+## Attempt using `reset()`
+
+```{r}
+run_number <- 1
+param <- parameters(
+  patient_inter = 5,
+  mean_n_consult_time = 20,
+  number_of_nurses = 1,
+  warm_up_period = 80,
+  data_collection_period = 80
+)
+set_seed <- TRUE
+number_of_doctors <- 3
+
+# Check all inputs are valid
+valid_inputs(run_number, param)
+
+# Set random seed based on run number
+if (set_seed) {
+  set.seed(run_number)
+}
+
+# Define the patient trajectory
+patient <- trajectory("appointment") %>%
+  seize("nurse", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("nurse", 1L)
+
+# Create simmer environment, add nurse resource and patient generator
+env <- simmer("simulation", verbose = verbose) %>% # nolint
+  add_resource("nurse", param[["number_of_nurses"]]) %>%
+  add_generator("patient", patient, function() {
+    rexp(n = 1L, rate = 1L / param[["patient_inter"]])
+  })
+
+# Run the warm-up period
+env %>%
+  simmer::run(param[["warm_up_period"]])
+
+# Extract monitoring data *before* the reset
+wu_arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+wu_resources <- get_mon_resources(env)
+
+# Reset the environment to clear statistics
+env %>%
+  simmer::reset()
+
+# Run the data collection period
+sim_log <- capture.output(
+  env %>%
+    simmer::run(param[["data_collection_period"]]) %>%
+    wrap()
+)
+
+# Extract monitoring data *after* the reset
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+resources <- get_mon_resources(env)
+
+# Display
+wu_arrivals %>% arrange(start_time)
+wu_resources
+arrivals %>% arrange(start_time)
+resources
+```
+
+It appears that in `wu_arrivals`, patients `end_time` = NA in some cases as not yet seen but in others as they start being seen but not finished before end of simulation.
+
+**TODO:** Find a way to distinguish patients still waiting for a resource v.s. patients in ongoing session with resource (perhaps by matching with resource times).
+
+When we reset, these are no longer monitored so not included in the new dataframes. However, I am concerned they simply no longer exist, as the patients in `arrivals` should all be waiting and not seen immediately, but `patient0` seems to be seen as soon as they arrive.
