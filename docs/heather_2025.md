@@ -7,32 +7,32 @@ As part of the project STARS (Sharing Tools and Artefacts for Reproducible Simul
 | Recommendation | Completion | Further details |
 | - | - | - |
 | **Set-up** |
-| Share code with an open licence (⭐) | - | - |
-| Link publication to a specific version of the code | - | - |
-| List dependencies and versions | - | - |
+| Share code with an open licence (⭐) | ✅ | `LICENSE` and `LICENSE.md` |
+| Link publication to a specific version of the code | N/A | No publication. |
+| List dependencies and versions | ✅ | `renv.lock` |
 | **Running the model** |
-| Provide code for all scenarios and sensitivity analyses (⭐) | - | - |
-| Ensure model parameters are correct (⭐) | - | - |
-| Control randomness | - | - |
+| Provide code for all scenarios and sensitivity analyses (⭐) | ✅ | Within `analysis.Rmd` |
+| Ensure model parameters are correct (⭐) | ✅ | - |
+| Control randomness | ✅ | - |
 | **Outputs** |
-| Include code to calculate all required model outputs (⭐) | - | - |
-| Include code to generate the tables, figures, and other reported results (⭐) | - | - |
+| Include code to calculate all required model outputs (⭐) | ✅ | - |
+| Include code to generate the tables, figures, and other reported results (⭐) | ✅ | Includes some examples (in `analysis.ipynb`) where these are generated. |
 
 ## Recommendations to support troubleshooting and reuse
 
 | Recommendation | Completion | Further details |
 | - | - | - |
 | **Design** |
-| Separate model code from applications | - | - |
-| Avoid hard-coded parameters | - | - |
-| Minimise code duplication | - | - |
+| Separate model code from applications | ✅ | - |
+| Avoid hard-coded parameters | ✅ | - |
+| Minimise code duplication | ✅ | - |
 | **Clarity** |
-| Comment sufficiently | - | - |
-| Ensure clarity and consistency in the model results tables | - | - |
-| Include run instructions | - | - |
-| State run times and machine specifications | - | - |
+| Comment sufficiently | ✅ | - |
+| Ensure clarity and consistency in the model results tables | ✅ | - |
+| Include run instructions | ✅ | - |
+| State run times and machine specifications | ✅ | In `README.md` and `.ipynb` files. |
 | **Functionality** |
-| Optimise model run time | - | - |
-| Save outputs to a file | - | - |
-| Avoid excessive output files | - | - |
-| Address large file sizes | - | - |
+| Optimise model run time | ✅ | Provides option for parallel processing. |
+| Save outputs to a file | ✅ | Includes some examples (in `analysis.ipynb`) where outputs are saved. |
+| Avoid excessive output files | ✅ | - |
+| Address large file sizes | N/A | - |

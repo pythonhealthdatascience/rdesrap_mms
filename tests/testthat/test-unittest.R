@@ -8,6 +8,7 @@
 # test could otherwise pass with any error (and not necessarily the specific
 # error we are checking for).
 
+
 patrick::with_parameters_test_that(
   "the model produces an error for invalid inputs",
   {
@@ -46,6 +47,7 @@ test_that("the model produces an error if a new parameter name is used", {
   # Check it fails with the anticipated error message
   expect_error(model(run_number = 1L, param = param), "Extra keys: new_entry.")
 })
+
 
 test_that("the model produces an error if parameters are missing", {
   # Remove a parameter

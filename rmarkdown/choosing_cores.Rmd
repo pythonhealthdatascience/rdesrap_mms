@@ -62,7 +62,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
   # Run model with 1 to 8 cores
   speed <- list()
   for (i in 1L:n_cores){
-    print(paste("Running with cores:", i))
+    message("Running with cores:", i)
     cores_start <- Sys.time()
 
     # Run model with specified number of cores
@@ -127,5 +127,5 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```

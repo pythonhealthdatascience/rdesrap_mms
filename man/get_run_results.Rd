@@ -2,22 +2,26 @@
 % Please edit documentation in R/get_run_results.R
 \name{get_run_results}
 \alias{get_run_results}
-\title{Get results from each replication.}
+\title{Process the raw monitored arrivals and resources.}
 \usage{
-get_run_results(results)
+get_run_results(results, run_number)
 }
 \arguments{
 \item{results}{Named list with `arrivals` containing output from
 `get_mon_arrivals()` and `resources` containing output from
 `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
+
+\item{run_number}{Integer representing index of current simulation run.}
 }
 \value{
-Tibble with results from each replication.
+Tibble with processed results from replication.
 }
 \description{
-For each replication (there can be one or many), calculate the: (1) number
-of arrivals, (2) mean wait time for each resource, (3) mean activity time
-for each resource, and (4) mean resource utilisation.
+For the provided replication, calculate the:
+(1) number of arrivals
+(2) mean wait time for each resource
+(3) mean activity time for each resource
+(4) mean resource utilisation.
 }
 \details{
 Credit: The utilisation calculation is taken from the

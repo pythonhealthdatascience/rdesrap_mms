@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-03-04
+2025-03-06
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -93,7 +93,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
   # Run model with 1 to 8 cores
   speed <- list()
   for (i in 1L:n_cores){
-    print(paste("Running with cores:", i))
+    message("Running with cores:", i)
     cores_start <- Sys.time()
 
     # Run model with specified number of cores
@@ -140,11 +140,15 @@ by running in parallel.
 run_cores(5L, "cores1.png")
 ```
 
-    ## [1] "Running with cores: 1"
-    ## [1] "Running with cores: 2"
-    ## [1] "Running with cores: 3"
-    ## [1] "Running with cores: 4"
-    ## [1] "Running with cores: 5"
+    ## Running with cores:1
+
+    ## Running with cores:2
+
+    ## Running with cores:3
+
+    ## Running with cores:4
+
+    ## Running with cores:5
 
 ![](../outputs/cores1.png)<!-- -->
 
@@ -164,11 +168,15 @@ and machine.
 run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
 ```
 
-    ## [1] "Running with cores: 1"
-    ## [1] "Running with cores: 2"
-    ## [1] "Running with cores: 3"
-    ## [1] "Running with cores: 4"
-    ## [1] "Running with cores: 5"
+    ## Running with cores:1
+
+    ## Running with cores:2
+
+    ## Running with cores:3
+
+    ## Running with cores:4
+
+    ## Running with cores:5
 
 ![](../outputs/cores2.png)<!-- -->
 
@@ -182,7 +190,7 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 2m 9s"
+    ## Notebook run time: 1m 15s

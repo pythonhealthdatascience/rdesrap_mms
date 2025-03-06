@@ -16,7 +16,8 @@ may not wish to do if being set elsewhere - such as done in runner()).
 Default is TRUE.}
 }
 \value{
-Named list with two tables: monitored arrivals and resources
+Named list with two tables: three tables: monitored arrivals,
+monitored resources, and the processed results from the run.
 }
 \description{
 Run simulation.

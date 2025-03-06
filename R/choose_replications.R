@@ -7,12 +7,6 @@
 #' @param path Path inc. filename to save figure to.
 #' @param min_rep A suggested minimum number of replications (default=NULL).
 #'
-#' @importFrom stats sd t.test
-#' @importFrom dplyr filter slice_head select pull
-#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon geom_vline labs
-#' theme_minimal ggsave
-#' @importFrom rlang .data
-#'
 #' @return Dataframe with results from each replication.
 #' @export
 
@@ -20,8 +14,7 @@ confidence_interval_method <- function(replications, desired_precision, metric,
                                        yaxis_title, path, min_rep = NULL) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
-  raw_results <- runner(param)
-  results <- get_run_results(raw_results)
+  results <- runner(param)[["run_results"]]
 
   # If mean of metric is less than 1, multiply by 100
   if (mean(results[[metric]]) < 1L) {
@@ -37,13 +30,13 @@ confidence_interval_method <- function(replications, desired_precision, metric,
   for (i in 1L:replications) {
 
     # Filter rows up to the i-th replication
-    subset <- results[[metric]][1L:i]
+    subset_data <- results[[metric]][1L:i]
 
     # Calculate mean
-    mean <- mean(subset)
+    mean_value <- mean(subset_data)
 
-    # Some calculations require more than 1 observation else will error...
-    if (i == 1L) {
+    # Some calculations require a few observations else will error...
+    if (i < 3L) {
       # When only one observation, set to NA
       std_dev <- NA
       ci_lower <- NA
@@ -52,17 +45,17 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     } else {
       # Else, calculate standard deviation, 95% confidence interval, and
       # percentage deviation
-      std_dev <- sd(subset)
-      ci <- t.test(subset)[["conf.int"]]
+      std_dev <- stats::sd(subset_data)
+      ci <- stats::t.test(subset_data)[["conf.int"]]
       ci_lower <- ci[[1L]]
       ci_upper <- ci[[2L]]
-      deviation <- ((ci_upper - mean) / mean) * 100L
+      deviation <- ((ci_upper - mean_value) / mean_value) * 100L
     }
 
     # Append to the cumulative list
     cumulative_list[[i]] <- data.frame(
       replications = i,
-      cumulative_mean = mean,
+      cumulative_mean = mean_value,
       cumulative_std = std_dev,
       ci_lower = ci_lower,
       ci_upper = ci_upper,
@@ -74,40 +67,47 @@ confidence_interval_method <- function(replications, desired_precision, metric,
   cumulative <- do.call(rbind, cumulative_list)
 
   # Get the minimum number of replications where deviation is less than target
-  compare <- cumulative %>%
-    filter(.data[["perc_deviation"]] <= desired_precision * 100L)
+  compare <- dplyr::filter(
+    cumulative, .data[["perc_deviation"]] <= desired_precision * 100L
+  )
   if (nrow(compare) > 0L) {
     # Get minimum number
     n_reps <- compare %>%
-      slice_head() %>%
+      dplyr::slice_head() %>%
       dplyr::select(replications) %>%
-      pull()
-    print(paste0("Reached desired precision (", desired_precision, ") in ",
-                 n_reps, " replications."))
+      dplyr::pull()
+    message("Reached desired precision (", desired_precision, ") in ",
+            n_reps, " replications.")
   } else {
     warning("Running ", replications, " replications did not reach ",
-            "desired precision (", desired_precision, ").")
+            "desired precision (", desired_precision, ").", call. = FALSE)
   }
 
   # Plot the cumulative mean and confidence interval
-  p <- ggplot(cumulative, aes(x = .data[["replications"]],
-                              y = .data[["cumulative_mean"]])) +
-    geom_line() +
-    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2)
+  p <- ggplot2::ggplot(cumulative,
+                       ggplot2::aes(x = .data[["replications"]],
+                                    y = .data[["cumulative_mean"]])) +
+    ggplot2::geom_line() +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(ymin = ci_lower, ymax = ci_upper),
+      alpha = 0.2
+    )
 
   # If specified, plot the minimum suggested number of replications
   if (!is.null(min_rep)) {
     p <- p +
-      geom_vline(xintercept = min_rep, linetype = "dashed", color = "red")
+      ggplot2::geom_vline(
+        xintercept = min_rep, linetype = "dashed", color = "red"
+      )
   }
 
   # Modify labels and style
   p <- p +
-    labs(x = "Replications", y = yaxis_title) +
-    theme_minimal()
+    ggplot2::labs(x = "Replications", y = yaxis_title) +
+    ggplot2::theme_minimal()
 
   # Save the plot
-  ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
+  ggplot2::ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
 
   return(cumulative)
 }

@@ -12,7 +12,8 @@
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
 #'
-#' @return Named list with two tables: monitored arrivals and resources
+#' @return Named list with two tables: three tables: monitored arrivals,
+#' monitored resources, and the processed results from the run.
 #' @export
 
 model <- function(run_number, param, set_seed = TRUE) {
@@ -38,7 +39,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
   # Create simmer environment, add nurse resource and patient generator, and
   # run the simulation. Capture output, which will save a log if verbose=TRUE
-  log <- capture.output(
+  sim_log <- capture.output(
     env <- simmer("simulation", verbose = verbose) %>% # nolint
       add_resource("nurse", param[["number_of_nurses"]]) %>%
       add_generator("patient", patient, function() {
@@ -52,7 +53,7 @@ model <- function(run_number, param, set_seed = TRUE) {
   if (isTRUE(verbose)) {
     # Create full log message by adding parameters
     param_string <- paste(names(param), param, sep = "=", collapse = "; ")
-    full_log <- append(c("Parameters:", param_string, "Log:"), log)
+    full_log <- append(c("Parameters:", param_string, "Log:"), sim_log)
     # Print to console
     if (isTRUE(param[["log_to_console"]])) {
       print(full_log)
@@ -70,110 +71,22 @@ model <- function(run_number, param, set_seed = TRUE) {
     resources = get_mon_resources(env)
   )
 
-  # Replace replication with appropriate run number (as these functions
-  # assume, if not supplied with list of envs, that there was one replication)
-  result[["arrivals"]][["replication"]] <- run_number
-  result[["resources"]][["replication"]] <- run_number
+  if (nrow(result[["arrivals"]]) > 0L) {
+    # Replace replication with appropriate run number (as these functions
+    # assume, if not supplied with list of envs, that there was one replication)
+    result[["arrivals"]][["replication"]] <- run_number
+    result[["resources"]][["replication"]] <- run_number
 
-  # Add a column with the wait time of patients who remained unseen at the end
-  # of the simulation
-  result[["arrivals"]] <- result[["arrivals"]] %>%
-    mutate(q_time_unseen = ifelse(is.na(.data[["activity_time"]]),
-                                  now(env) - .data[["start_time"]],
-                                  NA))
+    # Add a column with the wait time of patients who remained unseen at the end
+    # of the simulation
+    result[["arrivals"]] <- result[["arrivals"]] %>%
+      mutate(q_time_unseen = ifelse(is.na(.data[["activity_time"]]),
+                                    now(env) - .data[["start_time"]],
+                                    NA))
+  }
+
+  # Calculate the average results for that run and add to result list
+  result[["run_results"]] <- get_run_results(result, run_number)
+
   return(result)
-}
-
-#' Validate input parameters for the simulation.
-#'
-#' @param run_number Integer representing index of current simulation run.
-#' @param param List containing parameters for the simulation.
-#'
-#' @return Throws an error if any parameter is invalid.
-#' @export
-
-valid_inputs <- function(run_number, param) {
-  check_run_number(run_number)
-  check_param_names(param)
-  check_param_values(param)
-}
-
-#' Checks if the run number is a non-negative integer.
-#'
-#' @param run_number Integer representing index of current simulation run.
-#'
-#' @return Throws an error if the run number is invalid.
-
-check_run_number <- function(run_number) {
-  if (run_number < 0L || run_number %% 1L != 0L) {
-    stop("The run number must be a non-negative integer. Provided: ",
-         run_number)
-  }
-}
-
-#' Validate parameter names.
-#'
-#' Ensure that all required parameters are present, and no extra parameters are
-#' provided.
-#'
-#' @param param List containing parameters for the simulation.
-#'
-#' @return Throws an error if there are missing or extra parameters.
-
-check_param_names <- function(param) {
-  # Get valid argument names from the function
-  valid_names <- names(formals(parameters))
-
-  # Get names from input parameter list
-  input_names <- names(param)
-
-  # Find missing keys (i.e. are there things in valid_names not in input)
-  # and extra keys (i.e. are there things in input not in valid_names)
-  missing_keys <- setdiff(valid_names, input_names)
-  extra_keys <- setdiff(input_names, valid_names)
-
-  # If there are any missing or extra keys, throw an error
-  if (length(missing_keys) > 0L || length(extra_keys) > 0L) {
-    error_message <- ""
-    if (length(missing_keys) > 0L) {
-      error_message <- paste0(
-        error_message, "Missing keys: ", toString(missing_keys), ". "
-      )
-    }
-    if (length(extra_keys) > 0L) {
-      error_message <- paste0(
-        error_message, "Extra keys: ", toString(extra_keys), ". "
-      )
-    }
-    stop(error_message)
-  }
-}
-
-#' Validate parameter values.
-#'
-#' Ensure that specific parameters are positive numbers, or non-negative
-#' integers.
-#'
-#' @param param List containing parameters for the simulation.
-#'
-#' @return Throws an error if any specified parameter value is invalid.
-
-check_param_values <- function(param) {
-
-  # Check that listed parameters are always positive
-  p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
-  for (p in p_list) {
-    if (param[[p]] <= 0L) {
-      stop('The parameter "', p, '" must be greater than 0.')
-    }
-  }
-
-  # Check that listed parameters are non-negative integers
-  n_list <- c("data_collection_period", "number_of_nurses")
-  for (n in n_list) {
-    if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
-      stop('The parameter "', n,
-           '" must be an integer greater than or equal to 0.')
-    }
-  }
 }

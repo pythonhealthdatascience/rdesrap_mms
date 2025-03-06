@@ -4,8 +4,10 @@
 #'
 #' @importFrom future plan multisession sequential
 #' @importFrom future.apply future_lapply
+#' @importFrom dplyr bind_rows
 #'
-#' @return Named list with two tables: monitored arrivals and resources.
+#' @return Named list with three tables: monitored arrivals, monitored
+#' resources, and the processed results from each run.
 #' @export
 
 runner <- function(param) {
@@ -44,8 +46,15 @@ runner <- function(param) {
     all_resources <- do.call(
       rbind, lapply(results, function(x) x[["resources"]])
     )
-    results <- list(arrivals = all_arrivals, resources = all_resources)
+    # Bind rows will fill NA - e.g. if some runs have no results columns
+    # as had no arrivals, will set those to NA for that row
+    all_run_results <- dplyr::bind_rows(
+      lapply(results, function(x) x[["run_results"]])
+    )
+    results <- list(arrivals = all_arrivals,
+                    resources = all_resources,
+                    run_results = all_run_results)
   }
 
-  return(results)
+  return(results) # nolint
 }

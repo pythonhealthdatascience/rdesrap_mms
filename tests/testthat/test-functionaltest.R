@@ -6,18 +6,18 @@
 
 test_that("values are non-negative", {
   # Run model with standard parameters
-  raw_results <- model(run_number = 0L, param = parameters())
-  results <- get_run_results(raw_results)
+  param <- parameters()
+  run_results <- model(run_number = 0L, param)[["run_results"]]
 
   # Check that at least one patient was processed
-  expect_gt(results[["arrivals"]], 0L)
+  expect_gt(run_results[["arrivals"]], 0L)
 
   # Check that the wait time is not negative
-  expect_gte(results[["mean_waiting_time_nurse"]], 0L)
+  expect_gte(run_results[["mean_waiting_time_nurse"]], 0L)
 
   # Check that the activity time and utilisation are greater than 0
-  expect_gt(results[["mean_activity_time_nurse"]], 0L)
-  expect_gt(results[["utilisation_nurse"]], 0L)
+  expect_gt(run_results[["mean_activity_time_nurse"]], 0L)
+  expect_gt(run_results[["utilisation_nurse"]], 0L)
 })
 
 
@@ -30,19 +30,18 @@ test_that("under high demand, utilisation is valid and last patient is unseen",
       number_of_runs = 1L,
       cores = 1L
     )
-    raw_results <- runner(param)
-    results <- get_run_results(raw_results)
+    results <- runner(param)
 
     # Check that utilisation does not exceed 1 or drop below 0
-    expect_lte(results[["utilisation_nurse"]], 1L)
-    expect_gte(results[["utilisation_nurse"]], 0L)
+    expect_lte(results[["run_results"]][["utilisation_nurse"]], 1L)
+    expect_gte(results[["run_results"]][["utilisation_nurse"]], 0L)
 
     # Check that final patient is not seen by the nurse
     expect_identical(
-      tail(raw_results[["arrivals"]], 1L)[["end_time"]], NA_real_
+      tail(results[["arrivals"]], 1L)[["end_time"]], NA_real_
     )
     expect_identical(
-      tail(raw_results[["arrivals"]], 1L)[["activity_time"]], NA_real_
+      tail(results[["arrivals"]], 1L)[["activity_time"]], NA_real_
     )
   }
 )
@@ -53,16 +52,17 @@ test_that("runner outputs a named list with length 2 and correct names", {
   param <- parameters(
     data_collection_period = 50L, number_of_runs = 1L, cores = 1L
   )
-  result <- runner(param)
+  results <- runner(param)
 
   # Check the structure
-  expect_type(result, "list")
-  expect_length(result, 2L)
-  expect_named(result, c("arrivals", "resources"))
+  expect_type(results, "list")
+  expect_length(results, 3L)
+  expect_named(results, c("arrivals", "resources", "run_results"))
 
   # Check that arrivals and resources are dataframes
-  expect_s3_class(result[["arrivals"]], "data.frame")
-  expect_s3_class(result[["resources"]], "data.frame")
+  expect_s3_class(results[["arrivals"]], "data.frame")
+  expect_s3_class(results[["resources"]], "data.frame")
+  expect_s3_class(results[["run_results"]], "data.frame")
 })
 
 
@@ -80,20 +80,20 @@ patrick::with_parameters_test_that(
     # Run model with initial value
     init_param <- default_param
     init_param[[param_name]] <- init_value
-    init_result <- get_run_results(runner(init_param))
+    init_results <- runner(init_param)[["run_results"]]
 
     # Run model with adjusted value
     adj_param <- default_param
     adj_param[[param_name]] <- adj_value
-    adj_result <- get_run_results(runner(adj_param))
+    adj_results <- runner(adj_param)[["run_results"]]
 
     # Check that waiting times in the adjusted model are lower
-    expect_lt(adj_result[["mean_waiting_time_nurse"]],
-              init_result[["mean_waiting_time_nurse"]])
+    expect_lt(adj_results[["mean_waiting_time_nurse"]],
+              init_results[["mean_waiting_time_nurse"]])
 
     # Check that utilisation in the adjusted model is lower
-    expect_lt(adj_result[["utilisation_nurse"]],
-              init_result[["utilisation_nurse"]])
+    expect_lt(adj_results[["utilisation_nurse"]],
+              init_results[["utilisation_nurse"]])
   },
   patrick::cases(
     list(param_name = "number_of_nurses", init_value = 3L, adj_value = 9L),
@@ -113,12 +113,12 @@ patrick::with_parameters_test_that(
     # Run model with initial value
     init_param <- default_param
     init_param[[param_name]] <- init_value
-    init_result <- get_run_results(model(run_number = 1L, init_param))
+    init_result <- model(run_number = 1L, init_param)[["run_results"]]
 
     # Run model with adjusted value
     adj_param <- default_param
     adj_param[[param_name]] <- adj_value
-    adj_result <- get_run_results(model(run_number = 1L, adj_param))
+    adj_result <- model(run_number = 1L, adj_param)[["run_results"]]
 
     # Check that arrivals in the adjusted model are lower
     expect_lt(adj_result[["arrivals"]], init_result[["arrivals"]])
@@ -133,19 +133,100 @@ patrick::with_parameters_test_that(
 
 test_that("the same seed returns the same result", {
   # Run model twice using same run number (which will set the seed)
-  raw1 <- model(run_number = 0L, param = parameters())
-  raw2 <- model(run_number = 0L, param = parameters())
-  expect_identical(get_run_results(raw1), get_run_results(raw2))
+  param <- parameters()
+  raw1 <- model(run_number = 0L, param = param)[["run_results"]]
+  raw2 <- model(run_number = 0L, param = param)[["run_results"]]
+  expect_identical(raw1, raw2)
 
   # Conversely, if run with different run number, expect different
-  raw1 <- model(run_number = 0L, param = parameters())
-  raw2 <- model(run_number = 1L, param = parameters())
+  raw1 <- model(run_number = 0L, param = param)[["run_results"]]
+  raw2 <- model(run_number = 1L, param = param)[["run_results"]]
   expect_failure(
-    expect_identical(get_run_results(raw1), get_run_results(raw2))
+    expect_identical(raw1, raw2)
   )
 
   # Repeat experiment, but with multiple replications
-  raw1 <- runner(param = parameters())
-  raw2 <- runner(param = parameters())
-  expect_identical(get_run_results(raw1), get_run_results(raw2))
+  raw1 <- runner(param = param)[["run_results"]]
+  raw2 <- runner(param = param)[["run_results"]]
+  expect_identical(raw1, raw2)
+})
+
+
+test_that("columns that are expected to be complete have no NA", {
+  # Run model with low resources and definite arrivals
+  param <- parameters(
+    number_of_nurses = 1L,
+    data_collection_period = 300L,
+    patient_inter = 1L
+  )
+  results <- runner(param)
+
+  # Helper function to remove columns where expect NA and then check that
+  # remaining dataframe has no NA
+  check_no_na <- function(data, exclude = NULL) {
+    if (!is.null(exclude)) {
+      data <- data[, !names(data) %in% exclude]
+    }
+    expect_true(all(colSums(is.na(data)) == 0L))
+  }
+
+  # Check raw and processed results, excluding columns where expect NA
+  check_no_na(results[["arrivals"]],
+              exclude = c("end_time", "activity_time", "q_time_unseen"))
+  check_no_na(results[["resources"]])
+  check_no_na(results[["run_results"]])
+})
+
+
+test_that("all patients are seen when there are plenty nurses", {
+  # Run model with extremely large number of nurses
+  param <- parameters(
+    patient_inter = 4L,
+    mean_n_consult_time = 10L,
+    number_of_nurses = 10000000L,
+    data_collection_period = 100L,
+    number_of_runs = 1L
+  )
+  result <- runner(param)[["run_results"]]
+
+  # Check that no patients wait
+  expect_identical(result[["mean_waiting_time_nurse"]], 0.0)
+})
+
+
+test_that("the model can cope with having no arrivals", {
+  # Run with extremely high inter-arrival time and short length
+  param <- parameters(patient_inter = 99999999L, data_collection_period = 10L)
+  result <- model(run_number = 1L, param = param)
+
+  # Check that the raw result are two empty dataframes
+  expect_identical(nrow(result[["arrivals"]]), 0L)
+  expect_identical(nrow(result[["resources"]]), 0L)
+
+  # Check that the processed result is dataframe with one row, two columns,
+  # with just the run number and no arrivals
+  expected_run_results <- tibble(replication = 1L, arrivals = 0L)
+  expect_identical(result[["run_results"]], expected_run_results)
+})
+
+
+test_that("the model can cope with some replications having no arrivals", {
+  # Run model with conditions that will ensure some replications see an arrival,
+  # and some do not
+  param <- parameters(
+    patient_inter = 200L,
+    data_collection_period = 100L,
+    number_of_runs = 5L
+  )
+
+  # Run for replications and process results
+  run_result <- runner(param)[["run_results"]]
+
+  # Check there are rows for each replication
+  expect_identical(nrow(run_result), param[["number_of_runs"]])
+
+  # Check that arrivals is either 0 or 1 (with at least one of each)
+  expect_true(all(run_result[["arrivals"]] %in% c(0L, 1L)))
+  expect_true(any(run_result[["arrivals"]] == 0L))
+  expect_true(any(run_result[["arrivals"]] == 1L))
 })
