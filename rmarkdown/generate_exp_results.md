@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-03-05
+2025-03-06
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -64,10 +64,7 @@ param <- parameters(
 )
 
 # Run the replications
-raw_results <- runner(param)
-
-# Process results
-results <- get_run_results(raw_results)
+results <- runner(param)[["run_results"]]
 
 # Preview
 head(results)
@@ -158,7 +155,7 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 3s"
+    ## Notebook run time: 0m 13s

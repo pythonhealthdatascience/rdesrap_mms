@@ -56,16 +56,10 @@ output_dir <- file.path("..", "outputs")
 
 ## Default run
 
-Run with default parameters.
+Run with default parameters and save to `.csv`.
 
 ```{r}
-raw_results <- runner(param = parameters())
-```
-
-Process results and save to `.csv`.
-
-```{r}
-run_results <- get_run_results(raw_results)
+run_results <- runner(param = parameters())[["run_results"]]
 head(run_results)
 
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
@@ -163,7 +157,7 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   }
 
   # Calculate average results from each scenario
-  df <- results %>%
+  avg_results <- results %>%
     group_by_at(group_vars) %>%
     summarise(mean = mean(.data[[result_var]]),
               std_dev = sd(.data[[result_var]]),
@@ -173,16 +167,16 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   # Generate plot - with or without colour, depending on whether it was given
   if (!is.null(colour_var)) {
     # Convert colour variable to factor so it is treated like categorical
-    df[[colour_var]] <- as.factor(df[[colour_var]])
+    avg_results[[colour_var]] <- as.factor(avg_results[[colour_var]])
     # Create plot
-    p <- ggplot(df, aes(x = .data[[x_var]], y = mean,
-                        group = .data[[colour_var]])) +
+    p <- ggplot(avg_results, aes(x = .data[[x_var]], y = mean,
+                                 group = .data[[colour_var]])) +
       geom_line(aes(color = .data[[colour_var]])) +
       geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]],
                       fill = .data[[colour_var]]), alpha = 0.1)
   } else {
     # Create plot
-    p <- ggplot(df, aes(x = .data[[x_var]], y = mean)) +
+    p <- ggplot(avg_results, aes(x = .data[[x_var]], y = mean)) +
       geom_line() +
       geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
                   alpha = 0.1)
@@ -198,7 +192,7 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
 
   # Return the results dataframe
-  return(df)
+  return(avg_results) # nolint: object_overwrite_linter
 }
 ```
 
@@ -413,5 +407,5 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```

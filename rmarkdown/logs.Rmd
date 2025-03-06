@@ -37,7 +37,7 @@ We use the built-in simmer logging functionality. Within our `model` function, w
 Here, we will print to console and save to file:
 
 ```{r}
-log_file <- "../outputs/logs/log_example.log"
+log_file <- file.path("..", "outputs", "logs", "log_example.log")
 
 param <- parameters(
   patient_inter = 6L,
@@ -118,7 +118,7 @@ You may find this helpful for interpreting the log messages (for example, with t
 
 ```{r}
 # Set the seed
-set.seed(0)
+set.seed(0L)
 
 # Define the patient trajectory
 patient <- trajectory("appointment") %>%
@@ -149,5 +149,5 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```

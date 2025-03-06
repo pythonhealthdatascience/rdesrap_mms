@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-05
+2025-03-06
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -71,16 +71,10 @@ output_dir <- file.path("..", "outputs")
 
 ## Default run
 
-Run with default parameters.
+Run with default parameters and save to `.csv`.
 
 ``` r
-raw_results <- runner(param = parameters())
-```
-
-Process results and save to `.csv`.
-
-``` r
-run_results <- get_run_results(raw_results)
+run_results <- runner(param = parameters())[["run_results"]]
 head(run_results)
 ```
 
@@ -264,7 +258,7 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   }
 
   # Calculate average results from each scenario
-  df <- results %>%
+  avg_results <- results %>%
     group_by_at(group_vars) %>%
     summarise(mean = mean(.data[[result_var]]),
               std_dev = sd(.data[[result_var]]),
@@ -274,16 +268,16 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   # Generate plot - with or without colour, depending on whether it was given
   if (!is.null(colour_var)) {
     # Convert colour variable to factor so it is treated like categorical
-    df[[colour_var]] <- as.factor(df[[colour_var]])
+    avg_results[[colour_var]] <- as.factor(avg_results[[colour_var]])
     # Create plot
-    p <- ggplot(df, aes(x = .data[[x_var]], y = mean,
-                        group = .data[[colour_var]])) +
+    p <- ggplot(avg_results, aes(x = .data[[x_var]], y = mean,
+                                 group = .data[[colour_var]])) +
       geom_line(aes(color = .data[[colour_var]])) +
       geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]],
                       fill = .data[[colour_var]]), alpha = 0.1)
   } else {
     # Create plot
-    p <- ggplot(df, aes(x = .data[[x_var]], y = mean)) +
+    p <- ggplot(avg_results, aes(x = .data[[x_var]], y = mean)) +
       geom_line() +
       geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
                   alpha = 0.1)
@@ -299,7 +293,7 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
 
   # Return the results dataframe
-  return(df)
+  return(avg_results) # nolint: object_overwrite_linter
 }
 ```
 
@@ -366,7 +360,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Mar  5 10:51:54 2025
+    ## % Thu Mar  6 10:34:23 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -620,7 +614,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Mar  5 10:52:02 2025
+    ## % Thu Mar  6 10:34:50 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -661,19 +655,19 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160  patient86   44.32246       NA            NA    nurse           0
-    ## 161 patient156   77.59569       NA            NA    nurse           0
-    ## 162  patient87   45.24028       NA            NA    nurse           0
-    ## 163 patient107   51.75734       NA            NA    nurse           0
-    ## 164 patient157   77.98085       NA            NA    nurse           0
-    ## 165 patient160   78.41585       NA            NA    nurse           0
+    ## 160  patient56   29.48756       NA            NA    nurse           0
+    ## 161 patient152   76.34230       NA            NA    nurse           0
+    ## 162  patient91   46.39072       NA            NA    nurse           0
+    ## 163 patient154   76.80434       NA            NA    nurse           0
+    ## 164 patient155   77.41953       NA            NA    nurse           0
+    ## 165 patient158   78.34954       NA            NA    nurse           0
     ##     q_time_unseen
-    ## 160     35.677540
-    ## 161      2.404310
-    ## 162     34.759720
-    ## 163     28.242658
-    ## 164      2.019149
-    ## 165      1.584149
+    ## 160     50.512444
+    ## 161      3.657695
+    ## 162     33.609277
+    ## 163      3.195655
+    ## 164      2.580474
+    ## 165      1.650463
 
 ## Calculate run time
 
@@ -685,7 +679,7 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 21s"
+    ## Notebook run time: 1m 21s

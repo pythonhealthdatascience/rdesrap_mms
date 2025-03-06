@@ -10,7 +10,8 @@ runner(param)
 \item{param}{Named list of model parameters.}
 }
 \value{
-Named list with two tables: monitored arrivals and resources.
+Named list with three tables: monitored arrivals, monitored
+resources, and the processed results from each run.
 }
 \description{
 Run simulation for multiple replications, sequentially or in parallel.

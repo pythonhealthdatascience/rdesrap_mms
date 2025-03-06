@@ -1,7 +1,7 @@
 Logs
 ================
 Amy Heather
-2025-03-05
+2025-03-06
 
 - [Set up](#set-up)
 - [Simulation run with logs printed to the
@@ -48,7 +48,7 @@ function, we accept the parameters:
 Here, we will print to console and save to file:
 
 ``` r
-log_file <- "../outputs/logs/log_example.log"
+log_file <- file.path("..", "outputs", "logs", "log_example.log")
 
 param <- parameters(
   patient_inter = 6L,
@@ -221,7 +221,7 @@ distinct).
 
 ``` r
 # Set the seed
-set.seed(0)
+set.seed(0L)
 
 # Define the patient trajectory
 patient <- trajectory("appointment") %>%
@@ -265,7 +265,7 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 0s"
+    ## Notebook run time: 0m 0s

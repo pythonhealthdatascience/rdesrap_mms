@@ -26,7 +26,8 @@ Imports:
     tidyselect,
     future,
     future.apply,
-    ggplot2
+    ggplot2,
+    tibble
 Suggests:
     testthat (>= 3.0.0),
     patrick,

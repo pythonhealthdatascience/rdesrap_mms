@@ -40,9 +40,8 @@ run_scenarios <- function(scenarios, base_list) {
       s_param[[name]] <- s_args[[name]]
     }
 
-    # Run replications for the current scenario and process results
-    raw_results <- runner(s_param)
-    scenario_result <- get_run_results(raw_results, s_param)
+    # Run replications for the current scenario and get processed results
+    scenario_result <- runner(s_param)[["run_results"]]
 
     # Append scenario parameters to the results
     scenario_result[["scenario"]] <- index

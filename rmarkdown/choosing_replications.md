@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-03-05
+2025-03-06
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -223,7 +223,7 @@ runtime <- as.numeric(end_time - start_time, units = "secs")
 # Display converted to minutes and seconds
 minutes <- as.integer(runtime / 60L)
 seconds <- as.integer(runtime %% 60L)
-print(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## [1] "Notebook run time: 0m 2s"
+    ## Notebook run time: 0m 9s

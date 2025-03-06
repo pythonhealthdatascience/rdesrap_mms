@@ -12,7 +12,8 @@
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
 #'
-#' @return Named list with two tables: monitored arrivals and resources
+#' @return Named list with two tables: three tables: monitored arrivals,
+#' monitored resources, and the processed results from the run.
 #' @export
 
 model <- function(run_number, param, set_seed = TRUE) {
@@ -70,7 +71,7 @@ model <- function(run_number, param, set_seed = TRUE) {
     resources = get_mon_resources(env)
   )
 
-  if (nrow(result[["arrivals"]]) > 0) {
+  if (nrow(result[["arrivals"]]) > 0L) {
     # Replace replication with appropriate run number (as these functions
     # assume, if not supplied with list of envs, that there was one replication)
     result[["arrivals"]][["replication"]] <- run_number
@@ -83,6 +84,9 @@ model <- function(run_number, param, set_seed = TRUE) {
                                     now(env) - .data[["start_time"]],
                                     NA))
   }
+
+  # Calculate the average results for that run and add to result list
+  result[["run_results"]] <- get_run_results(result, run_number)
 
   return(result)
 }

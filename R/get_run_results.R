@@ -1,8 +1,10 @@
-#' Get results from each replication.
+#' Process the raw monitored arrivals and resources.
 #'
-#' For each replication (there can be one or many), calculate the: (1) number
-#' of arrivals, (2) mean wait time for each resource, (3) mean activity time
-#' for each resource, and (4) mean resource utilisation.
+#' For the provided replication, calculate the:
+#' (1) number of arrivals
+#' (2) mean wait time for each resource
+#' (3) mean activity time for each resource
+#' (4) mean resource utilisation.
 #'
 #' Credit: The utilisation calculation is taken from the
 #' `plot.resources.utilization()` function in simmer.plot 0.1.18, which is
@@ -18,33 +20,31 @@
 #' @param results Named list with `arrivals` containing output from
 #' `get_mon_arrivals()` and `resources` containing output from
 #' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
-#' @param param Named list of model parameters.
+#' @param run_number Integer representing index of current simulation run.
 #'
 #' @importFrom dplyr group_by summarise n_distinct mutate lead full_join
+#' @importFrom dplyr bind_cols
 #' @importFrom purrr reduce
 #' @importFrom rlang .data
 #' @importFrom simmer get_mon_resources get_mon_arrivals now
 #' @importFrom tidyr pivot_wider drop_na
 #' @importFrom tidyselect any_of
+#' @importFrom tibble tibble
 #'
-#' @return Tibble with results from each replication.
+#' @return Tibble with processed results from replication.
 #' @export
 
-get_run_results <- function(results, param) {
+get_run_results <- function(results, run_number) {
 
-  # Create a tibble with all replication numbers
-  all_replications <- tibble::tibble(replication = 1:param[["number_of_runs"]])
+  # Remove patients who were still waiting and had not completed
+  results[["arrivals"]] <- results[["arrivals"]] %>%
+    drop_na(any_of("end_time"))
 
-  # If there are any arrivals in any replication...
-  if (nrow(results[["arrivals"]]) > 0) {
-
-    # Remove patients who were still waiting and had not completed
-    results[["arrivals"]] <- results[["arrivals"]] %>%
-      drop_na(any_of("end_time"))
+  # If there are any arrivals...
+  if (nrow(results[["arrivals"]]) > 0L) {
 
     # Calculate the number of arrivals
     calc_arr <- results[["arrivals"]] %>%
-      group_by(.data[["replication"]]) %>%
       summarise(arrivals = n_distinct(.data[["name"]]))
 
     # Calculate the mean wait time for each resource
@@ -56,7 +56,7 @@ get_run_results <- function(results, param) {
           ), 10L
         )
       ) %>%
-      group_by(.data[["resource"]], .data[["replication"]]) %>%
+      group_by(.data[["resource"]]) %>%
       summarise(mean_waiting_time = mean(.data[["waiting_time"]])) %>%
       pivot_wider(names_from = "resource",
                   values_from = "mean_waiting_time",
@@ -64,7 +64,7 @@ get_run_results <- function(results, param) {
 
     # Calculate the mean time spent with each resource
     calc_act <- results[["arrivals"]] %>%
-      group_by(.data[["resource"]], .data[["replication"]]) %>%
+      group_by(.data[["resource"]]) %>%
       summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
       pivot_wider(names_from = "resource",
                   values_from = "mean_activity_time",
@@ -74,12 +74,13 @@ get_run_results <- function(results, param) {
     # Utilisation is given by the total effective usage time (`in_use`) over the
     # total time intervals considered (`dt`).
     calc_util <- results[["resources"]] %>%
-      group_by(.data[["resource"]], .data[["replication"]]) %>%
+      group_by(.data[["resource"]]) %>%
       # nolint start
       mutate(dt = lead(.data[["time"]]) - .data[["time"]]) %>%
       mutate(capacity = pmax(.data[["capacity"]], .data[["server"]])) %>%
       mutate(dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L)) %>%
-      mutate(in_use = .data[["dt"]] * .data[["server"]] / .data[["capacity"]]) %>%
+      mutate(in_use = (.data[["dt"]] * .data[["server"]] /
+                       .data[["capacity"]])) %>%
       # nolint end
       summarise(
         utilisation = sum(.data[["in_use"]], na.rm = TRUE) /
@@ -89,20 +90,18 @@ get_run_results <- function(results, param) {
                   values_from = "utilisation",
                   names_glue = "utilisation_{resource}")
 
-    # Combine all calculated metrics into a single dataframe
-    processed_result <- list(calc_arr, calc_wait, calc_act, calc_util) %>%
-      reduce(full_join, by = "replication")
-
-    # Join with all_replications to ensure all runs are represented
-    processed_result <- dplyr::full_join(
-      all_replications, processed_result, by = "replication") %>%
-      # Replace NA in 'arrivals' column with 0
-      mutate(arrivals = ifelse(is.na(arrivals), 0, arrivals))
-
-  # If there were no patients in any replication, return NULL
+    # Combine all calculated metrics into a single dataframe, and along with
+    # the replication number
+    processed_result <- dplyr::bind_cols(
+      tibble(replication = run_number),
+      calc_arr, calc_wait, calc_act, calc_util
+    )
   } else {
-    processed_result <- NULL
+    # If there were no arrivals, return dataframe row with just the replication
+    # number and arrivals column set to 0
+    processed_result <- tibble(replication = run_number,
+                               arrivals = nrow(results[["arrivals"]]))
   }
 
-  return(processed_result)
+  return(processed_result) # nolint
 }
