@@ -1,0 +1,212 @@
+---
+title: "Warm up period"
+author: "Amy Heather"
+date: "`r Sys.Date()`"
+output:
+  github_document:
+      toc: true
+      html_preview: false
+---
+
+## Set up
+
+Install the latest version of the local simulation package.
+
+```{r}
+devtools::load_all()
+```
+
+Import required packages.
+
+```{r}
+# nolint start: undesirable_function_linter.
+library(simulation)
+library(dplyr)
+library(tidyr)
+
+options(dplyr.summarise.inform = FALSE)
+# nolint end
+```
+
+Start timer.
+
+```{r}
+start_time <- Sys.time()
+```
+
+Define path to outputs folder.
+
+```{r}
+output_dir <- file.path("..", "outputs")
+```
+
+## Attempt at incorporating a warm-up period into `model.py`
+
+### Run the model
+
+Run the model for `warm_up_period` + `data_collection_period`...
+
+To illustrate our problem, have temporarily add another resource: doctor.
+
+```{r}
+run_number <- 1
+param <- parameters()
+set_seed <- TRUE
+number_of_doctors <- 3
+
+param$warm_up_period
+param$data_collection_period
+```
+
+```{r}
+# Check all inputs are valid
+valid_inputs(run_number, param)
+
+# Set random seed based on run number
+if (set_seed) {
+  set.seed(run_number)
+}
+
+# Define the patient trajectory
+patient <- trajectory("appointment") %>%
+  seize("nurse", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("nurse", 1L) %>%
+  seize("doctor", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("doctor", 1L)
+
+# Determine whether to get verbose activity logs
+verbose <- any(c(param[["log_to_console"]], param[["log_to_file"]]))
+
+# Create simmer environment, add nurse resource and patient generator, and
+# run the simulation. Capture output, which will save a log if verbose=TRUE
+sim_log <- capture.output(
+  env <- simmer("simulation", verbose = verbose) %>% # nolint
+    add_resource("nurse", param[["number_of_nurses"]]) %>%
+    add_resource("doctor", number_of_doctors) %>%
+    add_generator("patient", patient, function() {
+      rexp(n = 1L, rate = 1L / param[["patient_inter"]])
+    }) %>%
+    simmer::run(param[["warm_up_period"]] +
+                param[["data_collection_period"]]) %>%
+    wrap()
+)
+```
+
+### Trim the `arrivals` and `resources` dataframes produced
+
+Label warm-up and data-collection patients in the `arrivals` dataframe.
+
+```{r}
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+
+# Add column marking warm-up (wu) and data-collection (dc) patients
+arrivals <- arrivals %>%
+  group_by(name) %>%
+  # filter(all(start_time >= param[["warm_up_period"]])) %>%
+  mutate(period = if_else(
+    any(start_time < param[["warm_up_period"]]), "wu", "dc"
+  )) %>%
+  ungroup()
+arrivals
+```
+
+As `resources` does not contain only information on which patient they were associated with, we need to match the resource start time with the patient activity start times.
+
+First, we must calculate the `resource_start_time` (as the `start_time` in `arrivals` may be earlier if the patient had to wait for the resource).
+
+```{r}
+# Add column recording the resource start time (excluding wait time for resource)
+arrivals[["resource_start_time"]] <- (
+  arrivals[["end_time"]] - arrivals[["activity_time"]]
+)
+arrivals
+```
+
+**Question:** Is `resource_start_time` just the same as start time? If patients had to wait for a resource, does activity_time include that?
+
+**Answer:** No.
+
+```{r}
+# Instances where start_time is different from resource_start_time
+arrivals[round(arrivals$start_time, 10) != round(arrivals$resource_start_time, 10),]
+```
+
+In the `resources` dataframe, we just has `time` (which is for an event - including start time or end time).
+
+```{r}
+resources <- get_mon_resources(env)
+resources
+```
+
+```{r}
+# Create arrivals dataframe with rows for each patient's resource start and end time
+arrivals_times <- arrivals %>%
+  select(name, resource, resource_start_time, end_time, replication, period) %>%
+  pivot_longer(cols = c(resource_start_time, end_time),
+               names_to = "time_type",
+               values_to = "time_value")
+
+arrivals_times
+```
+
+```{r}
+# Sort both dataframes by time and round (otherwise everything doesn't match
+# due to floating point differences)
+decimal_places <- 10
+
+arrivals_times <- arrivals_times %>%
+  arrange(time_value) %>%
+  mutate(time_value_r = round(time_value, decimal_places))
+
+resources <- resources %>%
+  mutate(time_r = round(time, decimal_places))
+
+# Preview
+arrivals_times
+resources
+```
+
+```{r}
+# Merge the dataframes
+matched_data <- left_join(
+  resources, arrivals_times,
+  by = c("time_r" = "time_value_r",
+         "resource" = "resource",
+         "replication" = "replication")
+)
+matched_data
+```
+
+Unfortunately, some resources had no match, which is not allowable, as they must be associated with a patient, remaining the case even if we round by more decimal places (unshown).
+
+```{r}
+matched_data[is.na(matched_data[["name"]]),]
+```
+
+Looking manually...
+
+#### nurse 60.36518
+
+No match in `arrivals_times`
+
+```{r}
+arrivals_times %>%
+  arrange(time_value) %>%
+  filter(time_value > 58 & time_value < 62)
+```
+
+Does match in `arrivals` - interestingly, to `start_time` rather than `resource_start_time`. This indicates I had misunderstood something somewhere!
+
+```{r}
+arrivals %>%
+  arrange(start_time) %>%
+  filter(start_time > 58 & start_time < 62)
+```
+
+  
