@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-03-06
+2025-03-07
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -23,7 +23,9 @@ The run time is provided at the end of the notebook.
 
 ## Set up
 
-Install the latest version of the local simulation package.
+Install the latest version of the local simulation package. If running
+sequentially, `devtools::load_all()` is sufficient. If running in
+parallel, you must use `devtools::install()`.
 
 ``` r
 devtools::load_all()
@@ -226,4 +228,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 9s
+    ## Notebook run time: 0m 8s

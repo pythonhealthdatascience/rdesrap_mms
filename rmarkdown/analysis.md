@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-06
+2025-03-07
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -33,7 +33,9 @@ The run time is provided at the end of the notebook.
 
 ## Set up
 
-Install the latest version of the local simulation package.
+Install the latest version of the local simulation package. If running
+sequentially, `devtools::load_all()` is sufficient. If running in
+parallel, you must use `devtools::install()`.
 
 ``` r
 devtools::load_all()
@@ -81,12 +83,12 @@ head(run_results)
     ## # A tibble: 6 × 5
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1       21                  0.173                     10.7 
-    ## 2           2       16                  0                          7.10
-    ## 3           3       13                  0                          6.89
-    ## 4           4       16                  0.0177                     9.29
-    ## 5           5       17                  0                          4.79
-    ## 6           6       18                  0.393                      8.12
+    ## 1           1       25                  0.173                     10.7 
+    ## 2           2       19                  0                          7.10
+    ## 3           3       16                  0                          6.89
+    ## 4           4       18                  0.0177                     9.29
+    ## 5           5       22                  0                          4.79
+    ## 6           6       27                  0.393                      8.12
     ## # ℹ 1 more variable: utilisation_nurse <dbl>
 
 ``` r
@@ -222,12 +224,12 @@ head(scenario_results)
     ## # A tibble: 6 × 8
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1       26                  0.287                      9.10
-    ## 2           2       19                  0                          7.83
-    ## 3           3       22                  0.0192                     6.74
-    ## 4           4       21                  0.249                      7.97
-    ## 5           5       25                  0.246                      5.75
-    ## 6           6       27                  3.22                      10.0 
+    ## 1           1       28                  0.287                      9.10
+    ## 2           2       22                  0                          7.83
+    ## 3           3       27                  0.0192                     6.74
+    ## 4           4       25                  0.249                      7.97
+    ## 5           5       27                  0.246                      5.75
+    ## 6           6       35                  3.22                      10.0 
     ## # ℹ 4 more variables: utilisation_nurse <dbl>, scenario <int>,
     ## #   patient_inter <int>, number_of_nurses <int>
 
@@ -360,7 +362,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Thu Mar  6 10:34:23 2025
+    ## % Fri Mar  7 15:09:51 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -466,12 +468,12 @@ head(compare_template_results)
     ## # A tibble: 6 × 8
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1      471                    1.69                    10.3 
-    ## 2           2      502                    3.36                    10.3 
-    ## 3           3      483                    1.86                    10.1 
-    ## 4           4      461                    2.73                    10.6 
-    ## 5           5      466                    1.25                     9.71
-    ## 6           6      466                    2.13                    10.3 
+    ## 1           1      472                    1.69                    10.3 
+    ## 2           2      505                    3.36                    10.3 
+    ## 3           3      486                    1.86                    10.1 
+    ## 4           4      471                    2.73                    10.6 
+    ## 5           5      471                    1.25                     9.71
+    ## 6           6      471                    2.13                    10.3 
     ## # ℹ 4 more variables: utilisation_nurse <dbl>, scenario <int>,
     ## #   patient_inter <int>, number_of_nurses <int>
 
@@ -567,12 +569,12 @@ head(sensitivity_consult)
     ## # A tibble: 6 × 7
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1       22                   0                         8.42
-    ## 2           2       16                   0                         5.68
-    ## 3           3       14                   0                         5.49
-    ## 4           4       16                   0                         7.43
-    ## 5           5       18                   0                         3.86
-    ## 6           6       21                   0.172                     8.00
+    ## 1           1       23                   0                         8.42
+    ## 2           2       19                   0                         5.68
+    ## 3           3       16                   0                         5.49
+    ## 4           4       18                   0                         7.43
+    ## 5           5       22                   0                         3.86
+    ## 6           6       28                   0.172                     8.00
     ## # ℹ 3 more variables: utilisation_nurse <dbl>, scenario <int>,
     ## #   mean_n_consult_time <int>
 
@@ -614,7 +616,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Thu Mar  6 10:34:50 2025
+    ## % Fri Mar  7 15:10:14 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -655,19 +657,19 @@ tail(result[["arrivals"]])
 ```
 
     ##           name start_time end_time activity_time resource replication
-    ## 160  patient56   29.48756       NA            NA    nurse           0
-    ## 161 patient152   76.34230       NA            NA    nurse           0
-    ## 162  patient91   46.39072       NA            NA    nurse           0
-    ## 163 patient154   76.80434       NA            NA    nurse           0
-    ## 164 patient155   77.41953       NA            NA    nurse           0
-    ## 165 patient158   78.34954       NA            NA    nurse           0
+    ## 160 patient155   77.41953       NA            NA    nurse           0
+    ## 161  patient53   28.11090       NA            NA    nurse           0
+    ## 162 patient149   74.50965       NA            NA    nurse           0
+    ## 163  patient45   21.50986       NA            NA    nurse           0
+    ## 164 patient158   78.34954       NA            NA    nurse           0
+    ## 165 patient160   78.41585       NA            NA    nurse           0
     ##     q_time_unseen
-    ## 160     50.512444
-    ## 161      3.657695
-    ## 162     33.609277
-    ## 163      3.195655
-    ## 164      2.580474
-    ## 165      1.650463
+    ## 160      2.580474
+    ## 161     51.889101
+    ## 162      5.490353
+    ## 163     58.490139
+    ## 164      1.650463
+    ## 165      1.584149
 
 ## Calculate run time
 
@@ -682,4 +684,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 21s
+    ## Notebook run time: 1m 11s

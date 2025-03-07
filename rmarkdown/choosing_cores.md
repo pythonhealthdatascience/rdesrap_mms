@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-03-06
+2025-03-07
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -23,13 +23,39 @@ The run time is provided at the end of the notebook.
 
 ## Set up
 
-Install the latest version of the local simulation package.
+Install the latest version of the local simulation package. If running
+sequentially, `devtools::load_all()` is sufficient. If running in
+parallel, you must use `devtools::install()`.
 
 ``` r
-devtools::load_all()
+devtools::install()
 ```
 
-    ## ℹ Loading simulation
+    ## 
+    ## ── R CMD build ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
+    ##   ─  preparing ‘simulation’:
+    ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+    ##   ─  checking for LF line-endings in source and make files and shell scripts
+    ##   ─  checking for empty or unneeded directories
+    ##    Omitted ‘LazyData’ from DESCRIPTION
+    ##   ─  building ‘simulation_0.1.0.tar.gz’
+    ##      
+    ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
+    ##   /tmp/Rtmp65w8Im/simulation_0.1.0.tar.gz --install-tests 
+    ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
+    ## * installing *source* package ‘simulation’ ...
+    ## ** using staged installation
+    ## ** R
+    ## ** tests
+    ## ** byte-compile and prepare package for lazy loading
+    ## ** help
+    ## *** installing help indices
+    ## ** building package indices
+    ## ** testing if installed package can be loaded from temporary location
+    ## ** testing if installed package can be loaded from final location
+    ## ** testing if installed package keeps a record of temporary installation path
+    ## * DONE (simulation)
 
 Load required packages.
 
@@ -45,10 +71,6 @@ library(dplyr)
     ## The following objects are masked from 'package:data.table':
     ## 
     ##     between, first, last
-
-    ## The following object is masked from 'package:testthat':
-    ## 
-    ##     matches
 
     ## The following objects are masked from 'package:stats':
     ## 
@@ -104,6 +126,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
       param <- parameters()
     }
     param[["cores"]] <- i
+    
     invisible(runner(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
@@ -193,4 +216,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 15s
+    ## Notebook run time: 1m 20s

@@ -10,6 +10,7 @@ test_that("results from a new run match those previously generated", {
     patient_inter = 4L,
     mean_n_consult_time = 10L,
     number_of_nurses = 5L,
+    warm_up_period = 0L,
     data_collection_period = 80L,
     number_of_runs = 10L,
     cores = 1L
@@ -33,6 +34,7 @@ test_that("results from scenario analysis match those previously generated", {
     patient_inter = 4L,
     mean_n_consult_time = 10L,
     number_of_nurses = 5L,
+    warm_up_period = 0L,
     data_collection_period = 80L,
     number_of_runs = 10L,
     cores = 1L

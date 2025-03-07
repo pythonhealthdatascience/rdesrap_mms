@@ -47,6 +47,44 @@ test_that("under high demand, utilisation is valid and last patient is unseen",
 )
 
 
+test_that("under high demand + warm-up period, metrics are correct", {
+  param <- parameters(
+    patient_inter = 0.1,
+    number_of_nurses = 1L,
+    warm_up_period = 100L,
+    data_collection_period = 10L
+  )
+  result <- model(run_number = 1L, param = param)
+
+  # Check that no patients are seen in arrivals
+  expect_true(all(is.na(result[["arrivals"]][["end_time"]])))
+  expect_true(all(is.na(result[["arrivals"]][["activity_time"]])))
+  expect_false(anyNA(result[["arrivals"]][["q_time_unseen"]]))
+
+  # Check that the first entry for each resource is at start of the data
+  # collection period
+  first_resources <- result[["resources"]] %>%
+    group_by(resource) %>%
+    slice(1L)
+  expect_true(all(first_resources[["time"]] == param[["warm_up_period"]]))
+
+  # Get the run result
+  run_result <- result[["run_results"]][1L, ]
+
+  # Check that count in run_results matches entries in arrivals
+  expect_identical(run_result[["arrivals"]], nrow(result[["arrivals"]]))
+
+  # Check that wait time and time with nurse are NaN (as these patients should
+  # not have been seen, and we're not interested in warm-up patient times)
+  expect_identical(run_result[["mean_waiting_time_nurse"]], NA_real_)
+  expect_identical(run_result[["mean_activity_time_nurse"]], NA_real_)
+
+  # Expect this to be 1, as nurses were busy for whole time (doesn't matter
+  # what patient type they were busy with - in this case, warm-up patients).
+  expect_identical(run_result[["utilisation_nurse"]], 1.0)
+})
+
+
 test_that("runner outputs a named list with length 2 and correct names", {
   # Simple run of the model
   param <- parameters(
