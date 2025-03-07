@@ -11,6 +11,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
+#' @importFrom dplyr ungroup arrange slice n filter
 #'
 #' @return Named list with two tables: three tables: monitored arrivals,
 #' monitored resources, and the processed results from the run.
@@ -45,7 +46,8 @@ model <- function(run_number, param, set_seed = TRUE) {
       add_generator("patient", patient, function() {
         rexp(n = 1L, rate = 1L / param[["patient_inter"]])
       }) %>%
-      simmer::run(param[["data_collection_period"]]) %>%
+      simmer::run(param[["warm_up_period"]] +
+                    param[["data_collection_period"]]) %>%
       wrap()
   )
 
@@ -72,6 +74,30 @@ model <- function(run_number, param, set_seed = TRUE) {
   )
 
   if (nrow(result[["arrivals"]]) > 0L) {
+    if (param[["warm_up_period"]] > 0L) {
+      # Remove all entries for warm-up patients
+      result[["arrivals"]] <- result[["arrivals"]] %>%
+        group_by(.data[["name"]]) %>%
+        filter(all(.data[["start_time"]] >= param[["warm_up_period"]])) %>%
+        ungroup()
+
+      # Filter to resource events in the data collection period
+      dc_resources <- filter(result[["resources"]],
+                             .data[["time"]] >= param[["warm_up_period"]])
+
+      # Get the last event for each resource prior to the warm-up
+      last_usage <- result[["resources"]] %>%
+        filter(.data[["time"]] < param[["warm_up_period"]]) %>%
+        arrange(.data[["time"]]) %>%
+        group_by(.data[["resource"]]) %>%
+        slice(n()) %>%
+        # Replace time with 50
+        mutate(time = param[["warm_up_period"]])
+
+      # Set the last event as the first row in the filtered resources dataframe
+      result[["resources"]] <- rbind(last_usage, dc_resources)
+    }
+
     # Replace replication with appropriate run number (as these functions
     # assume, if not supplied with list of envs, that there was one replication)
     result[["arrivals"]][["replication"]] <- run_number

@@ -27,6 +27,7 @@
 #' @importFrom purrr reduce
 #' @importFrom rlang .data
 #' @importFrom simmer get_mon_resources get_mon_arrivals now
+#' @importFrom stats setNames
 #' @importFrom tidyr pivot_wider drop_na
 #' @importFrom tidyselect any_of
 #' @importFrom tibble tibble
@@ -36,43 +37,67 @@
 
 get_run_results <- function(results, run_number) {
 
-  # Remove patients who were still waiting and had not completed
-  results[["arrivals"]] <- results[["arrivals"]] %>%
-    drop_na(any_of("end_time"))
+  # If there were no arrivals, return dataframe row with just the replication
+  # number and arrivals column set to 0
+  if (nrow(results[["arrivals"]]) == 0L) {
+    processed_result <- tibble(replication = run_number, arrivals = 0L)
 
-  # If there are any arrivals...
-  if (nrow(results[["arrivals"]]) > 0L) {
+    # Otherwise...
+  } else {
 
     # Calculate the number of arrivals
     calc_arr <- results[["arrivals"]] %>%
       summarise(arrivals = n_distinct(.data[["name"]]))
 
-    # Calculate the mean wait time for each resource
-    calc_wait <- results[["arrivals"]] %>%
-      mutate(
-        waiting_time = round(
-          .data[["end_time"]] - (
-            .data[["start_time"]] + .data[["activity_time"]]
-          ), 10L
-        )
-      ) %>%
-      group_by(.data[["resource"]]) %>%
-      summarise(mean_waiting_time = mean(.data[["waiting_time"]])) %>%
-      pivot_wider(names_from = "resource",
-                  values_from = "mean_waiting_time",
-                  names_glue = "mean_waiting_time_{resource}")
+    # Create subset of data that removes patients who were still waiting and
+    # had not completed
+    complete_arrivals <- results[["arrivals"]] %>%
+      drop_na(any_of("end_time"))
 
-    # Calculate the mean time spent with each resource
-    calc_act <- results[["arrivals"]] %>%
-      group_by(.data[["resource"]]) %>%
-      summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
-      pivot_wider(names_from = "resource",
-                  values_from = "mean_activity_time",
-                  names_glue = "mean_activity_time_{resource}")
+    # If there are any patients who were seen...
+    if (nrow(complete_arrivals) > 0L) {
+
+      # Calculate the mean wait time for each resource
+      calc_wait <- complete_arrivals %>%
+        mutate(
+          waiting_time = round(
+            .data[["end_time"]] - (
+              .data[["start_time"]] + .data[["activity_time"]]
+            ), 10L
+          )
+        ) %>%
+        group_by(.data[["resource"]]) %>%
+        summarise(mean_waiting_time = mean(.data[["waiting_time"]])) %>%
+        pivot_wider(names_from = "resource",
+                    values_from = "mean_waiting_time",
+                    names_glue = "mean_waiting_time_{resource}")
+
+      # Calculate the mean time spent with each resource
+      calc_act <- complete_arrivals %>%
+        group_by(.data[["resource"]]) %>%
+        summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
+        pivot_wider(names_from = "resource",
+                    values_from = "mean_activity_time",
+                    names_glue = "mean_activity_time_{resource}")
+
+      # Otherwise, create same tibbles but set values to NA
+    } else {
+      unique_resources <- unique(results[["resources"]]["resource"])
+
+      calc_wait <- tibble::tibble(
+        !!!setNames(rep(list(NA_real_), length(unique_resources)),
+                    paste0("mean_waiting_time_", unique_resources))
+      )
+
+      calc_act <- tibble::tibble(
+        !!!setNames(rep(list(NA_real_), length(unique_resources)),
+                    paste0("mean_activity_time_", unique_resources))
+      )
+    }
 
     # Calculate the mean resource utilisation
-    # Utilisation is given by the total effective usage time (`in_use`) over the
-    # total time intervals considered (`dt`).
+    # Utilisation is given by the total effective usage time (`in_use`) over
+    # the total time intervals considered (`dt`).
     calc_util <- results[["resources"]] %>%
       group_by(.data[["resource"]]) %>%
       # nolint start
@@ -80,7 +105,7 @@ get_run_results <- function(results, run_number) {
       mutate(capacity = pmax(.data[["capacity"]], .data[["server"]])) %>%
       mutate(dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L)) %>%
       mutate(in_use = (.data[["dt"]] * .data[["server"]] /
-                       .data[["capacity"]])) %>%
+                         .data[["capacity"]])) %>%
       # nolint end
       summarise(
         utilisation = sum(.data[["in_use"]], na.rm = TRUE) /
@@ -96,12 +121,6 @@ get_run_results <- function(results, run_number) {
       tibble(replication = run_number),
       calc_arr, calc_wait, calc_act, calc_util
     )
-  } else {
-    # If there were no arrivals, return dataframe row with just the replication
-    # number and arrivals column set to 0
-    processed_result <- tibble(replication = run_number,
-                               arrivals = nrow(results[["arrivals"]]))
   }
-
   return(processed_result) # nolint
 }
