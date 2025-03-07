@@ -72,7 +72,7 @@ results <- runner(param)[["run_results"]]
 head(results)
 ```
 
-    ## # A tibble: 6 × 5
+    ## # A tibble: 6 × 7
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
     ## 1           1       25                  0.173                     10.7 
@@ -81,7 +81,8 @@ head(results)
     ## 4           4       18                  0.0177                     9.29
     ## 5           5       22                  0                          4.79
     ## 6           6       27                  0.393                      8.12
-    ## # ℹ 1 more variable: utilisation_nurse <dbl>
+    ## # ℹ 3 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
+    ## #   mean_waiting_time_unseen_nurse <dbl>
 
 ``` r
 # Save to csv
@@ -129,7 +130,7 @@ scenario_results <- run_scenarios(scenarios, base_list = parameters())
 head(scenario_results)
 ```
 
-    ## # A tibble: 6 × 8
+    ## # A tibble: 6 × 10
     ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
     ##         <int>    <int>                   <dbl>                    <dbl>
     ## 1           1       28                0.0865                       9.31
@@ -138,8 +139,9 @@ head(scenario_results)
     ## 4           4       25                0                            7.97
     ## 5           5       31                0.000130                     5.35
     ## 6           6       31                0.822                        8.88
-    ## # ℹ 4 more variables: utilisation_nurse <dbl>, scenario <int>,
-    ## #   patient_inter <int>, number_of_nurses <int>
+    ## # ℹ 6 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
+    ## #   mean_waiting_time_unseen_nurse <dbl>, scenario <int>, patient_inter <int>,
+    ## #   number_of_nurses <int>
 
 ``` r
 # Save to csv
@@ -160,4 +162,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 13s
+    ## Notebook run time: 0m 19s

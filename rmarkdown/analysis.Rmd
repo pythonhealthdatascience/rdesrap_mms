@@ -387,14 +387,35 @@ print(sensitivity_table_latex,
 
 ## NaN results
 
-Note: In this model, if patients are still waiting to be seen at the end of the simulation, they will have NaN results. These patients are included in the results as we set `ongoing = TRUE` for `get_mon_arrivals()`.
+If patients are still waiting to be seen at the end of the simulation, or are still busy with the resource at the end of the simulation, they will have NaN results for `end_time` and `activity_time` (and so for the calculated nurse wait and activity times).
 
-<!-- TODO: Do we handle these appropriately in analysis of results within this template and python template? Could do with including an example to show why this matters, to show importance of that backlog, and how to incorporate into analysis, and not just dropping those NaN? -->
+These patients are captured in the `q_time_unseen` column in `arrivals`, and in the `count_unseen_nurse` and `mean_waiting_time_unseen_nurse` columns in `run_results`.
+
+These patients will be ignored in calculation of metrics like mean time with nurse (as they don't get to see nurse) - but it's important we still have measures for those unseen, as lots of patients waiting at the end of the simulation reveals large backlogs in the system.
 
 ```{r}
-param <- parameters(patient_inter = 0.5)
-result <- model(run_number = 0L, param = param)
-tail(result[["arrivals"]])
+nan_experiment <- runner(parameters(patient_inter = 0.5))
+tail(nan_experiment[["arrivals"]])
+```
+
+```{r}
+nan_experiment[["run_results"]][c(
+  "replication", "count_unseen_nurse", "mean_waiting_time_nurse"
+)]
+```
+
+```{r}
+plot_results_spread(
+  column = "count_unseen_nurse",
+  x_label = "Patients still unseen by nurse at end of simulation (n)",
+  file = "spread_nan_count_unseen.png"
+)
+
+plot_results_spread(
+  column = "mean_waiting_time_nurse",
+  x_label = "Mean nurse wait time by patients unseen at simulation end (min)",
+  file = "spread_nan_wait_unseen.png"
+)
 ```
 
 ## Calculate run time

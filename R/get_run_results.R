@@ -115,11 +115,27 @@ get_run_results <- function(results, run_number) {
                   values_from = "utilisation",
                   names_glue = "utilisation_{resource}")
 
+    # Calculate the number of patients unseen at end of simulation
+    calc_unseen_n <- results[["arrivals"]] %>%
+      group_by(.data[["resource"]]) %>%
+      summarise(value = sum(!is.na(.data[["q_time_unseen"]]))) %>%
+      pivot_wider(names_from = "resource",
+                  values_from = "value",
+                  names_glue = "count_unseen_{resource}")
+
+    # Calculate the mean waiting time of patients unseen at end of simulation
+    calc_unseen_mean <- results[["arrivals"]] %>%
+      group_by(.data[["resource"]]) %>%
+      summarise(value = mean(.data[["q_time_unseen"]], na.rm = TRUE)) %>%
+      pivot_wider(names_from = "resource",
+                  values_from = "value",
+                  names_glue = "mean_waiting_time_unseen_{resource}")
+
     # Combine all calculated metrics into a single dataframe, and along with
     # the replication number
     processed_result <- dplyr::bind_cols(
       tibble(replication = run_number),
-      calc_arr, calc_wait, calc_act, calc_util
+      calc_arr, calc_wait, calc_act, calc_util, calc_unseen_n, calc_unseen_mean
     )
   }
   return(processed_result) # nolint
