@@ -205,8 +205,6 @@ The `lint_package()` function will run on files typically included in a package 
 
 TBC <!-- TODO: Write this section -->
 
-**Note:** This template does not include a **warm-up period**, as it is not natively supported by simmer and was not possible to implement. This was explored - as the simulation results returned by `get_mon_arrivals()` can be filtered to only include patients arriving after a warm-up period. This isn't possible for the `get_mon_resources()` results (which we use to derive utilisation). This is because it provides times for each resource, but doesn't specify whether each time is a start or end time. We examine results per resource, and when there are multiple resources, it wouldn't be possible to match the resource times to the patient items (to identify which are start and end times), as the patients end time may be later if they had other resources to visit (and vice versa, their start time may be earlier if they visited other resources prior).
-
 <br>
 
 ## 📂 Repository structure

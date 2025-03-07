@@ -74,14 +74,17 @@ model <- function(run_number, param, set_seed = TRUE) {
   )
 
   if (nrow(result[["arrivals"]]) > 0L) {
+
+    # Filter the output results if a warm-up period was specified...
     if (param[["warm_up_period"]] > 0L) {
-      # Remove all entries for warm-up patients
+
+      # For arrivals, just remove all entries for warm-up patients
       result[["arrivals"]] <- result[["arrivals"]] %>%
         group_by(.data[["name"]]) %>%
         filter(all(.data[["start_time"]] >= param[["warm_up_period"]])) %>%
         ungroup()
 
-      # Filter to resource events in the data collection period
+      # For resources, filter to resource events in the data collection period
       dc_resources <- filter(result[["resources"]],
                              .data[["time"]] >= param[["warm_up_period"]])
 
