@@ -224,38 +224,359 @@ Hence, the **solution** could be:
 
 BUT: note that my plans could have unintended calculations if I remove rows (either from approach in general, or from the latter item) that are required by the calculations.
 
-## Understanding the times in arrivals
+### Revisiting this approach
+
+These are the patients with mismatch between `resource_start_time` and `start_time`.
+
+```{r}
+options(digits = 22)
+
+arrivals %>%
+  select(name, resource, start_time, resource_start_time, end_time, replication, period) %>%
+  filter(start_time != resource_start_time)
+```
+
+Those with `resource_start_time` > `start_time` should indicate they had to wait, but some of these may just be floating point differences, such as:
+
+* Those very similar
+* Those with a slightly higher `resource_start_time`
+
+```{r}
+arrivals %>%
+  select(name, resource, start_time, resource_start_time, end_time, replication, period) %>%
+  filter(start_time > resource_start_time)
+```
+
+We can investigate this by cross-referencing for the equivalent times in `resources`.
+
+By manual inspection, we can see that those with very close times were just floating point issues, as there is only one entry in resources.
+
+For those with the larger gaps (60, 105, 110) they have entries in resources for start_time and resource_start_time, indicating a wait.
+
+* `patient15` (60, 61, 74)
+* `patient22` (104, 105, 128)
+* `patient24` (110, 112, 115)
+
+```{r}
+resources <- get_mon_resources(env)
+resources %>%
+  arrange(time)
+```
+
+Our options here are to either:
+
+* Filter arrivals to only include `start_time` if difference after rounding ---> issue, if there is a true difference, hidden by rounding
+* Match all start, resource start and end times.
+
+Trying option 2 first...
+
+```{r}
+# Create arrivals dataframe with rows for each patient's resource start and end time
+arrivals_times <- arrivals %>%
+  select(name, resource, start_time, resource_start_time, end_time, replication, period) %>%
+  pivot_longer(cols = c(start_time, resource_start_time, end_time),
+               names_to = "time_type",
+               values_to = "time_value")
+
+arrivals_times <- arrivals_times %>%
+  arrange(time_value)
+
+resources <- resources %>%
+  arrange(time)
+
+# Merge the dataframes
+matched_data <- left_join(
+  resources, arrivals_times,
+  by = c("time" = "time_value",
+         "resource" = "resource",
+         "replication" = "replication")
+)
+matched_data
+```
+
+No mismatch!
+
+```{r}
+matched_data[is.na(matched_data[["name"]]),]
+```
+
+However, we have added duplicate rows, where `start_time` and `resource_start_time` are the same...
+
+```{r}
+dim(resources)
+dim(matched_data)
+```
+
+This could be addressed by removing duplicates...
+
+```{r}
+# Remove resource_start_time in cases where it duplicates start_time
+arrivals_times_clean <- arrivals_times %>%
+  group_by(name, resource, replication, period, time_value) %>%
+  filter(!(n() > 1 & any(time_type == "start_time") & time_type == "resource_start_time")) %>%
+  ungroup()
+
+# Merge the dataframes
+matched_data2 <- left_join(
+  resources, arrivals_times_clean,
+  by = c("time" = "time_value",
+         "resource" = "resource",
+         "replication" = "replication")
+)
+matched_data2
+```
+
+Now less rows, but still 7 more than before! We need to identify which patients have surplus rows. By filtering to those with 5 + rows, we see the surplus is for patients who had a wait:
+
+* `patient15` (60, 61, 74)
+* `patient22` (104, 105, 128)
+* `patient24` (110, 112, 115)
+
+HOWEVER it does not include patient22.
+
+```{r}
+matched_data2 %>%
+  group_by(name) %>%
+  filter(n() > 4) %>%
+  ungroup()
+```
+
+For `patient22`'s doctors appointment, it has matched for when they joined the queue, but not for when they started the appointment.
+
+```{r}
+matched_data2 %>%
+  filter(name == "patient22")
+```
+
+Filtering for NA's though, we don't see anything.
+
+Instead, lets look for times around the expect time of the appointment. As a reminder:
+
+```
+patient22	doctor	104.556807495089344683947	105.448863449860368746158	128.573579711864510954911	1	dc
+```
+
+We see a match, for patient17's end time.
+
+```{r}
+matched_data2 %>%
+  filter(time > 104 & time < 106)
+```
+
+```{r}
+get_mon_resources(env) %>%
+  filter(time > 104 & time < 107)
+```
+
+### Matching without end_time
+
+```{r}
+# Remove end times
+arrivals_start_times_clean <- arrivals_times_clean %>%
+  filter(time_type != "end_time")
+
+# Merge the dataframes
+matched_data3 <- left_join(
+  resources, arrivals_start_times_clean,
+  by = c("time" = "time_value",
+         "resource" = "resource",
+         "replication" = "replication")
+)
+matched_data3
+```
+
+Now we see it has matched to patient22.
+
+```{r}
+matched_data3 %>%
+  filter(time > 104 & time < 106)
+```
+
+However, there are some duplicate rows (e.g. patient21 matched on start time twice).
+
+```{r}
+# Viewing duplicates
+matched_data3 %>%
+  drop_na(name) %>%
+  group_by(name) %>%
+  filter(n() > 2) %>%
+  ungroup()
+
+# Viewing original resources for patient21
+get_mon_resources(env) %>%
+  filter(time > 88 & time < 89)
+
+# Viewing original arrivals for patient21
+arrivals %>%
+  filter(name == "patient21")
+get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE) %>%
+  filter(name == "patient21")
+```
+
+### Why does arrivals have duplicate rows?
+
+Lets see if this is a wider issue.
+
+```{r}
+run_number <- 1
+param <- parameters()
+set_seed <- TRUE
+number_of_doctors <- 3
+
+# Check all inputs are valid
+valid_inputs(run_number, param)
+
+# Set random seed based on run number
+if (set_seed) {
+  set.seed(run_number)
+}
+
+# Define the patient trajectory
+patient <- trajectory("appointment") %>%
+  seize("nurse", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("nurse", 1L) %>%
+  seize("doctor", 1L) %>%
+  timeout(function() {
+    rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
+  }) %>%
+  release("doctor", 1L)
+
+# Determine whether to get verbose activity logs
+verbose <- any(c(param[["log_to_console"]], param[["log_to_file"]]))
+
+# Create simmer environment, add nurse resource and patient generator, and
+# run the simulation. Capture output, which will save a log if verbose=TRUE
+sim_log <- capture.output(
+  env <- simmer("simulation", verbose = verbose) %>% # nolint
+    add_resource("nurse", param[["number_of_nurses"]]) %>%
+    add_resource("doctor", number_of_doctors) %>%
+    add_generator("patient", patient, function() {
+      rexp(n = 1L, rate = 1L / param[["patient_inter"]])
+    }) %>%
+    simmer::run(param[["warm_up_period"]] +
+                param[["data_collection_period"]]) %>%
+    wrap()
+)
+
+arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
+resources <- get_mon_resources(env)
+```
+
+The max time is 130. All these patients were ones who were seen by a nurse, but still waiting for or in consultation with a doctor at the end of the time period.
+
+```{r}
+arrivals %>%
+  group_by(name) %>%
+  filter(n() > 2) %>%
+  arrange(name)
+```
+
+These are lost if ongoing = FALSE.
+
+```{r}
+get_mon_arrivals(env, per_resource = TRUE, ongoing = FALSE) %>%
+  group_by(name)%>%
+  filter(n() > 2)
+
+get_mon_arrivals(env, per_resource = TRUE, ongoing = FALSE) %>%
+  filter(name %in% c("patient21", "patient23", "patient25", "patient26"))
+```
+Hence, I think it is reasonable to drop these rows for these patients.
+
+### Returning to the warm-up calculations
+
+To summarise, our aim now is:
+
+* Add column marking warm-up and data collection patients.
+* Drop rows for patients with blank next to resource, if they already have times by the resource (BUT: could this be an issue if they revisit a resource in a simulation?)
+* Calculate resource start time.
+* Pivot the dataframe.
+* Match on start time and resource start time in the first instance.
+* Then, fill remaining blanks by matching on end time.
+* Then check for NA.
+
+Lets do it from scratch from `env` step.
 
 ```{r}
 arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE)
-arrivals %>%
-  mutate(total_time = end_time - start_time) %>%
-  filter(total_time > activity_time)
+arrivals
 ```
 
-## Inspired by `treat-sim-simmer`
-
-Calculate utilisation from `get_mon_arrivals()` (and do not use `get_mon_resources()`).
-
 ```{r}
-# Filter to patients who arrived after the warm-up period
-arrivals <- get_mon_arrivals(env, per_resource = TRUE, ongoing = TRUE) %>%
+# Add column marking warm-up (wu) and data-collection (dc) patients
+arrivals <- arrivals %>%
   group_by(name) %>%
-  filter(all(start_time >= param[["warm_up_period"]])) %>%
+  mutate(period = if_else(
+    any(start_time < param[["warm_up_period"]]), "wu", "dc"
+  )) %>%
   ungroup()
 
-resource_counts <- tibble(
-  resource = c("doctor", "nurse"),
-  count = c(number_of_doctors, param[["number_of_nurses"]])
+# Remove the blank entries for patients with  more rows than number of
+# resources (2), who have a complete version and blank version of same row
+arrivals <- arrivals %>%
+  group_by(name)%>%
+  mutate(group_size = n()) %>%
+  group_by(name, resource) %>%
+  filter(!(
+    any(!is.na(start_time) & !is.na(end_time) &
+          !is.na(activity_time)) & is.na(end_time)
+    ) | group_size <= 2) %>%
+  select(-group_size)
+
+arrivals
+```
+
+```{r}
+# Add column recording the resource start time (excluding wait time for resource)
+arrivals[["resource_start_time"]] <- (
+  arrivals[["end_time"]] - arrivals[["activity_time"]]
 )
 
-# Calculate utilisation
-arrivals %>%
-  mutate(waiting_time = end_time - start_time - activity_time) %>%
-  group_by(resource) %>%
-  summarise(in_use = sum(activity_time, na.rm=TRUE)) %>%
-  merge(resource_counts, by = "resource", all=TRUE) %>%
-  mutate(utilisation = in_use / (param[["data_collection_period"]] * count))
+# Pivot dataframe so rows for each patient's resource start and end time
+arrivals_times <- arrivals %>%
+  select(name, resource, start_time, resource_start_time, end_time, replication, period) %>%
+  pivot_longer(cols = c(start_time, resource_start_time, end_time),
+               names_to = "time_type",
+               values_to = "time_value")
+
+arrivals_times
+```
+
+```{r}
+matched_data4 <- resources %>%
+    left_join(arrivals, by = c("resource", "replication", "time" = "start_time")) %>%
+    left_join(arrivals, by = c("resource", "replication", "time" = "resource_start_time"), suffix = c("", "_rs")) %>%
+    left_join(arrivals, by = c("resource", "replication", "time" = "end_time"), suffix = c("", "_et")) %>%
+    mutate(
+      name = coalesce(name, name_rs, name_et),
+      match_type = case_when(
+        !is.na(name) ~ "start_time",
+        !is.na(name_rs) ~ "resource_start_time",
+        !is.na(name_et) ~ "end_time",
+        TRUE ~ NA_character_
+      ),
+      period = coalesce(period, period_rs, period_et)
+    ) %>%
+    select(resource, time, server, queue, capacity, queue_size, system, limit, replication,
+           name, match_type, period)
+matched_data4
+```
+
+Checking for NA...
+
+```{r}
+matched_data4 %>%
+  filter(is.na(name))
+```
+
+Checking if it matched patient17 or patient22...
+
+```{r}
+matched_data4 %>%
+  filter(time > 104 & time < 106)
 ```
 
 ## Attempt using `reset()`
