@@ -59,26 +59,19 @@ get_run_results <- function(results, run_number) {
 
       # Calculate the mean wait time for each resource
       calc_wait <- complete_arrivals %>%
-        mutate(
-          waiting_time = round(
-            .data[["end_time"]] - (
-              .data[["start_time"]] + .data[["activity_time"]]
-            ), 10L
-          )
-        ) %>%
         group_by(.data[["resource"]]) %>%
-        summarise(mean_waiting_time = mean(.data[["waiting_time"]])) %>%
+        summarise(mean_waiting_time = mean(.data[["wait_time"]])) %>%
         pivot_wider(names_from = "resource",
                     values_from = "mean_waiting_time",
                     names_glue = "mean_waiting_time_{resource}")
 
       # Calculate the mean time spent with each resource
-      calc_act <- complete_arrivals %>%
+      calc_serv <- complete_arrivals %>%
         group_by(.data[["resource"]]) %>%
-        summarise(mean_activity_time = mean(.data[["activity_time"]])) %>%
+        summarise(mean_serve_time = mean(.data[["serve_length"]])) %>%
         pivot_wider(names_from = "resource",
-                    values_from = "mean_activity_time",
-                    names_glue = "mean_activity_time_{resource}")
+                    values_from = "mean_serve_time",
+                    names_glue = "mean_serve_time_{resource}")
 
       # Otherwise, create same tibbles but set values to NA
     } else {
@@ -89,9 +82,9 @@ get_run_results <- function(results, run_number) {
                     paste0("mean_waiting_time_", unique_resources))
       )
 
-      calc_act <- tibble::tibble(
+      calc_serv <- tibble::tibble(
         !!!setNames(rep(list(NA_real_), length(unique_resources)),
-                    paste0("mean_activity_time_", unique_resources))
+                    paste0("mean_serve_time_", unique_resources))
       )
     }
 
@@ -118,7 +111,7 @@ get_run_results <- function(results, run_number) {
     # Calculate the number of patients unseen at end of simulation
     calc_unseen_n <- results[["arrivals"]] %>%
       group_by(.data[["resource"]]) %>%
-      summarise(value = sum(!is.na(.data[["q_time_unseen"]]))) %>%
+      summarise(value = sum(!is.na(.data[["wait_time_unseen"]]))) %>%
       pivot_wider(names_from = "resource",
                   values_from = "value",
                   names_glue = "count_unseen_{resource}")
@@ -126,7 +119,7 @@ get_run_results <- function(results, run_number) {
     # Calculate the mean waiting time of patients unseen at end of simulation
     calc_unseen_mean <- results[["arrivals"]] %>%
       group_by(.data[["resource"]]) %>%
-      summarise(value = mean(.data[["q_time_unseen"]], na.rm = TRUE)) %>%
+      summarise(value = mean(.data[["wait_time_unseen"]], na.rm = TRUE)) %>%
       pivot_wider(names_from = "resource",
                   values_from = "value",
                   names_glue = "mean_waiting_time_unseen_{resource}")
@@ -135,7 +128,7 @@ get_run_results <- function(results, run_number) {
     # the replication number
     processed_result <- dplyr::bind_cols(
       tibble(replication = run_number),
-      calc_arr, calc_wait, calc_act, calc_util, calc_unseen_n, calc_unseen_mean
+      calc_arr, calc_wait, calc_serv, calc_util, calc_unseen_n, calc_unseen_mean
     )
   }
   return(processed_result) # nolint
