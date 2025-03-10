@@ -1,10 +1,11 @@
 Generate expected results
 ================
 Amy Heather
-2025-03-07
+2025-03-10
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
+- [Model with a warm-up period](#model-with-a-warm-up-period)
 - [Scenario analysis](#scenario-analysis)
 - [Calculate run time](#calculate-run-time)
 
@@ -90,6 +91,45 @@ write.csv(results, file.path(testdata_dir, "base_results.csv"),
           row.names = FALSE)
 ```
 
+## Model with a warm-up period
+
+``` r
+# Define model parameters
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  warm_up_period = 40L,
+  data_collection_period = 80L,
+  number_of_runs = 10L,
+  cores = 1L
+)
+
+# Run the replications
+results <- runner(param)[["run_results"]]
+
+# Preview
+head(results)
+```
+
+    ## # A tibble: 6 × 7
+    ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
+    ##         <int>    <int>                   <dbl>                    <dbl>
+    ## 1           1       23                  0.453                      9.65
+    ## 2           2       11                  0                          8.77
+    ## 3           3       20                  0.0138                     8.18
+    ## 4           4       19                  0.192                     12.4 
+    ## 5           5       23                  0.0393                     7.33
+    ## 6           6       25                  1.87                      10.5 
+    ## # ℹ 3 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
+    ## #   mean_waiting_time_unseen_nurse <dbl>
+
+``` r
+# Save to csv
+write.csv(results, file.path(testdata_dir, "warm_up_results.csv"),
+          row.names = FALSE)
+```
+
 ## Scenario analysis
 
 ``` r
@@ -99,31 +139,27 @@ param <- parameters(
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
   data_collection_period = 80L,
-  number_of_runs = 10L,
+  number_of_runs = 3L,
   cores = 1L
 )
 
 # Run scenario analysis
 scenarios <- list(
-  patient_inter = c(3L, 4L, 5L),
+  patient_inter = c(3L, 4L),
   number_of_nurses = c(6L, 7L)
 )
 scenario_results <- run_scenarios(scenarios, base_list = parameters())
 ```
 
-    ## There are 6 scenarios. Running:
+    ## There are 4 scenarios. Running:
 
     ## Scenario: patient_inter = 3, number_of_nurses = 6
 
     ## Scenario: patient_inter = 4, number_of_nurses = 6
 
-    ## Scenario: patient_inter = 5, number_of_nurses = 6
-
     ## Scenario: patient_inter = 3, number_of_nurses = 7
 
     ## Scenario: patient_inter = 4, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 5, number_of_nurses = 7
 
 ``` r
 # Preview
@@ -162,4 +198,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 19s
+    ## Notebook run time: 0m 28s

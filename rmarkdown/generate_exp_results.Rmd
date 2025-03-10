@@ -66,6 +66,31 @@ write.csv(results, file.path(testdata_dir, "base_results.csv"),
           row.names = FALSE)
 ```
 
+## Model with a warm-up period
+
+```{r}
+# Define model parameters
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  warm_up_period = 40L,
+  data_collection_period = 80L,
+  number_of_runs = 10L,
+  cores = 1L
+)
+
+# Run the replications
+results <- runner(param)[["run_results"]]
+
+# Preview
+head(results)
+
+# Save to csv
+write.csv(results, file.path(testdata_dir, "warm_up_results.csv"),
+          row.names = FALSE)
+```
+
 ## Scenario analysis
 
 ```{r}
@@ -75,13 +100,13 @@ param <- parameters(
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
   data_collection_period = 80L,
-  number_of_runs = 10L,
+  number_of_runs = 3L,
   cores = 1L
 )
 
 # Run scenario analysis
 scenarios <- list(
-  patient_inter = c(3L, 4L, 5L),
+  patient_inter = c(3L, 4L),
   number_of_nurses = c(6L, 7L)
 )
 scenario_results <- run_scenarios(scenarios, base_list = parameters())
