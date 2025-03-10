@@ -68,7 +68,7 @@ path <- file.path(output_dir, "choose_param_conf_int_1.png")
 ci_df <- confidence_interval_method(
   replications = 150L,
   desired_precision = 0.05,
-  metric = "mean_activity_time_nurse",
+  metric = "mean_serve_time_nurse",
   yaxis_title = "Mean time with nurse",
   path = path,
   min_rep = 98L

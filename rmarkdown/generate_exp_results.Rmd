@@ -109,7 +109,7 @@ scenarios <- list(
   patient_inter = c(3L, 4L),
   number_of_nurses = c(6L, 7L)
 )
-scenario_results <- run_scenarios(scenarios, base_list = parameters())
+scenario_results <- run_scenarios(scenarios, base_list = param)
 
 # Preview
 head(scenario_results)

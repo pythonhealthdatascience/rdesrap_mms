@@ -103,7 +103,7 @@ plot_results_spread(column = "mean_waiting_time_nurse",
                     x_label = "Mean wait time for nurse",
                     file = "spread_nurse_wait.png")
 
-plot_results_spread(column = "mean_activity_time_nurse",
+plot_results_spread(column = "mean_serve_time_nurse",
                     x_label = "Mean length of nurse consultation",
                     file = "spread_nurse_time.png")
 
@@ -389,7 +389,7 @@ print(sensitivity_table_latex,
 
 If patients are still waiting to be seen at the end of the simulation, or are still busy with the resource at the end of the simulation, they will have NaN results for `end_time` and `activity_time` (and so for the calculated nurse wait and activity times).
 
-These patients are captured in the `q_time_unseen` column in `arrivals`, and in the `count_unseen_nurse` and `mean_waiting_time_unseen_nurse` columns in `run_results`.
+These patients are captured in the `wait_time_unseen` column in `arrivals`, and in the `count_unseen_nurse` and `mean_waiting_time_unseen_nurse` columns in `run_results`.
 
 These patients will be ignored in calculation of metrics like mean time with nurse (as they don't get to see nurse) - but it's important we still have measures for those unseen, as lots of patients waiting at the end of the simulation reveals large backlogs in the system.
 
