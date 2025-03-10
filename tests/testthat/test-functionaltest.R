@@ -268,3 +268,72 @@ test_that("the model can cope with some replications having no arrivals", {
   expect_true(any(run_result[["arrivals"]] == 0L))
   expect_true(any(run_result[["arrivals"]] == 1L))
 })
+
+
+test_that("results are empty if model runs with only a warm-up", {
+  # Run model with only a warm-up period and no time for results collection
+  param <- parameters(warm_up_period = 50L, data_collection_period = 0L)
+  result <- model(run_number = 1L, param = param)
+
+  # Check that arrivals and resources are empty
+  expect_identical(nrow(result[["arrivals"]]), 0L)
+  expect_identical(nrow(result[["resources"]]), 0L)
+
+  # Check that run results records 0 arrivals
+  expected_run_results <- tibble(replication = 1L, arrivals = 0L)
+  expect_identical(result[["run_results"]], expected_run_results)
+})
+
+
+test_that("running with warm-up leads to different results than without", {
+  # Helper function to run model with high arrivals and specified warm-up
+  helper_warmup <- function(warm_up_period) {
+    param <- parameters(patient_inter = 1L,
+                        mean_n_consult_time = 10L,
+                        number_of_nurses = 5L,
+                        warm_up_period = warm_up_period,
+                        data_collection_period = 80L)
+    model(run_number = 1L, param = param)
+  }
+
+  # Run model with and without warm-up period
+  results_warmup <- helper_warmup(warm_up_period = 50L)
+  results_none <- helper_warmup(warm_up_period = 0L)
+
+  # With warm-up, check that first arrival has:
+  # > Start time in data collection period
+  # > Queue time greater than 0 (as we have run scenario with backlog where
+  # expect resources to still be in use by warm-up patients)
+  first_patient <- results_warmup[["arrivals"]] %>%
+    arrange(start_time) %>%
+    mutate(wait_time = end_time - activity_time) %>%
+    slice(1L)
+  expect_gt(first_patient[["start_time"]], 50L)
+  expect_gt(first_patient[["wait_time"]], 0L)
+
+  # Without warm-up, check that first arrival has:
+  # > Start time after 0
+  # > Queue time equal to 0
+  first_patient <- results_none[["arrivals"]] %>%
+    arrange(start_time) %>%
+    mutate(wait_time = round(end_time - activity_time - start_time, 10L)) %>%
+    slice(1L)
+  expect_gt(first_patient[["start_time"]], 0L)
+  expect_identical(first_patient[["wait_time"]], 0.0)
+
+  # Comparing the results, expect warm-up to have:
+  # > Longer mean wait time
+  # > Higher utilisation
+  # > Higher count unseen
+  # > Higher mean wait time unseen
+  run_wu <- results_warmup[["run_results"]]
+  run_none <- results_none[["run_results"]]
+  expect_gt(run_wu[["mean_waiting_time_nurse"]],
+            run_none[["mean_waiting_time_nurse"]])
+  expect_gt(run_wu[["utilisation_nurse"]],
+            run_none[["utilisation_nurse"]])
+  expect_gt(run_wu[["count_unseen_nurse"]],
+            run_none[["count_unseen_nurse"]])
+  expect_gt(run_wu[["mean_waiting_time_unseen_nurse"]],
+            run_none[["mean_waiting_time_unseen_nurse"]])
+})
