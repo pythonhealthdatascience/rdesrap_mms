@@ -11,9 +11,8 @@
 #' @importFrom magrittr %>%
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
-#' @importFrom dplyr ungroup arrange slice n filter
 #'
-#' @return Named list with two tables: three tables: monitored arrivals,
+#' @return Named list with three tables: monitored arrivals,
 #' monitored resources, and the processed results from the run.
 #' @export
 
@@ -77,28 +76,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
     # Filter the output results if a warm-up period was specified...
     if (param[["warm_up_period"]] > 0L) {
-
-      # For arrivals, just remove all entries for warm-up patients
-      result[["arrivals"]] <- result[["arrivals"]] %>%
-        group_by(.data[["name"]]) %>%
-        filter(all(.data[["start_time"]] >= param[["warm_up_period"]])) %>%
-        ungroup()
-
-      # For resources, filter to resource events in the data collection period
-      dc_resources <- filter(result[["resources"]],
-                             .data[["time"]] >= param[["warm_up_period"]])
-
-      # Get the last event for each resource prior to the warm-up
-      last_usage <- result[["resources"]] %>%
-        filter(.data[["time"]] < param[["warm_up_period"]]) %>%
-        arrange(.data[["time"]]) %>%
-        group_by(.data[["resource"]]) %>%
-        slice(n()) %>%
-        # Replace time with 50
-        mutate(time = param[["warm_up_period"]])
-
-      # Set the last event as the first row in the filtered resources dataframe
-      result[["resources"]] <- rbind(last_usage, dc_resources)
+      result <- filter_warmup(result, param[["warm_up_period"]])
     }
 
     # Replace replication with appropriate run number (as these functions
@@ -106,8 +84,8 @@ model <- function(run_number, param, set_seed = TRUE) {
     result[["arrivals"]][["replication"]] <- run_number
     result[["resources"]][["replication"]] <- run_number
 
-    # Add a column with the wait time of patients who remained unseen at the end
-    # of the simulation
+    # Add a column with the wait time of patients who remained unseen at the
+    # end of the simulation
     result[["arrivals"]] <- result[["arrivals"]] %>%
       mutate(q_time_unseen = ifelse(is.na(.data[["activity_time"]]),
                                     now(env) - .data[["start_time"]],
