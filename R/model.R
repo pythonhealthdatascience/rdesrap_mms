@@ -13,6 +13,7 @@
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
 #' @importFrom dplyr select left_join
+#' @importFrom tidyselect all_of
 #'
 #' @return Named list with three tables: monitored arrivals,
 #' monitored resources, and the processed results from the run.
@@ -86,11 +87,11 @@ model <- function(run_number, param, set_seed = TRUE) {
 
     # Get the extra arrivals attributes
     extra_attributes <- get_mon_attributes(env) %>%
-      select(.data[["name"]], .data[["key"]], .data[["value"]]) %>%
+      select("name", "key", "value") %>%
       # Add column with resource name, and remove that from key
       mutate(resource = gsub("_.+", "", .data[["key"]]),
              key = gsub("^[^_]+_", "", .data[["key"]])) %>%
-      pivot_wider(names_from = .data[["key"]], values_from = .data[["value"]])
+      pivot_wider(names_from = "key", values_from = "value")
 
     # Merge extra attributes with the arrival data
     result[["arrivals"]] <- left_join(
