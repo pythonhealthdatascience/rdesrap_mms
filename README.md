@@ -5,10 +5,10 @@
 <!-- badges: start -->
 ![R 4.4.1](https://img.shields.io/badge/-R_4.4.1-276DC2?logo=r&logoColor=white) <!--TODO Specify R version -->
 ![MIT Licence](https://img.shields.io/badge/Licence-MIT-green.svg?labelColor=gray)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14980863.svg)](https://doi.org/10.5281/zenodo.14980863)
 [![R-CMD-check](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml)
 [![Lint](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml)
 <!-- badges: end -->
-<!-- TODO: Add DOI -->
 
 A template for creating **discrete-event simulation (DES)** models in R within a **reproducible analytical pipeline (RAP)**.<br><br>
 Click on <kbd>Use this template</kbd> to initialise new repository.<br>
@@ -188,8 +188,6 @@ devtools::test()
 
 The repository contains a GitHub action `R-CMD-check.yaml` which will automatically run tests with new commits to GitHub, as part of the `devtools::check()` operation. This is continuous integration, helping to catch bugs early and keep the code stable. It will run the tests on three operating systems: Ubuntu, Windows and Mac.
 
-<!--TODO: Double check this CI definitely flags test failures-->
-
 🔎 **Linting**
 
 You can lint the `.R` and `.Rmd` files by running:
@@ -206,8 +204,6 @@ The `lint_package()` function will run on files typically included in a package 
 ## ❓ How does the model work?
 
 TBC <!-- TODO: Write this section -->
-
-**Note:** This template does not include a **warm-up period**, as it is not natively supported by simmer and was not possible to implement. This was explored - as the simulation results returned by `get_mon_arrivals()` can be filtered to only include patients arriving after a warm-up period. This isn't possible for the `get_mon_resources()` results (which we use to derive utilisation). This is because it provides times for each resource, but doesn't specify whether each time is a start or end time. We examine results per resource, and when there are multiple resources, it wouldn't be possible to match the resource times to the patient items (to identify which are start and end times), as the patients end time may be later if they had other resources to visit (and vice versa, their start time may be earlier if they visited other resources prior).
 
 <br>
 
@@ -259,9 +255,13 @@ These times were obtained on an Intel Core i7-12700H with 32GB RAM running Ubunt
 
 ## 📝 Citation
 
-<!-- TODO: Add Zenodo citation once archived -->
+If you use this template, please cite the archived repository:
 
-> Heather, A. (2025). Simple Reproducible R Discrete-Event Simulation (DES) Template. GitHub. https://github.com/pythonhealthdatascience/rap_template_r_des.
+> Heather, A. (2025). R DES Rap Template. Zenodo. https://doi.org/10.5281/zenodo.14980863.
+
+You can also cite the GitHub repository:
+
+> Heather, A. (2025). R DES Rap Template. GitHub. https://github.com/pythonhealthdatascience/rap_template_r_des.
 
 Researcher details:
 

@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-03-06
+2025-03-10
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -23,7 +23,9 @@ The run time is provided at the end of the notebook.
 
 ## Set up
 
-Install the latest version of the local simulation package.
+Install the latest version of the local simulation package. If running
+sequentially, `devtools::load_all()` is sufficient. If running in
+parallel, you must use `devtools::install()`.
 
 ``` r
 devtools::load_all()
@@ -121,27 +123,27 @@ path <- file.path(output_dir, "choose_param_conf_int_1.png")
 ci_df <- confidence_interval_method(
   replications = 150L,
   desired_precision = 0.05,
-  metric = "mean_activity_time_nurse",
+  metric = "mean_serve_time_nurse",
   yaxis_title = "Mean time with nurse",
   path = path,
   min_rep = 98L
 )
 ```
 
-    ## Reached desired precision (0.05) in 98 replications.
+    ## Reached desired precision (0.05) in 86 replications.
 
 ``` r
 # Preview dataframe
 head(ci_df)
 ```
 
-    ##   replications cumulative_mean cumulative_std ci_lower  ci_upper perc_deviation
-    ## 1            1       10.740547             NA       NA        NA             NA
-    ## 2            2        8.920561             NA       NA        NA             NA
-    ## 3            3        8.242866       2.165677 2.863026 13.622707       65.26662
-    ## 4            4        8.504535       1.844086 5.570182 11.438888       34.50339
-    ## 5            5        7.760938       2.305467 4.898323 10.623553       36.88491
-    ## 6            6        7.820313       2.067195 5.650925  9.989701       27.74042
+    ##   replications cumulative_mean cumulative_std ci_lower ci_upper perc_deviation
+    ## 1            1        6.486585             NA       NA       NA             NA
+    ## 2            2        7.765904             NA       NA       NA             NA
+    ## 3            3        8.360267       1.642090 4.281088 12.43945       48.79245
+    ## 4            4        8.623889       1.440704 6.331408 10.91637       26.58291
+    ## 5            5        8.677132       1.253353 7.120889 10.23338       17.93500
+    ## 6            6        8.490040       1.211089 7.219080  9.76100       14.97001
 
 ``` r
 # View first ten rows were percentage deviation is below 5
@@ -151,16 +153,16 @@ ci_df %>%
 ```
 
     ##    replications cumulative_mean cumulative_std ci_lower ci_upper perc_deviation
-    ## 1            98        8.461235       2.106669 8.038875 8.883596       4.991712
-    ## 2            99        8.475054       2.100398 8.056137 8.893971       4.942943
-    ## 3           100        8.468351       2.090838 8.053483 8.883219       4.899036
-    ## 4           101        8.473309       2.080954 8.062503 8.884115       4.848241
-    ## 5           102        8.478815       2.071373 8.071959 8.885671       4.798504
-    ## 6           103        8.485316       2.062250 8.082270 8.888361       4.749915
-    ## 7           104        8.490698       2.052949 8.091450 8.889945       4.702173
-    ## 8           105        8.477837       2.047301 8.081634 8.874040       4.673399
-    ## 9           106        8.456515       2.049320 8.061841 8.851190       4.667105
-    ## 10          107        8.459470       2.039859 8.068501 8.850440       4.621677
+    ## 1            86        8.123779       1.892516 7.718022 8.529535       4.994675
+    ## 2            87        8.110926       1.885296 7.709115 8.512738       4.953948
+    ## 3            88        8.142942       1.898338 7.740723 8.545162       4.939485
+    ## 4            89        8.171550       1.906718 7.769895 8.573205       4.915281
+    ## 5            90        8.165945       1.896722 7.768684 8.563206       4.864846
+    ## 6            91        8.147768       1.894109 7.753301 8.542235       4.841415
+    ## 7            92        8.133673       1.888518 7.742573 8.524774       4.808417
+    ## 8            93        8.120481       1.882530 7.732778 8.508183       4.774378
+    ## 9            94        8.149747       1.893759 7.761867 8.537626       4.759405
+    ## 10           95        8.183308       1.911851 7.793844 8.572772       4.759248
 
 ``` r
 # View plot
@@ -185,7 +187,7 @@ ci_df <- confidence_interval_method(
 )
 ```
 
-    ## Reached desired precision (0.05) in 148 replications.
+    ## Reached desired precision (0.05) in 151 replications.
 
 ``` r
 # View first ten rows were percentage deviation is below 5
@@ -195,16 +197,16 @@ ci_df %>%
 ```
 
     ##    replications cumulative_mean cumulative_std ci_lower ci_upper perc_deviation
-    ## 1           148        45.73420       14.04814 43.45214 48.01625       4.989822
-    ## 2           149        45.89021       14.12952 43.60278 48.17764       4.984574
-    ## 3           150        45.90075       14.08261 43.62865 48.17286       4.950028
-    ## 4           151        45.84563       14.05193 43.58612 48.10513       4.928512
-    ## 5           152        45.92331       14.03803 43.67359 48.17302       4.898849
-    ## 6           153        45.84086       14.02890 43.60008 48.08163       4.888154
-    ## 7           154        45.71614       14.06836 43.47650 47.95579       4.899034
-    ## 8           155        45.85137       14.12331 43.61035 48.09239       4.887567
-    ## 9           156        45.87804       14.08162 43.65092 48.10515       4.854423
-    ## 10          157        46.12548       14.37477 43.85937 48.39160       4.912928
+    ## 1           151        46.19744       14.35729 43.88883 48.50605       4.997262
+    ## 2           154        46.26876       14.45690 43.96726 48.57027       4.974207
+    ## 3           155        46.11886       14.53024 43.81327 48.42444       4.999226
+    ## 4           156        46.01632       14.53980 43.71674 48.31590       4.997313
+    ## 5           158        45.85531       14.54490 43.56976 48.14086       4.984266
+    ## 6           159        45.86608       14.49943 43.59496 48.13719       4.951630
+    ## 7           160        45.93341       14.47884 43.67272 48.19409       4.921656
+    ## 8           161        45.95768       14.43680 43.71068 48.20468       4.889286
+    ## 9           162        46.07486       14.46898 43.82992 48.31980       4.872380
+    ## 10          163        46.12769       14.44001 43.89423 48.36115       4.841908
 
 ``` r
 # View plot
@@ -226,4 +228,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 9s
+    ## Notebook run time: 0m 28s

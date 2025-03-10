@@ -1,10 +1,11 @@
 Generate expected results
 ================
 Amy Heather
-2025-03-06
+2025-03-10
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
+- [Model with a warm-up period](#model-with-a-warm-up-period)
 - [Scenario analysis](#scenario-analysis)
 - [Calculate run time](#calculate-run-time)
 
@@ -22,7 +23,9 @@ The run time is provided at the end of this notebook.
 
 ## Set-up
 
-Install the latest version of the local simulation package.
+Install the latest version of the local simulation package. If running
+sequentially, `devtools::load_all()` is sufficient. If running in
+parallel, you must use `devtools::install()`.
 
 ``` r
 devtools::load_all()
@@ -58,6 +61,49 @@ param <- parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
+  warm_up_period = 0L,
+  data_collection_period = 80L,
+  number_of_runs = 10L,
+  cores = 1L
+)
+
+# Run the replications
+results <- runner(param)[["run_results"]]
+
+results
+```
+
+    ## # A tibble: 10 × 7
+    ##    replication arrivals mean_waiting_time_nurse mean_serve_time_nurse
+    ##          <int>    <int>                   <dbl>                 <dbl>
+    ##  1           1       17                  0.0361                  6.49
+    ##  2           2       19                  0.107                   9.05
+    ##  3           3       28                  0                       9.55
+    ##  4           4       15                  0                       9.41
+    ##  5           5       25                  0.323                   8.89
+    ##  6           6       17                  0                       7.55
+    ##  7           7       23                  0                       4.19
+    ##  8           8       20                  0.0147                  9.58
+    ##  9           9       18                  0                       4.77
+    ## 10          10       18                  0                       8.03
+    ## # ℹ 3 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
+    ## #   mean_waiting_time_unseen_nurse <dbl>
+
+``` r
+# Save to csv
+write.csv(results, file.path(testdata_dir, "base_results.csv"),
+          row.names = FALSE)
+```
+
+## Model with a warm-up period
+
+``` r
+# Define model parameters
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  warm_up_period = 40L,
   data_collection_period = 80L,
   number_of_runs = 10L,
   cores = 1L
@@ -70,20 +116,21 @@ results <- runner(param)[["run_results"]]
 head(results)
 ```
 
-    ## # A tibble: 6 × 5
-    ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
-    ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1       21                  0.173                     10.7 
-    ## 2           2       16                  0                          7.10
-    ## 3           3       13                  0                          6.89
-    ## 4           4       16                  0.0177                     9.29
-    ## 5           5       17                  0                          4.79
-    ## 6           6       18                  0.393                      8.12
-    ## # ℹ 1 more variable: utilisation_nurse <dbl>
+    ## # A tibble: 6 × 7
+    ##   replication arrivals mean_waiting_time_nurse mean_serve_time_nurse
+    ##         <int>    <int>                   <dbl>                 <dbl>
+    ## 1           1       19                  0.0361                  6.85
+    ## 2           2       15                  0.175                  10.6 
+    ## 3           3       26                  0.103                   7.68
+    ## 4           4       16                  0.0891                  9.36
+    ## 5           5       20                  0.0842                  6.30
+    ## 6           6       19                  0                       6.23
+    ## # ℹ 3 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
+    ## #   mean_waiting_time_unseen_nurse <dbl>
 
 ``` r
 # Save to csv
-write.csv(results, file.path(testdata_dir, "base_results.csv"),
+write.csv(results, file.path(testdata_dir, "warm_up_results.csv"),
           row.names = FALSE)
 ```
 
@@ -96,48 +143,45 @@ param <- parameters(
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
   data_collection_period = 80L,
-  number_of_runs = 10L,
+  number_of_runs = 3L,
   cores = 1L
 )
 
 # Run scenario analysis
 scenarios <- list(
-  patient_inter = c(3L, 4L, 5L),
+  patient_inter = c(3L, 4L),
   number_of_nurses = c(6L, 7L)
 )
-scenario_results <- run_scenarios(scenarios, base_list = parameters())
+scenario_results <- run_scenarios(scenarios, base_list = param)
 ```
 
-    ## There are 6 scenarios. Running:
+    ## There are 4 scenarios. Running:
 
     ## Scenario: patient_inter = 3, number_of_nurses = 6
 
     ## Scenario: patient_inter = 4, number_of_nurses = 6
 
-    ## Scenario: patient_inter = 5, number_of_nurses = 6
-
     ## Scenario: patient_inter = 3, number_of_nurses = 7
 
     ## Scenario: patient_inter = 4, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 5, number_of_nurses = 7
 
 ``` r
 # Preview
 head(scenario_results)
 ```
 
-    ## # A tibble: 6 × 8
-    ##   replication arrivals mean_waiting_time_nurse mean_activity_time_nurse
-    ##         <int>    <int>                   <dbl>                    <dbl>
-    ## 1           1       27                0.0865                       9.31
-    ## 2           2       19                0                            7.83
-    ## 3           3       22                0                            6.74
-    ## 4           4       21                0                            7.97
-    ## 5           5       25                0.000130                     5.35
-    ## 6           6       29                0.822                        8.88
-    ## # ℹ 4 more variables: utilisation_nurse <dbl>, scenario <int>,
-    ## #   patient_inter <int>, number_of_nurses <int>
+    ## # A tibble: 6 × 10
+    ##   replication arrivals mean_waiting_time_nurse mean_serve_time_nurse
+    ##         <int>    <int>                   <dbl>                 <dbl>
+    ## 1           1       27                  0.0821                  8.38
+    ## 2           2       29                  0.558                  10.5 
+    ## 3           3       39                  0.0135                  9.62
+    ## 4           1       17                  0                       6.83
+    ## 5           2       21                  0.218                  11.2 
+    ## 6           3       28                  0                       9.55
+    ## # ℹ 6 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
+    ## #   mean_waiting_time_unseen_nurse <dbl>, scenario <int>, patient_inter <int>,
+    ## #   number_of_nurses <int>
 
 ``` r
 # Save to csv
@@ -158,4 +202,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 13s
+    ## Notebook run time: 0m 2s

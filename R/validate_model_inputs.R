@@ -86,7 +86,7 @@ check_param_values <- function(param) {
   }
 
   # Check that listed parameters are non-negative integers
-  n_list <- c("data_collection_period", "number_of_nurses")
+  n_list <- c("warm_up_period", "data_collection_period", "number_of_nurses")
   for (n in n_list) {
     if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
       stop('The parameter "', n,

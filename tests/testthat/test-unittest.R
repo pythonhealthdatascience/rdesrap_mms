@@ -35,6 +35,7 @@ patrick::with_parameters_test_that(
     list(param_name = "number_of_runs", param_value = 0L, rule = "p"),
     # Parameters which should be non-negative integers (n)
     list(param_name = "number_of_nurses", param_value = -1L, rule = "n"),
+    list(param_name = "warm_up_period", param_value = -1L, rule = "n"),
     list(param_name = "data_collection_period", param_value = -1L, rule = "n")
   )
 )
@@ -57,4 +58,45 @@ test_that("the model produces an error if parameters are missing", {
   # Check it fails with the anticipated error message
   expect_error(model(run_number = 1L, param = param),
                "Missing keys: patient_inter")
+})
+
+
+test_that("warm-up filtering works as expected", {
+  mock_result <- list(
+    arrivals = data.frame(name = c("p1", "p2", "p3"),
+                          start_time = c(5L, 10L, 14L),
+                          stringsAsFactors = FALSE),
+    resources = data.frame(resource = "nurse",
+                           time = c(5L, 14L),
+                           stringsAsFactors = FALSE)
+  )
+
+  # With no warm-up...
+  # > Check that no entries are removed
+  no_warm_up <- filter_warmup(mock_result, warm_up_period = 0L)
+  expect_identical(no_warm_up, mock_result)
+
+  # With warm-up of 10...
+  # > Check that two arrivals remain (10 + 15)
+  # > Check that resources starts from time 10
+  filtered <- filter_warmup(mock_result, warm_up_period = 10L)
+  expect_identical(nrow(filtered[["arrivals"]]), 2L)
+  expect_true(all(filtered[["arrivals"]][["start_time"]] >= 10L))
+  expect_identical(nrow(filtered[["resources"]]), 2L)
+  expect_identical(filtered[["resources"]][["time"]], c(10L, 14L))
+
+  # Emulating run with no data collection period...
+  # > Check that no data remains
+  full_length <- filter_warmup(mock_result, warm_up_period = 15L)
+  expect_identical(nrow(full_length[["arrivals"]]), 0L)
+  expect_identical(nrow(full_length[["resources"]]), 0L)
+
+  # If warm-up ends before any resources are used...
+  # > Check that no entries are removed from arrivals
+  # > Check that no rows are add to resources (as no need for the first row to
+  # equal warm_up_period if no active resources).
+  short_warm_up <- filter_warmup(mock_result, warm_up_period = 3L)
+  expect_identical(as.data.frame(short_warm_up[["arrivals"]]),
+                   mock_result[["arrivals"]])
+  expect_identical(short_warm_up[["resources"]], mock_result[["resources"]])
 })

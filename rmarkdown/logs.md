@@ -1,7 +1,7 @@
 Logs
 ================
 Amy Heather
-2025-03-06
+2025-03-10
 
 - [Set up](#set-up)
 - [Simulation run with logs printed to the
@@ -22,7 +22,9 @@ illustrate how a simulation work, or to support debugging.
 
 ## Set up
 
-Install the latest version of the local simulation package.
+Install the latest version of the local simulation package. If running
+sequentially, `devtools::load_all()` is sufficient. If running in
+parallel, you must use `devtools::install()`.
 
 ``` r
 devtools::load_all()
@@ -65,42 +67,48 @@ param <- parameters(
 verbose_run <- model(run_number = 0L, param = param)
 ```
 
-    ##  [1] "Parameters:"                                                                                                                                                                                                           
-    ##  [2] "patient_inter=6; mean_n_consult_time=8; number_of_nurses=1; data_collection_period=30; number_of_runs=1; scenario_name=NULL; cores=1; log_to_console=TRUE; log_to_file=TRUE; file_path=../outputs/logs/log_example.log"
-    ##  [3] "Log:"                                                                                                                                                                                                                  
-    ##  [4] "         0 |    source: patient          |       new: patient0         | 1.10422"                                                                                                                                      
-    ##  [5] "   1.10422 |   arrival: patient0         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ##  [6] "   1.10422 |  resource: nurse            |   arrival: patient0         | SERVE"                                                                                                                                        
-    ##  [7] "   1.10422 |    source: patient          |       new: patient1         | 1.97846"                                                                                                                                      
-    ##  [8] "   1.10422 |   arrival: patient0         |  activity: Timeout          | function()"                                                                                                                                   
-    ##  [9] "   1.97846 |   arrival: patient1         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [10] "   1.97846 |  resource: nurse            |   arrival: patient1         | ENQUEUE"                                                                                                                                      
-    ## [11] "   1.97846 |    source: patient          |       new: patient2         | 4.59487"                                                                                                                                      
-    ## [12] "   2.22258 |   arrival: patient0         |  activity: Release          | nurse, 1"                                                                                                                                     
-    ## [13] "   2.22258 |  resource: nurse            |   arrival: patient0         | DEPART"                                                                                                                                       
-    ## [14] "   2.22258 |      task: Post-Release     |          :                  | "                                                                                                                                             
-    ## [15] "   2.22258 |  resource: nurse            |   arrival: patient1         | SERVE"                                                                                                                                        
-    ## [16] "   2.22258 |   arrival: patient1         |  activity: Timeout          | function()"                                                                                                                                   
-    ## [17] "   4.59487 |   arrival: patient2         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [18] "   4.59487 |  resource: nurse            |   arrival: patient2         | ENQUEUE"                                                                                                                                      
-    ## [19] "   4.59487 |    source: patient          |       new: patient3         | 11.9722"                                                                                                                                      
-    ## [20] "   11.9722 |   arrival: patient3         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [21] "   11.9722 |  resource: nurse            |   arrival: patient3         | ENQUEUE"                                                                                                                                      
-    ## [22] "   11.9722 |    source: patient          |       new: patient4         | 15.2103"                                                                                                                                      
-    ## [23] "   15.2103 |   arrival: patient4         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [24] "   15.2103 |  resource: nurse            |   arrival: patient4         | ENQUEUE"                                                                                                                                      
-    ## [25] "   15.2103 |    source: patient          |       new: patient5         | 20.9497"                                                                                                                                      
-    ## [26] "   20.9497 |   arrival: patient5         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [27] "   20.9497 |  resource: nurse            |   arrival: patient5         | ENQUEUE"                                                                                                                                      
-    ## [28] "   20.9497 |    source: patient          |       new: patient6         | 21.832"                                                                                                                                       
-    ## [29] "    21.832 |   arrival: patient6         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [30] "    21.832 |  resource: nurse            |   arrival: patient6         | ENQUEUE"                                                                                                                                      
-    ## [31] "    21.832 |    source: patient          |       new: patient7         | 30.1764"                                                                                                                                      
-    ## [32] "   25.3823 |   arrival: patient1         |  activity: Release          | nurse, 1"                                                                                                                                     
-    ## [33] "   25.3823 |  resource: nurse            |   arrival: patient1         | DEPART"                                                                                                                                       
-    ## [34] "   25.3823 |      task: Post-Release     |          :                  | "                                                                                                                                             
-    ## [35] "   25.3823 |  resource: nurse            |   arrival: patient2         | SERVE"                                                                                                                                        
-    ## [36] "   25.3823 |   arrival: patient2         |  activity: Timeout          | function()"
+    ##  [1] "Parameters:"                                                                                                                                                                                                                             
+    ##  [2] "patient_inter=6; mean_n_consult_time=8; number_of_nurses=1; warm_up_period=0; data_collection_period=30; number_of_runs=1; scenario_name=NULL; cores=1; log_to_console=TRUE; log_to_file=TRUE; file_path=../outputs/logs/log_example.log"
+    ##  [3] "Log:"                                                                                                                                                                                                                                    
+    ##  [4] "         0 |    source: patient          |       new: patient0         | 1.10422"                                                                                                                                                        
+    ##  [5] "   1.10422 |   arrival: patient0         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ##  [6] "   1.10422 |  resource: nurse            |   arrival: patient0         | SERVE"                                                                                                                                                          
+    ##  [7] "   1.10422 |   arrival: patient0         |  activity: SetAttribute     | [nurse_serve_start], function(), 0, N, 0"                                                                                                                       
+    ##  [8] "   1.10422 |   arrival: patient0         |  activity: SetAttribute     | [nurse_serve_length], function(), 0, N, 0"                                                                                                                      
+    ##  [9] "   1.10422 |    source: patient          |       new: patient1         | 1.94299"                                                                                                                                                        
+    ## [10] "   1.10422 |   arrival: patient0         |  activity: Timeout          | function()"                                                                                                                                                     
+    ## [11] "   1.94299 |   arrival: patient1         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [12] "   1.94299 |  resource: nurse            |   arrival: patient1         | ENQUEUE"                                                                                                                                                        
+    ## [13] "   1.94299 |    source: patient          |       new: patient2         | 4.5594"                                                                                                                                                         
+    ## [14] "   2.26987 |   arrival: patient0         |  activity: Release          | nurse, 1"                                                                                                                                                       
+    ## [15] "   2.26987 |  resource: nurse            |   arrival: patient0         | DEPART"                                                                                                                                                         
+    ## [16] "   2.26987 |      task: Post-Release     |          :                  | "                                                                                                                                                               
+    ## [17] "   2.26987 |  resource: nurse            |   arrival: patient1         | SERVE"                                                                                                                                                          
+    ## [18] "   2.26987 |   arrival: patient1         |  activity: SetAttribute     | [nurse_serve_start], function(), 0, N, 0"                                                                                                                       
+    ## [19] "   2.26987 |   arrival: patient1         |  activity: SetAttribute     | [nurse_serve_length], function(), 0, N, 0"                                                                                                                      
+    ## [20] "   2.26987 |   arrival: patient1         |  activity: Timeout          | function()"                                                                                                                                                     
+    ## [21] "    4.5594 |   arrival: patient2         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [22] "    4.5594 |  resource: nurse            |   arrival: patient2         | ENQUEUE"                                                                                                                                                        
+    ## [23] "    4.5594 |    source: patient          |       new: patient3         | 11.9368"                                                                                                                                                        
+    ## [24] "   11.9368 |   arrival: patient3         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [25] "   11.9368 |  resource: nurse            |   arrival: patient3         | ENQUEUE"                                                                                                                                                        
+    ## [26] "   11.9368 |    source: patient          |       new: patient4         | 15.1749"                                                                                                                                                        
+    ## [27] "   15.1749 |   arrival: patient4         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [28] "   15.1749 |  resource: nurse            |   arrival: patient4         | ENQUEUE"                                                                                                                                                        
+    ## [29] "   15.1749 |    source: patient          |       new: patient5         | 20.9143"                                                                                                                                                        
+    ## [30] "   20.9143 |   arrival: patient5         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [31] "   20.9143 |  resource: nurse            |   arrival: patient5         | ENQUEUE"                                                                                                                                                        
+    ## [32] "   20.9143 |    source: patient          |       new: patient6         | 21.7966"                                                                                                                                                        
+    ## [33] "   21.7966 |   arrival: patient6         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [34] "   21.7966 |  resource: nurse            |   arrival: patient6         | ENQUEUE"                                                                                                                                                        
+    ## [35] "   21.7966 |    source: patient          |       new: patient7         | 30.141"                                                                                                                                                         
+    ## [36] "   25.4296 |   arrival: patient1         |  activity: Release          | nurse, 1"                                                                                                                                                       
+    ## [37] "   25.4296 |  resource: nurse            |   arrival: patient1         | DEPART"                                                                                                                                                         
+    ## [38] "   25.4296 |      task: Post-Release     |          :                  | "                                                                                                                                                               
+    ## [39] "   25.4296 |  resource: nurse            |   arrival: patient2         | SERVE"                                                                                                                                                          
+    ## [40] "   25.4296 |   arrival: patient2         |  activity: SetAttribute     | [nurse_serve_start], function(), 0, N, 0"                                                                                                                       
+    ## [41] "   25.4296 |   arrival: patient2         |  activity: SetAttribute     | [nurse_serve_length], function(), 0, N, 0"                                                                                                                      
+    ## [42] "   25.4296 |   arrival: patient2         |  activity: Timeout          | function()"
 
 If we import the log file, we’ll see it contains the same output:
 
@@ -109,42 +117,48 @@ log_contents <- readLines(log_file)
 print(log_contents, sep = "\n")
 ```
 
-    ##  [1] "Parameters:"                                                                                                                                                                                                           
-    ##  [2] "patient_inter=6; mean_n_consult_time=8; number_of_nurses=1; data_collection_period=30; number_of_runs=1; scenario_name=NULL; cores=1; log_to_console=TRUE; log_to_file=TRUE; file_path=../outputs/logs/log_example.log"
-    ##  [3] "Log:"                                                                                                                                                                                                                  
-    ##  [4] "         0 |    source: patient          |       new: patient0         | 1.10422"                                                                                                                                      
-    ##  [5] "   1.10422 |   arrival: patient0         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ##  [6] "   1.10422 |  resource: nurse            |   arrival: patient0         | SERVE"                                                                                                                                        
-    ##  [7] "   1.10422 |    source: patient          |       new: patient1         | 1.97846"                                                                                                                                      
-    ##  [8] "   1.10422 |   arrival: patient0         |  activity: Timeout          | function()"                                                                                                                                   
-    ##  [9] "   1.97846 |   arrival: patient1         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [10] "   1.97846 |  resource: nurse            |   arrival: patient1         | ENQUEUE"                                                                                                                                      
-    ## [11] "   1.97846 |    source: patient          |       new: patient2         | 4.59487"                                                                                                                                      
-    ## [12] "   2.22258 |   arrival: patient0         |  activity: Release          | nurse, 1"                                                                                                                                     
-    ## [13] "   2.22258 |  resource: nurse            |   arrival: patient0         | DEPART"                                                                                                                                       
-    ## [14] "   2.22258 |      task: Post-Release     |          :                  | "                                                                                                                                             
-    ## [15] "   2.22258 |  resource: nurse            |   arrival: patient1         | SERVE"                                                                                                                                        
-    ## [16] "   2.22258 |   arrival: patient1         |  activity: Timeout          | function()"                                                                                                                                   
-    ## [17] "   4.59487 |   arrival: patient2         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [18] "   4.59487 |  resource: nurse            |   arrival: patient2         | ENQUEUE"                                                                                                                                      
-    ## [19] "   4.59487 |    source: patient          |       new: patient3         | 11.9722"                                                                                                                                      
-    ## [20] "   11.9722 |   arrival: patient3         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [21] "   11.9722 |  resource: nurse            |   arrival: patient3         | ENQUEUE"                                                                                                                                      
-    ## [22] "   11.9722 |    source: patient          |       new: patient4         | 15.2103"                                                                                                                                      
-    ## [23] "   15.2103 |   arrival: patient4         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [24] "   15.2103 |  resource: nurse            |   arrival: patient4         | ENQUEUE"                                                                                                                                      
-    ## [25] "   15.2103 |    source: patient          |       new: patient5         | 20.9497"                                                                                                                                      
-    ## [26] "   20.9497 |   arrival: patient5         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [27] "   20.9497 |  resource: nurse            |   arrival: patient5         | ENQUEUE"                                                                                                                                      
-    ## [28] "   20.9497 |    source: patient          |       new: patient6         | 21.832"                                                                                                                                       
-    ## [29] "    21.832 |   arrival: patient6         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                            
-    ## [30] "    21.832 |  resource: nurse            |   arrival: patient6         | ENQUEUE"                                                                                                                                      
-    ## [31] "    21.832 |    source: patient          |       new: patient7         | 30.1764"                                                                                                                                      
-    ## [32] "   25.3823 |   arrival: patient1         |  activity: Release          | nurse, 1"                                                                                                                                     
-    ## [33] "   25.3823 |  resource: nurse            |   arrival: patient1         | DEPART"                                                                                                                                       
-    ## [34] "   25.3823 |      task: Post-Release     |          :                  | "                                                                                                                                             
-    ## [35] "   25.3823 |  resource: nurse            |   arrival: patient2         | SERVE"                                                                                                                                        
-    ## [36] "   25.3823 |   arrival: patient2         |  activity: Timeout          | function()"
+    ##  [1] "Parameters:"                                                                                                                                                                                                                             
+    ##  [2] "patient_inter=6; mean_n_consult_time=8; number_of_nurses=1; warm_up_period=0; data_collection_period=30; number_of_runs=1; scenario_name=NULL; cores=1; log_to_console=TRUE; log_to_file=TRUE; file_path=../outputs/logs/log_example.log"
+    ##  [3] "Log:"                                                                                                                                                                                                                                    
+    ##  [4] "         0 |    source: patient          |       new: patient0         | 1.10422"                                                                                                                                                        
+    ##  [5] "   1.10422 |   arrival: patient0         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ##  [6] "   1.10422 |  resource: nurse            |   arrival: patient0         | SERVE"                                                                                                                                                          
+    ##  [7] "   1.10422 |   arrival: patient0         |  activity: SetAttribute     | [nurse_serve_start], function(), 0, N, 0"                                                                                                                       
+    ##  [8] "   1.10422 |   arrival: patient0         |  activity: SetAttribute     | [nurse_serve_length], function(), 0, N, 0"                                                                                                                      
+    ##  [9] "   1.10422 |    source: patient          |       new: patient1         | 1.94299"                                                                                                                                                        
+    ## [10] "   1.10422 |   arrival: patient0         |  activity: Timeout          | function()"                                                                                                                                                     
+    ## [11] "   1.94299 |   arrival: patient1         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [12] "   1.94299 |  resource: nurse            |   arrival: patient1         | ENQUEUE"                                                                                                                                                        
+    ## [13] "   1.94299 |    source: patient          |       new: patient2         | 4.5594"                                                                                                                                                         
+    ## [14] "   2.26987 |   arrival: patient0         |  activity: Release          | nurse, 1"                                                                                                                                                       
+    ## [15] "   2.26987 |  resource: nurse            |   arrival: patient0         | DEPART"                                                                                                                                                         
+    ## [16] "   2.26987 |      task: Post-Release     |          :                  | "                                                                                                                                                               
+    ## [17] "   2.26987 |  resource: nurse            |   arrival: patient1         | SERVE"                                                                                                                                                          
+    ## [18] "   2.26987 |   arrival: patient1         |  activity: SetAttribute     | [nurse_serve_start], function(), 0, N, 0"                                                                                                                       
+    ## [19] "   2.26987 |   arrival: patient1         |  activity: SetAttribute     | [nurse_serve_length], function(), 0, N, 0"                                                                                                                      
+    ## [20] "   2.26987 |   arrival: patient1         |  activity: Timeout          | function()"                                                                                                                                                     
+    ## [21] "    4.5594 |   arrival: patient2         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [22] "    4.5594 |  resource: nurse            |   arrival: patient2         | ENQUEUE"                                                                                                                                                        
+    ## [23] "    4.5594 |    source: patient          |       new: patient3         | 11.9368"                                                                                                                                                        
+    ## [24] "   11.9368 |   arrival: patient3         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [25] "   11.9368 |  resource: nurse            |   arrival: patient3         | ENQUEUE"                                                                                                                                                        
+    ## [26] "   11.9368 |    source: patient          |       new: patient4         | 15.1749"                                                                                                                                                        
+    ## [27] "   15.1749 |   arrival: patient4         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [28] "   15.1749 |  resource: nurse            |   arrival: patient4         | ENQUEUE"                                                                                                                                                        
+    ## [29] "   15.1749 |    source: patient          |       new: patient5         | 20.9143"                                                                                                                                                        
+    ## [30] "   20.9143 |   arrival: patient5         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [31] "   20.9143 |  resource: nurse            |   arrival: patient5         | ENQUEUE"                                                                                                                                                        
+    ## [32] "   20.9143 |    source: patient          |       new: patient6         | 21.7966"                                                                                                                                                        
+    ## [33] "   21.7966 |   arrival: patient6         |  activity: Seize            | nurse, 1, 0 paths"                                                                                                                                              
+    ## [34] "   21.7966 |  resource: nurse            |   arrival: patient6         | ENQUEUE"                                                                                                                                                        
+    ## [35] "   21.7966 |    source: patient          |       new: patient7         | 30.141"                                                                                                                                                         
+    ## [36] "   25.4296 |   arrival: patient1         |  activity: Release          | nurse, 1"                                                                                                                                                       
+    ## [37] "   25.4296 |  resource: nurse            |   arrival: patient1         | DEPART"                                                                                                                                                         
+    ## [38] "   25.4296 |      task: Post-Release     |          :                  | "                                                                                                                                                               
+    ## [39] "   25.4296 |  resource: nurse            |   arrival: patient2         | SERVE"                                                                                                                                                          
+    ## [40] "   25.4296 |   arrival: patient2         |  activity: SetAttribute     | [nurse_serve_start], function(), 0, N, 0"                                                                                                                       
+    ## [41] "   25.4296 |   arrival: patient2         |  activity: SetAttribute     | [nurse_serve_length], function(), 0, N, 0"                                                                                                                      
+    ## [42] "   25.4296 |   arrival: patient2         |  activity: Timeout          | function()"
 
 ### Interpreting the simmer log messages
 
@@ -189,22 +203,22 @@ The logs will align with the recorded results of each patient.
 verbose_run[["arrivals"]]
 ```
 
-    ##       name start_time  end_time activity_time resource replication
-    ## 1 patient0   1.104219  2.222582      1.118362    nurse           0
-    ## 2 patient1   1.978460 25.382330     23.159748    nurse           0
-    ## 3 patient6  21.832022        NA            NA    nurse           0
-    ## 4 patient5  20.949746        NA            NA    nurse           0
-    ## 5 patient4  15.210341        NA            NA    nurse           0
-    ## 6 patient3  11.972244        NA            NA    nurse           0
-    ## 7 patient2   4.594872        NA            NA    nurse           0
-    ##   q_time_unseen
-    ## 1            NA
-    ## 2            NA
-    ## 3      8.167978
-    ## 4      9.050254
-    ## 5     14.789659
-    ## 6     18.027756
-    ## 7     25.405128
+    ##       name start_time  end_time activity_time resource replication serve_start
+    ## 1 patient0   1.104219  2.269873      1.165654    nurse           0    1.104219
+    ## 2 patient1   1.942991 25.429622     23.159748    nurse           0    2.269873
+    ## 3 patient6  21.796553        NA            NA    nurse           0          NA
+    ## 4 patient4  15.174872        NA            NA    nurse           0          NA
+    ## 5 patient3  11.936775        NA            NA    nurse           0          NA
+    ## 6 patient5  20.914277        NA            NA    nurse           0          NA
+    ## 7 patient2   4.559403        NA            NA    nurse           0   25.429622
+    ##   serve_length  wait_time wait_time_unseen
+    ## 1     1.165654  0.0000000               NA
+    ## 2    23.159748  0.3268822               NA
+    ## 3           NA         NA         8.203447
+    ## 4           NA         NA        14.825128
+    ## 5           NA         NA        18.063225
+    ## 6           NA         NA         9.085723
+    ## 7     6.096239 20.8702188               NA
 
 ## Customising the log messages
 

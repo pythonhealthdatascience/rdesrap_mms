@@ -8,6 +8,7 @@ parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
+  warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 100L,
   scenario_name = NULL,
@@ -22,16 +23,18 @@ parameters(
 
 \item{mean_n_consult_time}{Mean nurse consultation time in minutes.}
 
-\item{number_of_nurses}{Number of available nurses (integer).}
+\item{number_of_nurses}{Number of available nurses (int).}
+
+\item{warm_up_period}{Duration of warm-up period in minutes.}
 
 \item{data_collection_period}{Duration of data collection period in
 minutes.}
 
-\item{number_of_runs}{Number of simulation runs (integer).}
+\item{number_of_runs}{Number of simulation runs (int).}
 
 \item{scenario_name}{Label for the scenario (int|float|string).}
 
-\item{cores}{Number of cores to use for parallel execution (integer).}
+\item{cores}{Number of cores to use for parallel execution (int).}
 
 \item{log_to_console}{Whether to print activity log to console.}
 
