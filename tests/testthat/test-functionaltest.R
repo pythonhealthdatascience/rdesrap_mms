@@ -16,7 +16,7 @@ test_that("values are non-negative", {
   expect_gte(run_results[["mean_waiting_time_nurse"]], 0L)
 
   # Check that the activity time and utilisation are greater than 0
-  expect_gt(run_results[["mean_activity_time_nurse"]], 0L)
+  expect_gt(run_results[["mean_serve_time_nurse"]], 0L)
   expect_gt(run_results[["utilisation_nurse"]], 0L)
 })
 
@@ -59,7 +59,7 @@ test_that("under high demand + warm-up period, metrics are correct", {
   # Check that no patients are seen in arrivals
   expect_true(all(is.na(result[["arrivals"]][["end_time"]])))
   expect_true(all(is.na(result[["arrivals"]][["activity_time"]])))
-  expect_false(anyNA(result[["arrivals"]][["q_time_unseen"]]))
+  expect_false(anyNA(result[["arrivals"]][["wait_time_unseen"]]))
 
   # Check that the first entry for each resource is at start of the data
   # collection period
@@ -77,7 +77,7 @@ test_that("under high demand + warm-up period, metrics are correct", {
   # Check that wait time and time with nurse are NaN (as these patients should
   # not have been seen, and we're not interested in warm-up patient times)
   expect_identical(run_result[["mean_waiting_time_nurse"]], NA_real_)
-  expect_identical(run_result[["mean_activity_time_nurse"]], NA_real_)
+  expect_identical(run_result[["mean_serve_time_nurse"]], NA_real_)
 
   # Expect this to be 1, as nurses were busy for whole time (doesn't matter
   # what patient type they were busy with - in this case, warm-up patients).
@@ -171,7 +171,7 @@ patrick::with_parameters_test_that(
 
 test_that("the same seed returns the same result", {
   # Run model twice using same run number (which will set the seed)
-  param <- parameters()
+  param <- parameters(number_of_runs = 5L)
   raw1 <- model(run_number = 0L, param = param)[["run_results"]]
   raw2 <- model(run_number = 0L, param = param)[["run_results"]]
   expect_identical(raw1, raw2)
@@ -197,7 +197,7 @@ test_that("columns that are expected to be complete have no NA", {
     data_collection_period = 300L,
     patient_inter = 1L
   )
-  results <- runner(param)
+  results <- model(run_number = 1, param)
 
   # Helper function to remove columns where expect NA and then check that
   # remaining dataframe has no NA
@@ -210,7 +210,8 @@ test_that("columns that are expected to be complete have no NA", {
 
   # Check raw and processed results, excluding columns where expect NA
   check_no_na(results[["arrivals"]],
-              exclude = c("end_time", "activity_time", "q_time_unseen"))
+              exclude = c("end_time", "activity_time", "serve_start",
+                          "serve_length", "wait_time", "wait_time_unseen"))
   check_no_na(results[["resources"]])
   check_no_na(results[["run_results"]])
 })
@@ -336,4 +337,117 @@ test_that("running with warm-up leads to different results than without", {
             run_none[["count_unseen_nurse"]])
   expect_gt(run_wu[["mean_waiting_time_unseen_nurse"]],
             run_none[["mean_waiting_time_unseen_nurse"]])
+})
+
+
+test_that("log to console and file work correctly", {
+  # Set parameters and create temporary file for log
+  log_file <- tempfile(fileext = ".log")
+  param <- parameters(
+    mean_n_consult_time = 10L,
+    patient_inter = 5L,
+    number_of_nurses = 1L,
+    warm_up_period = 0L,
+    data_collection_period = 10L,
+    log_to_console = TRUE,
+    log_to_file = TRUE,
+    file_path = log_file
+  )
+
+  # Check if "Parameters:" and "Log:" are in the console output
+  expect_output(model(run_number = 1L, param = param),
+                "Parameters:.*Log:", fixed = FALSE)
+
+  # Check if "Parameters:" and "Log:" are in the file output
+  expect_true(file.exists(log_file))
+  expect_match(readLines(log_file), "Parameters:", all = FALSE)
+  expect_match(readLines(log_file), "Log:", all = FALSE)
+})
+
+
+test_that("check that calculated times are consistent with one another", {
+  param <- parameters(
+    patient_inter = 1L,
+    mean_n_consult_time = 10L,
+    number_of_nurses = 5L,
+    warm_up_period = 0L,
+    data_collection_period = 80L
+  )
+  result <- model(1L, param)
+
+
+  # Filter to patients who started service with a nurse but did not complete
+  # before the end of the simulation
+  incomplete <- result[["arrivals"]] %>%
+    filter(is.na(end_time)) %>%
+    filter(!is.na(serve_start))
+
+  # Check that they are excluded from wait time unseen
+  expect_true(all(is.na(incomplete[["wait_time_unseen"]])))
+
+  # Check that all have a wait time greater than 0
+  expect_true(all(incomplete[["wait_time"]] > 0L))
+
+  # Check that their service started after having seized the resource
+  expect_true(all(incomplete[["start_time"]] < incomplete[["serve_start"]]))
+
+  # Check that their service ended after the end of the simulation
+  expect_true(all(incomplete[["serve_start"]] + incomplete[["serve_length"]]
+                  > param[["data_collection_period"]]))
+
+
+  # Filter to patients who completed a the nurse service before the end
+  complete <- result[["arrivals"]] %>%
+    filter(!is.na(end_time))
+
+  # Check that they are excluded from wait time unseen
+  expect_true(all(is.na(complete[["wait_time_unseen"]])))
+
+  # Check that all have result in wait_time (0+)
+  expect_false(anyNA(complete[["wait_time"]]))
+
+  # For those with no wait, check that start_time and activity_time align with
+  # the calculated serve times
+  complete_no_wait <- filter(complete, wait_time == 0L)
+  expect_identical(complete_no_wait[["start_time"]],
+                   complete_no_wait[["serve_start"]])
+  expect_identical(complete_no_wait[["activity_time"]],
+                   complete_no_wait[["serve_length"]])
+
+  # For those with a wait, check that start_time < serve_start
+  complete_wait <- filter(complete, wait_time > 0L)
+  expect_true(all(complete_wait[["start_time"]] <
+                    complete_wait[["serve_start"]]))
+
+  # Filter to patients who are never seen
+  unseen <- result[["arrivals"]] %>%
+    filter(is.na(serve_start))
+
+  # Check that all have a result for wait_time_unseen
+  expect_false(anyNA(unseen[["wait_time_unseen"]]))
+})
+
+
+test_that("the count of unseen patients and mean unseen wait are consistent", {
+  # Run the model with parameters that we expect to mean some replications
+  # have no unseen patients
+  param <- parameters(
+    patient_inter = 3L,
+    mean_n_consult_time = 10L,
+    number_of_nurses = 6L,
+    data_collection_period = 80L,
+    number_of_runs = 10L,
+    cores = 1L
+  )
+  result <- runner(param)[["run_results"]]
+
+  # Check that replications with no unseen patients have no result for
+  # unseen wait time
+  no_unseen <- filter(result, count_unseen_nurse == 0)
+  expect_true(all(is.na(no_unseen[["mean_waiting_time_unseen_nurse"]])))
+
+  # Check that replications with some unseen patients have a result for
+  # unseen wait time
+  some_unseen <- filter(result, count_unseen_nurse > 0)
+  expect_true(all(some_unseen[["mean_waiting_time_unseen_nurse"]] > 0))
 })
