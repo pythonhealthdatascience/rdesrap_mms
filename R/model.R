@@ -81,8 +81,11 @@ model <- function(run_number, param, set_seed = TRUE) {
 
     # Replace replication with appropriate run number (as these functions
     # assume, if not supplied with list of envs, that there was one replication)
-    result[["arrivals"]][["replication"]] <- run_number
-    result[["resources"]][["replication"]] <- run_number
+    result[["arrivals"]] <- mutate(result[["arrivals"]],
+                                   replication = run_number)
+    result[["resources"]] <- mutate(result[["resources"]],
+                                    replication = run_number)
+
 
     # Add a column with the wait time of patients who remained unseen at the
     # end of the simulation
