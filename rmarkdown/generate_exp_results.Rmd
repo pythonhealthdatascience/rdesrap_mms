@@ -50,6 +50,7 @@ param <- parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
+  warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 10L,
   cores = 1L
@@ -58,8 +59,7 @@ param <- parameters(
 # Run the replications
 results <- runner(param)[["run_results"]]
 
-# Preview
-head(results)
+results
 
 # Save to csv
 write.csv(results, file.path(testdata_dir, "base_results.csv"),

@@ -61,6 +61,7 @@ param <- parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
+  warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 10L,
   cores = 1L
@@ -69,19 +70,22 @@ param <- parameters(
 # Run the replications
 results <- runner(param)[["run_results"]]
 
-# Preview
-head(results)
+results
 ```
 
-    ## # A tibble: 6 × 7
-    ##   replication arrivals mean_waiting_time_nurse mean_serve_time_nurse
-    ##         <int>    <int>                   <dbl>                 <dbl>
-    ## 1           1       17                  0.0361                  6.49
-    ## 2           2       19                  0.107                   9.05
-    ## 3           3       28                  0                       9.55
-    ## 4           4       15                  0                       9.41
-    ## 5           5       25                  0.323                   8.89
-    ## 6           6       17                  0                       7.55
+    ## # A tibble: 10 × 7
+    ##    replication arrivals mean_waiting_time_nurse mean_serve_time_nurse
+    ##          <int>    <int>                   <dbl>                 <dbl>
+    ##  1           1       17                  0.0361                  6.49
+    ##  2           2       19                  0.107                   9.05
+    ##  3           3       28                  0                       9.55
+    ##  4           4       15                  0                       9.41
+    ##  5           5       25                  0.323                   8.89
+    ##  6           6       17                  0                       7.55
+    ##  7           7       23                  0                       4.19
+    ##  8           8       20                  0.0147                  9.58
+    ##  9           9       18                  0                       4.77
+    ## 10          10       18                  0                       8.03
     ## # ℹ 3 more variables: utilisation_nurse <dbl>, count_unseen_nurse <int>,
     ## #   mean_waiting_time_unseen_nurse <dbl>
 
@@ -198,4 +202,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 3s
+    ## Notebook run time: 0m 2s

@@ -197,7 +197,7 @@ test_that("columns that are expected to be complete have no NA", {
     data_collection_period = 300L,
     patient_inter = 1L
   )
-  results <- model(run_number = 1, param)
+  results <- model(run_number = 1L, param)
 
   # Helper function to remove columns where expect NA and then check that
   # remaining dataframe has no NA
@@ -443,11 +443,11 @@ test_that("the count of unseen patients and mean unseen wait are consistent", {
 
   # Check that replications with no unseen patients have no result for
   # unseen wait time
-  no_unseen <- filter(result, count_unseen_nurse == 0)
+  no_unseen <- filter(result, count_unseen_nurse == 0L)
   expect_true(all(is.na(no_unseen[["mean_waiting_time_unseen_nurse"]])))
 
   # Check that replications with some unseen patients have a result for
   # unseen wait time
-  some_unseen <- filter(result, count_unseen_nurse > 0)
-  expect_true(all(some_unseen[["mean_waiting_time_unseen_nurse"]] > 0))
+  some_unseen <- filter(result, count_unseen_nurse > 0L)
+  expect_true(all(some_unseen[["mean_waiting_time_unseen_nurse"]] > 0L))
 })

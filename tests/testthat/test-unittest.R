@@ -60,6 +60,7 @@ test_that("the model produces an error if parameters are missing", {
                "Missing keys: patient_inter")
 })
 
+
 test_that("warm-up filtering works as expected", {
   mock_result <- list(
     arrivals = data.frame(name = c("p1", "p2", "p3"),

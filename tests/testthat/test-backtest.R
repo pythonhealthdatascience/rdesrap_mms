@@ -19,6 +19,11 @@ test_that("results from a new run match those previously generated", {
   # Run the replications then get the monitored arrivals and resources
   results <- as.data.frame(runner(param)[["run_results"]])
 
+  # Convert to logical (which is how it imports)
+  results[["mean_waiting_time_unseen_nurse"]] <- as.logical(
+    results[["mean_waiting_time_unseen_nurse"]]
+  )
+
   # Import the expected results
   exp_results <- read.csv(test_path("testdata", "base_results.csv"))
 
@@ -71,7 +76,7 @@ test_that("results from scenario analysis match those previously generated", {
   )
 
   scenario_results <- as.data.frame(
-    run_scenarios(scenarios, base_list = parameters())
+    run_scenarios(scenarios, base_list = param)
   )
 
   # Import the expected results
