@@ -8,6 +8,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14980863.svg)](https://doi.org/10.5281/zenodo.14980863)
 [![R-CMD-check](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml)
 [![Lint](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml)
+[![ORCID: Heather](https://img.shields.io/badge/ORCID_Amy_Heather-0000--0002--6596--3479-brightgreen)](https://orcid.org/0000-0002-6596-3479)
 <!-- badges: end -->
 
 A template for creating **discrete-event simulation (DES)** models in R within a **reproducible analytical pipeline (RAP)**.<br><br>
@@ -242,10 +243,11 @@ repo/
 
 The overall run time will vary depending on how the template model is used. A few example implementations are provided in `rmarkdown/` and the run times for these were:
 
-* `analysis.Rmd`: 42s
-* `choosing_cores.Rmd`: 1m 14s
-* `choosing_replications.Rmd`: 2s
-* `generate_exp_results.Rmd`: 0s
+* `analysis.Rmd`: 1m 56s
+* `choosing_cores.Rmd`: 2m 13s
+* `choosing_replications.Rmd`: 13s
+* `generate_exp_results.Rmd`: 1s
+* `logs.Rmd`: 0s
 
 <!--TODO: Check these are up to date -->
 

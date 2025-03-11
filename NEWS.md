@@ -1,6 +1,6 @@
 # R DES RAP Template 0.2.0
 
-Warm-up period, "unseen" metrics and tests.
+Warm-up period, "unseen" metrics and tests. Note that the alteration to record service duration altered the order of random number generation, so results now differ from before.
 
 ## New features
 
