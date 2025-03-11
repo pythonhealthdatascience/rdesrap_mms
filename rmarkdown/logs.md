@@ -1,7 +1,7 @@
 Logs
 ================
 Amy Heather
-2025-03-10
+2025-03-11
 
 - [Set up](#set-up)
 - [Simulation run with logs printed to the
@@ -167,58 +167,61 @@ print(log_contents, sep = "\n")
 The patient arrives at 1.10422 and requests a nurse. There is one
 available (`SERVE`) so the consultation begins (`Timeout`).
 
-    ##  [5] "  1.10422 |   arrival: patient0         |  activity: Seize            | nurse, 1, 0 paths"
-    ##  [6] "  1.10422 |  resource: nurse            |   arrival: patient0         | SERVE"
+    [5] "  1.10422 |   arrival: patient0         |  activity: Seize            | nurse, 1, 0 paths"
+    [6] "  1.10422 |  resource: nurse            |   arrival: patient0         | SERVE"
     ...
-    ##  [8] "  1.10422 |   arrival: patient0         |  activity: Timeout          | function()"
+    [10] " 1.10422 |   arrival: patient0         |  activity: Timeout          | function()"  
 
-The consultation finishes at 2.22258, and the patient leaves:
+The consultation finishes at 2.26987, and the patient leaves:
 
-    ## [13] "   2.22258 |   arrival: patient0         |  activity: Release          | nurse, 1"
-    ## [14] "   2.22258 |  resource: nurse            |   arrival: patient0         | DEPART"
-    ## [15] "   2.22258 |      task: Post-Release     |          :                  | "
+    [14] "   2.26987 |   arrival: patient0         |  activity: Release          | nurse, 1"
+    [15] "   2.26987 |  resource: nurse            |   arrival: patient0         | DEPART"
+    [16] "   2.26987 |      task: Post-Release     |          :                  | "
 
 #### Example B: `patient2`
 
-The patient arrives at 4.59487, requests a nurse and enters a queue
+The patient arrives at 4.5594, requests a nurse and enters a queue
 (`ENQUEUE`).
 
-    [17] "   4.59487 |   arrival: patient2         |  activity: Seize            | nurse, 1, 0 paths"
-    [18] "   4.59487 |  resource: nurse            |   arrival: patient2         | ENQUEUE"
+    [13] "   1.94299 |    source: patient          |       new: patient2         | 4.5594"             
+    ...
+    [21] "    4.5594 |   arrival: patient2         |  activity: Seize            | nurse, 1, 0 paths"
+    [22] "    4.5594 |  resource: nurse            |   arrival: patient2         | ENQUEUE"
 
 A nurse becomes available at 25.3823 (`SERVE`) so consultation begins
 (`Timeout`).
 
-    [35] "   25.3823 |  resource: nurse            |   arrival: patient2         | SERVE"
-    [36] "   25.3823 |   arrival: patient2         |  activity: Timeout          | function()"
+    [39] "   25.4296 |  resource: nurse            |   arrival: patient2         | SERVE"
+    ...                                                                                          
+    [42] "   25.4296 |   arrival: patient2         |  activity: Timeout          | function()"
 
-However, there are no further entries as the simulation ends before the
-consultation ends.
+However, there are no further entries for that patient as the simulation
+ends before the consultation ends.
 
 ### Compare with recorded results
 
 The logs will align with the recorded results of each patient.
 
 ``` r
-verbose_run[["arrivals"]]
+arrange(verbose_run[["arrivals"]], start_time)
 ```
 
     ##       name start_time  end_time activity_time resource replication serve_start
     ## 1 patient0   1.104219  2.269873      1.165654    nurse           0    1.104219
     ## 2 patient1   1.942991 25.429622     23.159748    nurse           0    2.269873
-    ## 3 patient6  21.796553        NA            NA    nurse           0          NA
-    ## 4 patient4  15.174872        NA            NA    nurse           0          NA
-    ## 5 patient3  11.936775        NA            NA    nurse           0          NA
+    ## 3 patient2   4.559403        NA            NA    nurse           0   25.429622
+    ## 4 patient3  11.936775        NA            NA    nurse           0          NA
+    ## 5 patient4  15.174872        NA            NA    nurse           0          NA
     ## 6 patient5  20.914277        NA            NA    nurse           0          NA
-    ## 7 patient2   4.559403        NA            NA    nurse           0   25.429622
+    ## 7 patient6  21.796553        NA            NA    nurse           0          NA
     ##   serve_length  wait_time wait_time_unseen
     ## 1     1.165654  0.0000000               NA
     ## 2    23.159748  0.3268822               NA
-    ## 3           NA         NA         8.203447
-    ## 4           NA         NA        14.825128
-    ## 5           NA         NA        18.063225
+    ## 3     6.096239 20.8702188               NA
+    ## 4           NA         NA        18.063225
+    ## 5           NA         NA        14.825128
     ## 6           NA         NA         9.085723
-    ## 7     6.096239 20.8702188               NA
+    ## 7           NA         NA         8.203447
 
 ## Customising the log messages
 
@@ -237,18 +240,25 @@ distinct).
 # Set the seed
 set.seed(0L)
 
+env <- simmer("simulation", verbose = FALSE)
+
 # Define the patient trajectory
 patient <- trajectory("appointment") %>%
   simmer::log_("🚶 Arrives.") %>%
   seize("nurse", 1L) %>%
-  simmer::log_("🩺 Nurse consultation begins.") %>%
-  timeout(function() {
+  set_attribute("nurse_serve_start", function() now(env)) %>%
+  set_attribute("nurse_serve_length", function() {
     rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
   }) %>%
+  simmer::log_(function() {
+    paste0("🩺 Nurse consultation begins (length: ",
+           round(get_attribute(env, "nurse_serve_length"), 5L), ")")
+  }) %>%
+  timeout(function() get_attribute(env, "nurse_serve_length")) %>%
   release("nurse", 1L) %>%
   simmer::log_("🚪 Leaves.")
 
-env <- simmer("simulation", verbose = FALSE) %>%
+env <- env %>%
   add_resource("nurse", param[["number_of_nurses"]]) %>%
   add_generator("patient", patient, function() {
     rexp(n = 1L, rate = 1L / param[["patient_inter"]])
@@ -257,17 +267,17 @@ env <- simmer("simulation", verbose = FALSE) %>%
 ```
 
     ## 1.10422: patient0: 🚶 Arrives.
-    ## 1.10422: patient0: 🩺 Nurse consultation begins.
-    ## 1.97846: patient1: 🚶 Arrives.
-    ## 2.22258: patient0: 🚪 Leaves.
-    ## 2.22258: patient1: 🩺 Nurse consultation begins.
-    ## 4.59487: patient2: 🚶 Arrives.
-    ## 11.9722: patient3: 🚶 Arrives.
-    ## 15.2103: patient4: 🚶 Arrives.
-    ## 20.9497: patient5: 🚶 Arrives.
-    ## 21.832: patient6: 🚶 Arrives.
-    ## 25.3823: patient1: 🚪 Leaves.
-    ## 25.3823: patient2: 🩺 Nurse consultation begins.
+    ## 1.10422: patient0: 🩺 Nurse consultation begins (length: 1.16565)
+    ## 1.94299: patient1: 🚶 Arrives.
+    ## 2.26987: patient0: 🚪 Leaves.
+    ## 2.26987: patient1: 🩺 Nurse consultation begins (length: 23.15975)
+    ## 4.5594: patient2: 🚶 Arrives.
+    ## 11.9368: patient3: 🚶 Arrives.
+    ## 15.1749: patient4: 🚶 Arrives.
+    ## 20.9143: patient5: 🚶 Arrives.
+    ## 21.7966: patient6: 🚶 Arrives.
+    ## 25.4296: patient1: 🚪 Leaves.
+    ## 25.4296: patient2: 🩺 Nurse consultation begins (length: 6.09624)
 
 ## Calculate run time
 
