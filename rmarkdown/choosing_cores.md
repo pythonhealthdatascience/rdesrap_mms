@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-03-10
+2025-03-11
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -32,18 +32,18 @@ devtools::install()
 ```
 
     ## 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
+    ## ── R CMD build ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts (339ms)
+    ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
     ##    Removed empty directory ‘simulation/tests/testthat/_snaps’
     ##    Omitted ‘LazyData’ from DESCRIPTION
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/Rtmp1uX8wq/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/Rtmp1vPIq0/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -127,7 +127,7 @@ run_cores <- function(n_cores, file, model_param = NULL) {
       param <- parameters()
     }
     param[["cores"]] <- i
-    
+
     invisible(runner(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
@@ -217,4 +217,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 4m 10s
+    ## Notebook run time: 2m 13s

@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-10
+2025-03-11
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -103,11 +103,12 @@ write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 #'
 #' Generate figure, show it, and then save under specified file name.
 #'
+#' @param run_results The dataframe from the model results `run_results`.
 #' @param column Name of column to plot.
 #' @param x_label X axis label.
 #' @param file Filename to save figure to.
 
-plot_results_spread <- function(column, x_label, file) {
+plot_results_spread <- function(run_results, column, x_label, file) {
 
   # Generate plot
   p <- ggplot(run_results, aes(.data[[column]])) +
@@ -126,7 +127,8 @@ plot_results_spread <- function(column, x_label, file) {
 ```
 
 ``` r
-plot_results_spread(column = "arrivals",
+plot_results_spread(run_results = run_results,
+                    column = "arrivals",
                     x_label = "Arrivals",
                     file = "spread_arrivals.png")
 ```
@@ -134,7 +136,8 @@ plot_results_spread(column = "arrivals",
 ![](../outputs/spread_arrivals.png)<!-- -->
 
 ``` r
-plot_results_spread(column = "mean_waiting_time_nurse",
+plot_results_spread(run_results = run_results,
+                    column = "mean_waiting_time_nurse",
                     x_label = "Mean wait time for nurse",
                     file = "spread_nurse_wait.png")
 ```
@@ -142,7 +145,8 @@ plot_results_spread(column = "mean_waiting_time_nurse",
 ![](../outputs/spread_nurse_wait.png)<!-- -->
 
 ``` r
-plot_results_spread(column = "mean_serve_time_nurse",
+plot_results_spread(run_results = run_results,
+                    column = "mean_serve_time_nurse",
                     x_label = "Mean length of nurse consultation",
                     file = "spread_nurse_time.png")
 ```
@@ -150,7 +154,8 @@ plot_results_spread(column = "mean_serve_time_nurse",
 ![](../outputs/spread_nurse_time.png)<!-- -->
 
 ``` r
-plot_results_spread(column = "utilisation_nurse",
+plot_results_spread(run_results = run_results,
+                    column = "utilisation_nurse",
                     x_label = "Mean nurse utilisation",
                     file = "spread_nurse_util.png")
 ```
@@ -364,7 +369,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Mar 10 15:35:34 2025
+    ## % Tue Mar 11 09:43:36 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -620,7 +625,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Mar 10 15:36:56 2025
+    ## % Tue Mar 11 09:44:14 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -667,19 +672,19 @@ tail(nan_experiment[["arrivals"]])
 ```
 
     ##             name start_time end_time activity_time resource replication
-    ## 16136  patient73   36.35539       NA            NA    nurse         100
-    ## 16137 patient152   73.69369       NA            NA    nurse         100
-    ## 16138 patient145   69.38484       NA            NA    nurse         100
-    ## 16139  patient76   38.71731       NA            NA    nurse         100
-    ## 16140  patient97   48.44855       NA            NA    nurse         100
+    ## 16136 patient139   66.41747       NA            NA    nurse         100
+    ## 16137  patient74   37.63360       NA            NA    nurse         100
+    ## 16138  patient64   33.83536       NA            NA    nurse         100
+    ## 16139 patient140   66.66795       NA            NA    nurse         100
+    ## 16140  patient75   38.54559       NA            NA    nurse         100
     ## 16141  patient77   38.74436       NA            NA    nurse         100
     ##       serve_start serve_length wait_time wait_time_unseen
-    ## 16136          NA           NA        NA        43.644608
-    ## 16137          NA           NA        NA         6.306312
-    ## 16138          NA           NA        NA        10.615160
-    ## 16139          NA           NA        NA        41.282691
-    ## 16140          NA           NA        NA        31.551447
-    ## 16141          NA           NA        NA        41.255638
+    ## 16136          NA           NA        NA         13.58253
+    ## 16137          NA           NA        NA         42.36640
+    ## 16138          NA           NA        NA         46.16464
+    ## 16139          NA           NA        NA         13.33205
+    ## 16140          NA           NA        NA         41.45441
+    ## 16141          NA           NA        NA         41.25564
 
 ``` r
 nan_experiment[["run_results"]][c(
@@ -704,6 +709,7 @@ nan_experiment[["run_results"]][c(
 
 ``` r
 plot_results_spread(
+  run_results = nan_experiment[["run_results"]],
   column = "count_unseen_nurse",
   x_label = "Patients still unseen by nurse at end of simulation (n)",
   file = "spread_nan_count_unseen.png"
@@ -714,6 +720,7 @@ plot_results_spread(
 
 ``` r
 plot_results_spread(
+  run_results = nan_experiment[["run_results"]],
   column = "mean_waiting_time_nurse",
   x_label = "Mean nurse wait time by patients unseen at simulation end (min)",
   file = "spread_nan_wait_unseen.png"
@@ -735,4 +742,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 4m 21s
+    ## Notebook run time: 1m 56s
