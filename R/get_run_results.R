@@ -69,8 +69,7 @@ calc_arrivals <- function(arrivals) {
 calc_mean_wait <- function(arrivals, resources) {
 
   # Create subset of data that removes patients who were still waiting
-  # TODO: CORRECT FROM END_TIME TO WAIT_TIME
-  complete_arrivals <- drop_na(arrivals, any_of("end_time"))
+  complete_arrivals <- drop_na(arrivals, any_of("wait_time"))
 
   # If there are any patients who were seen, calculate mean wait times...
   if (nrow(complete_arrivals) > 0L) {
@@ -81,7 +80,6 @@ calc_mean_wait <- function(arrivals, resources) {
                   values_from = "mean_waiting_time",
                   names_glue = "mean_waiting_time_{resource}")
   } else {
-    # TODO: WILL THIS BREAK IF SOME RESOURCES COMPLETE AND OTHERS NOT?
     # But if no patients are seen, create same tibble with values set to NA
     unique_resources <- unique(resources["resource"])
     tibble::tibble(
@@ -106,8 +104,7 @@ calc_mean_wait <- function(arrivals, resources) {
 calc_mean_serve_length <- function(arrivals, resources) {
 
   # Create subset of data that removes patients who were still waiting
-  # TODO: CORRECT FROM END_TIME TO WAIT_TIME
-  complete_arrivals <- drop_na(arrivals, any_of("end_time"))
+  complete_arrivals <- drop_na(arrivals, any_of("wait_time"))
 
   # If there are any patients who were seen, calculate mean service length...
   if (nrow(complete_arrivals) > 0L) {
@@ -118,7 +115,6 @@ calc_mean_serve_length <- function(arrivals, resources) {
                   values_from = "mean_serve_time",
                   names_glue = "mean_serve_time_{resource}")
   } else {
-    # TODO: WILL THIS BREAK IF SOME RESOURCES COMPLETE AND OTHERS NOT?
     # But if no patients are seen, create same tibble with values set to NA
     unique_resources <- unique(resources["resource"])
     tibble::tibble(
