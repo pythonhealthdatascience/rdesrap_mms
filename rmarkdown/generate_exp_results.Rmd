@@ -57,12 +57,24 @@ param <- parameters(
 )
 
 # Run the replications
-results <- runner(param)[["run_results"]]
+results <- runner(param)
 
-results
+# Arrivals
+results[["arrivals"]]
+write.csv(results[["arrivals"]],
+          file.path(testdata_dir, "base_arrivals.csv"),
+          row.names = FALSE)
 
-# Save to csv
-write.csv(results, file.path(testdata_dir, "base_results.csv"),
+# Resources
+results[["resources"]]
+write.csv(results[["resources"]],
+          file.path(testdata_dir, "base_resources.csv"),
+          row.names = FALSE)
+
+# Run results
+results[["run_results"]]
+write.csv(results[["run_results"]],
+          file.path(testdata_dir, "base_run_results.csv"),
           row.names = FALSE)
 ```
 
