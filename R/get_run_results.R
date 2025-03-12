@@ -1,4 +1,4 @@
-#' Process the raw monitored arrivals and resources.
+#' Get average results for the provided single run.
 #'
 #' @param results Named list with `arrivals` containing output from
 #' `get_mon_arrivals()` and `resources` containing output from
@@ -6,14 +6,14 @@
 #' @param run_number Integer representing index of current simulation run.
 #'
 #' @importFrom dplyr group_by summarise n_distinct mutate lead full_join
-#' @importFrom dplyr bind_cols
+#' @importFrom dplyr bind_cols across
 #' @importFrom purrr reduce
-#' @importFrom rlang .data
 #' @importFrom simmer get_mon_resources get_mon_arrivals now
-#' @importFrom stats setNames
 #' @importFrom tidyr pivot_wider drop_na
-#' @importFrom tidyselect any_of
 #' @importFrom tibble tibble
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of any_of
+#' @importFrom stats setNames
 #'
 #' @return Tibble with processed results from replication.
 #' @export
@@ -46,12 +46,20 @@ get_run_results <- function(results, run_number) {
 #' Calculate the number of arrivals
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with column containing total number of arrivals.
+#' @export
 
-calc_arrivals <- function(arrivals) {
+calc_arrivals <- function(arrivals, groups = NULL) {
+  # If provided, group the dataset
+  if (!is.null(groups)) {
+    arrivals <- group_by(arrivals, across(all_of(groups)))
+  }
+  # Calculate number of arrivals
   arrivals %>%
-    summarise(arrivals = n_distinct(.data[["name"]]))
+    summarise(arrivals = n_distinct(.data[["name"]])) %>%
+    ungroup()
 }
 
 
@@ -59,26 +67,30 @@ calc_arrivals <- function(arrivals) {
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param resources Dataframe with times patients use or queue for resources.
-#'
-#' @importFrom dplyr group_by summarise
-#' @importFrom tibble tibble
-#' @importFrom tidyr pivot_wider drop_na
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with columns containing result for each resource.
+#' @export
 
-calc_mean_wait <- function(arrivals, resources) {
+calc_mean_wait <- function(arrivals, resources, groups = NULL) {
 
   # Create subset of data that removes patients who were still waiting
   complete_arrivals <- drop_na(arrivals, any_of("wait_time"))
 
   # If there are any patients who were seen, calculate mean wait times...
   if (nrow(complete_arrivals) > 0L) {
+
+    # Create list of grouping variables (always "resource", but can add others)
+    group_vars <- c("resource", groups)
+
+    # Calculate mean wait time for each resource
     complete_arrivals %>%
-      group_by(.data[["resource"]]) %>%
+      group_by(across(all_of(group_vars))) %>%
       summarise(mean_waiting_time = mean(.data[["wait_time"]])) %>%
       pivot_wider(names_from = "resource",
                   values_from = "mean_waiting_time",
-                  names_glue = "mean_waiting_time_{resource}")
+                  names_glue = "mean_waiting_time_{resource}") %>%
+      ungroup()
   } else {
     # But if no patients are seen, create same tibble with values set to NA
     unique_resources <- unique(resources["resource"])
@@ -94,26 +106,30 @@ calc_mean_wait <- function(arrivals, resources) {
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param resources Dataframe with times patients use or queue for resources.
-#'
-#' @importFrom dplyr group_by summarise
-#' @importFrom tibble tibble
-#' @importFrom tidyr pivot_wider drop_na
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with columns containing result for each resource.
+#' @export
 
-calc_mean_serve_length <- function(arrivals, resources) {
+calc_mean_serve_length <- function(arrivals, resources, groups = NULL) {
 
   # Create subset of data that removes patients who were still waiting
   complete_arrivals <- drop_na(arrivals, any_of("wait_time"))
 
   # If there are any patients who were seen, calculate mean service length...
   if (nrow(complete_arrivals) > 0L) {
+
+    # Create list of grouping variables (always "resource", but can add others)
+    group_vars <- c("resource", groups)
+
+    # Calculate mean serve time for each resource
     complete_arrivals %>%
-      group_by(.data[["resource"]]) %>%
+      group_by(across(all_of(group_vars))) %>%
       summarise(mean_serve_time = mean(.data[["serve_length"]])) %>%
       pivot_wider(names_from = "resource",
                   values_from = "mean_serve_time",
-                  names_glue = "mean_serve_time_{resource}")
+                  names_glue = "mean_serve_time_{resource}") %>%
+      ungroup()
   } else {
     # But if no patients are seen, create same tibble with values set to NA
     unique_resources <- unique(resources["resource"])
@@ -137,12 +153,17 @@ calc_mean_serve_length <- function(arrivals, resources) {
 #' https://github.com/r-simmer/simmer.plot.).
 #'
 #' @param resources Dataframe with times patients use or queue for resources.
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with columns containing result for each resource.
+#' @export
 
-calc_utilisation <- function(resources) {
+calc_utilisation <- function(resources, groups = NULL) {
+  # Create list of grouping variables (always "resource", but can add others)
+  group_vars <- c("resource", groups)
+  # Calculate utilisation
   resources %>%
-    group_by(.data[["resource"]]) %>%
+    group_by(across(all_of(group_vars))) %>%
     mutate(dt = lead(.data[["time"]]) - .data[["time"]],
            capacity = pmax(.data[["capacity"]], .data[["server"]]),
            dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L),
@@ -154,23 +175,30 @@ calc_utilisation <- function(resources) {
     ) %>%
     pivot_wider(names_from = "resource",
                 values_from = "utilisation",
-                names_glue = "utilisation_{resource}")
+                names_glue = "utilisation_{resource}") %>%
+    ungroup()
 }
 
 
 #' Calculate the number of patients still waiting for resource at end
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with columns containing result for each resource.
+#' @export
 
-calc_unseen_n <- function(arrivals) {
+calc_unseen_n <- function(arrivals, groups = NULL) {
+  # Create list of grouping variables (always "resource", but can add others)
+  group_vars <- c("resource", groups)
+  # Calculate number of patients waiting
   arrivals %>%
-    group_by(.data[["resource"]]) %>%
+    group_by(across(all_of(group_vars))) %>%
     summarise(value = sum(!is.na(.data[["wait_time_unseen"]]))) %>%
     pivot_wider(names_from = "resource",
                 values_from = "value",
-                names_glue = "count_unseen_{resource}")
+                names_glue = "count_unseen_{resource}") %>%
+    ungroup()
 }
 
 
@@ -178,14 +206,20 @@ calc_unseen_n <- function(arrivals) {
 #' resource at the end of the simulation
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with columns containing result for each resource.
+#' @export
 
-calc_unseen_mean <- function(arrivals) {
+calc_unseen_mean <- function(arrivals, groups = NULL) {
+  # Create list of grouping variables (always "resource", but can add others)
+  group_vars <- c("resource", groups)
+  # Calculate wait time of unseen patients
   arrivals %>%
-    group_by(.data[["resource"]]) %>%
+    group_by(across(all_of(group_vars))) %>%
     summarise(value = mean(.data[["wait_time_unseen"]], na.rm = TRUE)) %>%
     pivot_wider(names_from = "resource",
                 values_from = "value",
-                names_glue = "mean_waiting_time_unseen_{resource}")
+                names_glue = "mean_waiting_time_unseen_{resource}") %>%
+    ungroup()
 }

@@ -4,10 +4,12 @@
 \alias{calc_utilisation}
 \title{Calculate the resource utilisation}
 \usage{
-calc_utilisation(resources)
+calc_utilisation(resources, groups = NULL)
 }
 \arguments{
 \item{resources}{Dataframe with times patients use or queue for resources.}
+
+\item{groups}{Optional list of columns to group by for the calculation.}
 }
 \value{
 Tibble with columns containing result for each resource.

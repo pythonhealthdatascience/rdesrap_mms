@@ -4,10 +4,12 @@
 \alias{calc_unseen_n}
 \title{Calculate the number of patients still waiting for resource at end}
 \usage{
-calc_unseen_n(arrivals)
+calc_unseen_n(arrivals, groups = NULL)
 }
 \arguments{
 \item{arrivals}{Dataframe with times for each patient with each resource.}
+
+\item{groups}{Optional list of columns to group by for the calculation.}
 }
 \value{
 Tibble with columns containing result for each resource.

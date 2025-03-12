@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_run_results.R
 \name{get_run_results}
 \alias{get_run_results}
-\title{Process the raw monitored arrivals and resources.}
+\title{Get average results for the provided single run.}
 \usage{
 get_run_results(results, run_number)
 }
@@ -17,5 +17,5 @@ get_run_results(results, run_number)
 Tibble with processed results from replication.
 }
 \description{
-Process the raw monitored arrivals and resources.
+Get average results for the provided single run.
 }

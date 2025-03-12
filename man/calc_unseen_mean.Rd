@@ -5,10 +5,12 @@
 \title{Calculate the mean wait time of patients who are still waiting for a
 resource at the end of the simulation}
 \usage{
-calc_unseen_mean(arrivals)
+calc_unseen_mean(arrivals, groups = NULL)
 }
 \arguments{
 \item{arrivals}{Dataframe with times for each patient with each resource.}
+
+\item{groups}{Optional list of columns to group by for the calculation.}
 }
 \value{
 Tibble with columns containing result for each resource.

@@ -4,10 +4,12 @@
 \alias{calc_arrivals}
 \title{Calculate the number of arrivals}
 \usage{
-calc_arrivals(arrivals)
+calc_arrivals(arrivals, groups = NULL)
 }
 \arguments{
 \item{arrivals}{Dataframe with times for each patient with each resource.}
+
+\item{groups}{Optional list of columns to group by for the calculation.}
 }
 \value{
 Tibble with column containing total number of arrivals.
