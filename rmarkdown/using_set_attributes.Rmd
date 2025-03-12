@@ -18,7 +18,9 @@ This is important, as otherwise the result returned by `get_mon_arrivals()` only
 This document explains how the first attribute has no change on the model results, but how the second attribute does impact them. This isn't bad! It is just important if you are transitioning between not recording this attribute and to then recording this attribute, that it will have altered the order of random number generation, so the exact results now differ from before.
 
 ```{r}
+# nolint start: undesirable_function_linter.
 library(simmer)
+# nolint end
 ```
 
 ## Original model
@@ -32,8 +34,8 @@ param <- list(
   data_collection_period = 20L
 )
 
-run_number = 0L
-verbose = TRUE
+run_number <- 0L
+verbose <- TRUE
 ```
 
 ```{r}

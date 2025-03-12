@@ -1,7 +1,7 @@
 Using `set_attributes()`
 ================
 Amy Heather
-2025-03-11
+2025-03-12
 
 - [Original model](#original-model)
 - [Model with record of allocation to a nurse
@@ -30,7 +30,9 @@ altered the order of random number generation, so the exact results now
 differ from before.
 
 ``` r
+# nolint start: undesirable_function_linter.
 library(simmer)
+# nolint end
 ```
 
 ## Original model
@@ -44,8 +46,8 @@ param <- list(
   data_collection_period = 20L
 )
 
-run_number = 0L
-verbose = TRUE
+run_number <- 0L
+verbose <- TRUE
 ```
 
 ``` r
