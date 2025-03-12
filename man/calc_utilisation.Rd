@@ -19,7 +19,7 @@ Utilisation is given by the total effective usage time (`in_use`) over
 the total time intervals considered (`dt`).
 }
 \details{
-Credit: The utilisation calculation is taken from the
+Credit: The utilisation calculation is adapted from the
 `plot.resources.utilization()` function in simmer.plot 0.1.18, which is
 shared under an MIT Licence (Ucar I, Smeets B (2023). simmer.plot: Plotting
 Methods for 'simmer'. https://r-simmer.org

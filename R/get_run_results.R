@@ -146,7 +146,7 @@ calc_mean_serve_length <- function(arrivals, resources, groups = NULL) {
 #' Utilisation is given by the total effective usage time (`in_use`) over
 #' the total time intervals considered (`dt`).
 #'
-#' Credit: The utilisation calculation is taken from the
+#' Credit: The utilisation calculation is adapted from the
 #' `plot.resources.utilization()` function in simmer.plot 0.1.18, which is
 #' shared under an MIT Licence (Ucar I, Smeets B (2023). simmer.plot: Plotting
 #' Methods for 'simmer'. https://r-simmer.org
@@ -164,14 +164,25 @@ calc_utilisation <- function(resources, groups = NULL) {
   # Calculate utilisation
   resources %>%
     group_by(across(all_of(group_vars))) %>%
-    mutate(dt = lead(.data[["time"]]) - .data[["time"]],
-           capacity = pmax(.data[["capacity"]], .data[["server"]]),
-           dt = ifelse(.data[["capacity"]] > 0L, .data[["dt"]], 0L),
-           in_use = (.data[["dt"]] * .data[["server"]] /
-                       .data[["capacity"]])) %>%
+    mutate(
+      # Time between this row and the next
+      interval_duration = lead(.data[["time"]]) - .data[["time"]],
+      # Ensures effective capacity is never less than number of servers in
+      # use (in case of situations where servers may exceed "capacity").
+      effective_capacity = pmax(.data[["capacity"]], .data[["server"]]),
+      # Divide number of servers in use by effective capacity
+      # Set to NA if effective capacity is 0
+      utilisation = ifelse(.data[["effective_capacity"]] > 0L,
+                           .data[["server"]] / .data[["effective_capacity"]],
+                           NA_real_)
+    ) %>%
     summarise(
-      utilisation = sum(.data[["in_use"]], na.rm = TRUE) /
-        sum(.data[["dt"]], na.rm = TRUE)
+      # Multiply each utilisation by its own unique duration. The total of
+      # those is then divided by the total duration of all intervals combined.
+      # Hence, we are calculated a time-weighted average utilisation.
+      utilisation = (sum(.data[["utilisation"]] * .data[["interval_duration"]],
+                         na.rm = TRUE) /
+                       sum(.data[["interval_duration"]], na.rm = TRUE))
     ) %>%
     pivot_wider(names_from = "resource",
                 values_from = "utilisation",
