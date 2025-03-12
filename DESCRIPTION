@@ -27,7 +27,8 @@ Imports:
     future,
     future.apply,
     ggplot2,
-    tibble
+    tibble,
+    gridExtra
 Suggests:
     testthat (>= 3.0.0),
     patrick,

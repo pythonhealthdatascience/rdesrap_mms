@@ -65,6 +65,19 @@ head(run_results)
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
+Can calculate overall results from across the replications as well...
+
+```{r}
+run_results %>%
+  dplyr::select(!c(replication, arrivals)) %>%
+  gather() %>%
+  group_by(key) %>%
+  reframe(mean = mean(value, na.rm = TRUE),
+          std_dev = stats::sd(value, na.rm = TRUE),
+          ci_lower = stats::t.test(value)[["conf.int"]][[1]],
+          ci_upper = stats::t.test(value)[["conf.int"]][[2]])
+```
+
 ## View spread of results across replication
 
 ```{r}
