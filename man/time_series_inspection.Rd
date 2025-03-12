@@ -4,10 +4,12 @@
 \alias{time_series_inspection}
 \title{Time series inspection method for determining length of warm-up.}
 \usage{
-time_series_inspection(df_list, file_path, warm_up = NULL)
+time_series_inspection(result, file_path, warm_up = NULL)
 }
 \arguments{
-\item{df_list}{List of dataframes, as output by `get_interval_means()`.}
+\item{result}{Named list with `arrivals` containing output from
+`get_mon_arrivals()` and `resources` containing output from
+`get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
 
 \item{file_path}{Path to save figure to.}
 
@@ -15,6 +17,5 @@ time_series_inspection(df_list, file_path, warm_up = NULL)
 chosen warm-up period. Defaults to NULL, which will not plot a line.}
 }
 \description{
-For each metric in the provided dataframes (from `get_interval_means()`),
-find the cumulative mean results and plot over time (overall and per run).
+Find the cumulative mean results and plot over time (overall and per run).
 }

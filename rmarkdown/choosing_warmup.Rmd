@@ -10,7 +10,7 @@ output:
 
 A suitable length for the warm-up period can be determined using the **time series inspection approach**. This involves looking at performance measures over time to identify when the system is exhibiting **steady state behaviour** (even though the system will never truly reach a "steady state").
 
-If we simply plot the mean result at regular intervals, this would vary too much. Therefore, we plot the **cumulative mean** of the performance measure, and look for the point at which this **smoothes out and stabilises**. This indicates the point for the warm-up period to end.
+If we simply plot the mean result over time, this would vary too much. Therefore, we plot the **cumulative mean** of the performance measure, and look for the point at which this **smoothes out and stabilises**. This indicates the point for the warm-up period to end.
 
 This should be assessed when running the model using the base case parameters. If these change, you should reassess the appropriate warm-up period.
 
@@ -72,20 +72,17 @@ param <- parameters(
 result <- runner(param)
 ```
 
-For each replication, find the average result per interval in the simulation.
+Use the `time_series_inspection` function, which will find the cumulative mean over time (for each replication, and overall) and plot it, for three metrics:
 
-```{r}
-interval_audit <- get_interval_means(result, interval_size = 50L)
-interval_audit
-```
-
-Run function which calculates and plots cumulative results for each metric. Run on all except unseen counts (as those are just 0 / NA for this model).
+* Mean wait time
+* Mean service length
+* Utilisation
 
 ```{r, fig.show='hide'}
 path <- file.path(output_dir, "choose_param_time_series.png")
 
 time_series_inspection(
-  df_list = interval_audit[1L:4L],
+  result = result,
   file_path = path,
   warm_up = 10000L
 )

@@ -1,89 +1,82 @@
-#' Find the mean results per interval in each replication in the results.
-#'
-#' @param result Named list with `arrivals` and `resources` containing results
-#' from the run of a simulation for the desired number of replications.
-#' @param interval_size Size of batch intervals.
-#'
-#' @return List containing results from each interval and replication for
-#' each metric.
-#' @export
-
-get_interval_means <- function(result, interval_size) {
-
-  # Label intervals based on the start_time (used for count of arrivals)
-  arrivals_arrive <- result[["arrivals"]] %>%
-    mutate(interval = (ceiling(.data[["start_time"]] / interval_size) *
-                         interval_size))
-
-  # Label interval based on serve_time (used for all other metrics)
-  arrivals_serve <- result[["arrivals"]] %>%
-    mutate(interval = (ceiling(.data[["serve_start"]] / interval_size) *
-                         interval_size))
-  resources <- result[["resources"]] %>%
-    mutate(interval = (ceiling(.data[["time"]] / interval_size) *
-                         interval_size))
-
-  # Calculate metrics
-  group_vars <- c("interval", "replication")
-  list(
-    calc_arrivals(arrivals_arrive, group_vars),
-    calc_mean_wait(arrivals_serve, resources, group_vars),
-    calc_mean_serve_length(arrivals_serve, resources, group_vars),
-    calc_utilisation(resources, group_vars),
-    calc_unseen_n(arrivals_serve, group_vars),
-    calc_unseen_mean(arrivals_serve, group_vars)
-  )
-}
-
-
 #' Time series inspection method for determining length of warm-up.
 #'
-#' For each metric in the provided dataframes (from `get_interval_means()`),
-#' find the cumulative mean results and plot over time (overall and per run).
+#' Find the cumulative mean results and plot over time (overall and per run).
 #'
-#' @param df_list List of dataframes, as output by `get_interval_means()`.
+#' @param result Named list with `arrivals` containing output from
+#' `get_mon_arrivals()` and `resources` containing output from
+#' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
 #' @param file_path Path to save figure to.
 #' @param warm_up Location on X axis to plot vertical red line indicating the
 #' chosen warm-up period. Defaults to NULL, which will not plot a line.
 #'
+#' @importFrom dplyr rename
 #' @importFrom ggplot2 ggplot geom_line aes_string labs theme_minimal geom_vline
 #' @importFrom ggplot2 annotate ggsave
 #' @importFrom gridExtra marrangeGrob
 #'
 #' @export
 
-time_series_inspection <- function(df_list, file_path, warm_up = NULL) {
+time_series_inspection <- function(result, file_path, warm_up = NULL) {
 
   plot_list <- list()
 
+  # Collect dataframes with metrics at each timepoint (relabelled "time" for
+  # all). If you have multiple resources, would need to run time series
+  # inspection on each resource. As this is not the case here, have just
+  # selected replication, time and the metric.
+  metrics <- list()
+
+  # Wait time of each patient at each time point
+  metrics[[1L]] <- result[["arrivals"]] %>%
+    rename(time = .data[["serve_start"]]) %>%
+    select(.data[["replication"]],
+           .data[["time"]],
+           .data[["wait_time"]])
+
+  # Service length of each patient at each time point
+  metrics[[2L]] <- result[["arrivals"]] %>%
+    rename(time = .data[["serve_start"]]) %>%
+    select(.data[["replication"]],
+           .data[["time"]],
+           .data[["serve_length"]])
+
+  # Utilisation at each time point
+  metrics[[3L]] <- calc_utilisation(result[["resources"]],
+                                    groups = c("resource", "replication"),
+                                    summarise = FALSE) %>%
+    select(.data[["replication"]],
+           .data[["time"]],
+           .data[["utilisation"]])
+
   # Loop through all the dataframes in df_list
-  for (i in seq_along(df_list)) {
+  for (i in seq_along(metrics)) {
 
     # Get name of the metric
-    metric <- setdiff(names(df_list[[i]]), c("interval", "replication"))
+    metric <- setdiff(names(metrics[[i]]), c("time", "replication"))
 
     # Calculate cumulative mean for the current metric
-    cumulative <- df_list[[i]] %>%
-      arrange(.data[["replication"]], .data[["interval"]]) %>%
+    cumulative <- metrics[[i]] %>%
+      arrange(.data[["replication"]], .data[["time"]]) %>%
       group_by(.data[["replication"]]) %>%
       mutate(cumulative_mean = cumsum(.data[[metric]]) /
                seq_along(.data[[metric]])) %>%
       ungroup()
 
-    # Calculate overall cumulative mean at each interval, across replications
-    overall_mean <- cumulative %>%
-      arrange(.data[["interval"]]) %>%
-      group_by(.data[["interval"]]) %>%
-      summarise(cumulative_mean = mean(.data[["cumulative_mean"]]))
+    # Repeat calculation, but including all replications in one
+    overall_cumulative <- metrics[[i]] %>%
+      arrange(.data[["time"]]) %>%
+      mutate(cumulative_mean = cumsum(.data[[metric]]) /
+               seq_along(.data[[metric]])) %>%
+      ungroup()
 
     # Create plot
     p <- ggplot() +
       geom_line(data = cumulative,
-                aes_string(x = "interval", y = "cumulative_mean",
+                aes_string(x = "time", y = "cumulative_mean",
                            group = "replication"),
                 color = "lightblue", alpha = 0.8) +
-      geom_line(data = overall_mean,
-                aes_string(x = "interval", y = "cumulative_mean"),
+      geom_line(data = overall_cumulative,
+                aes_string(x = "time", y = "cumulative_mean"),
                 color = "darkblue") +
       labs(x = "Run time (minutes)", y = paste("Cumulative mean", metric)) +
       theme_minimal()
@@ -101,8 +94,9 @@ time_series_inspection <- function(df_list, file_path, warm_up = NULL) {
   }
 
   # Arrange plots in a single column
-  combined_plot <- marrangeGrob(plot_list, ncol = 1L, nrow = length(df_list))
+  combined_plot <- marrangeGrob(plot_list, ncol = 1L, nrow = length(plot_list),
+                                top = NULL)
 
   # Save to file
-  ggsave(file_path, combined_plot, width = 8L, height = 4L * length(df_list))
+  ggsave(file_path, combined_plot, width = 8L, height = 4L * length(plot_list))
 }
