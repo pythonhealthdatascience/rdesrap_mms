@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-11
+2025-03-12
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -95,6 +95,28 @@ head(run_results)
 ``` r
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
+
+Can calculate overall results from across the replications as well…
+
+``` r
+run_results %>%
+  dplyr::select(!c(replication, arrivals)) %>%
+  gather() %>%
+  group_by(key) %>%
+  reframe(mean = mean(value, na.rm = TRUE),
+          std_dev = stats::sd(value, na.rm = TRUE),
+          ci_lower = stats::t.test(value)[["conf.int"]][[1]],
+          ci_upper = stats::t.test(value)[["conf.int"]][[2]])
+```
+
+    ## # A tibble: 5 × 5
+    ##   key                             mean std_dev ci_lower ci_upper
+    ##   <chr>                          <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 count_unseen_nurse             0.17    0.652   0.0406    0.299
+    ## 2 mean_serve_time_nurse          9.44    2.20    9.01      9.88 
+    ## 3 mean_waiting_time_nurse        0.252   0.679   0.117     0.386
+    ## 4 mean_waiting_time_unseen_nurse 3.07    3.03    0.542     5.61 
+    ## 5 utilisation_nurse              0.459   0.154   0.429     0.490
 
 ## View spread of results across replication
 
@@ -369,7 +391,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar 11 15:56:23 2025
+    ## % Wed Mar 12 16:11:33 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -625,7 +647,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar 11 15:56:58 2025
+    ## % Wed Mar 12 16:12:14 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -672,19 +694,19 @@ tail(nan_experiment[["arrivals"]])
 ```
 
     ##             name start_time end_time activity_time resource replication
-    ## 16136  patient66   34.61088       NA            NA    nurse         100
-    ## 16137 patient135   64.81834       NA            NA    nurse         100
-    ## 16138  patient95   47.54917       NA            NA    nurse         100
-    ## 16139  patient69   35.83208       NA            NA    nurse         100
-    ## 16140  patient74   37.63360       NA            NA    nurse         100
-    ## 16141  patient75   38.54559       NA            NA    nurse         100
+    ## 16136 patient131   64.07388       NA            NA    nurse         100
+    ## 16137  patient63   32.62716       NA            NA    nurse         100
+    ## 16138  patient76   38.71731       NA            NA    nurse         100
+    ## 16139  patient99   49.99761       NA            NA    nurse         100
+    ## 16140  patient69   35.83208       NA            NA    nurse         100
+    ## 16141  patient77   38.74436       NA            NA    nurse         100
     ##       serve_start serve_length wait_time wait_time_unseen
-    ## 16136          NA           NA        NA         45.38912
-    ## 16137          NA           NA        NA         15.18166
-    ## 16138          NA           NA        NA         32.45083
-    ## 16139          NA           NA        NA         44.16792
-    ## 16140          NA           NA        NA         42.36640
-    ## 16141          NA           NA        NA         41.45441
+    ## 16136          NA           NA        NA         15.92612
+    ## 16137          NA           NA        NA         47.37284
+    ## 16138          NA           NA        NA         41.28269
+    ## 16139          NA           NA        NA         30.00239
+    ## 16140          NA           NA        NA         44.16792
+    ## 16141          NA           NA        NA         41.25564
 
 ``` r
 nan_experiment[["run_results"]][c(
@@ -742,4 +764,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 50s
+    ## Notebook run time: 2m 5s
