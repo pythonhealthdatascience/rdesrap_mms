@@ -230,6 +230,8 @@ test_that("all patients are seen when there are plenty nurses", {
 
   # Check that no patients wait
   expect_identical(result[["mean_waiting_time_nurse"]], 0.0)
+  expect_identical(result[["count_unseen_nurse"]], 0L)
+  expect_true(is.na(result[["mean_waiting_time_unseen_nurse"]]))
 })
 
 
