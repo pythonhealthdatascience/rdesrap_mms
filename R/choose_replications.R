@@ -1,3 +1,104 @@
+#' Computes running sample mean and variance using Welford's algorithm.
+#'
+#' @description
+#' They are computed via updates to a stored value, rather than storing lots of
+#' data and repeatedly taking the mean after new values have been added.
+#' Implements Welford's algorithm for updating mean and variance.
+#' See Knuth. D `The Art of Computer Programming` Vol 2. 2nd ed. Page 216.
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#'
+#' @return Object of `R6Class` with methods for running mean and variance
+#' calculation.
+#' @export
+
+WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
+
+  #' @field n Number of observations.
+  n = 0L,
+
+  #' @field mean Running mean.
+  mean = NA,
+
+  #' @field sq Running sum of squares of differences.
+  sq = NA,
+
+  #' @field alpha Significance level for confidence interval calculations.
+  #' For example, if alpha is 0.05, then confidence level is 95 \%.
+  alpha = NA,
+
+  #' @description Initialise the WelfordStats object.
+  #' @param data Initial data sample.
+  #' @param alpha Significance level for confidence interval calculations.
+  #' @return A new `WelfordStats` object.
+  initialize = function(data = NULL, alpha = 0.05) {
+    # Set alpha using the provided value
+    self$alpha <- alpha
+    # If an initial data sample is supplied, then run update()
+    if (!is.null(data)) {
+      for (x in as.matrix(data)) {
+        self$update(x)
+      }
+    }
+  },
+
+  #' @description Update running statistics with a new data point.
+  #' @param x A new data point.
+  update = function(x) {
+    self$n <- self$n + 1L
+    if (self$n == 1L) {
+      self$mean <- x
+      self$sq <- 0L
+    } else {
+      updated_mean <- self$mean + ((x - self$mean) / self$n)
+      self$sq <- self$sq + ((x - self$mean) * (x - updated_mean))
+      self$mean <- updated_mean
+    }
+  },
+
+  #' @description Computes the variance of the data points.
+  variance = function() {
+    self$sq / (self$n - 1L)
+  },
+
+  #' @description Computes the standard deviation.
+  std = function() {
+    if (self$n < 3L) return(NA_real_)
+    sqrt(self$variance())
+  },
+
+  #' @description Computes the standard error of the mean.
+  std_error = function() {
+    self$std() / sqrt(self$n)
+  },
+
+  #' @description Computes the half-width of the confidence interval.
+  half_width = function() {
+    if (self$n < 3L) return(NA_real_)
+    dof <- self$n - 1L
+    t_value <- qt(1L - (self$alpha / 2L), df = dof)
+    t_value * self$std_error()
+  },
+
+  #' @description Computes the lower confidence interval bound.
+  lci = function() {
+    self$mean - self$half_width()
+  },
+
+  #' @description Computes the upper confidence interval bound.
+  uci = function() {
+    self$mean + self$half_width()
+  },
+
+  #' @description Computes the precision of the confidence interval expressed
+  #' as the percentage deviation of the half width from the mean.
+  deviation = function() {
+    self$half_width() / self$mean
+  }
+))
+
+
 #' Use the confidence interval method to select the number of replications.
 #'
 #' @param replications Number of times to run the model.
