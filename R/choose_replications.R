@@ -18,6 +18,9 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
   #' @field n Number of observations.
   n = 0L,
 
+  #' @field latest_data Latest data point.
+  latest_data = NA,
+
   #' @field mean Running mean.
   mean = NA,
 
@@ -25,16 +28,21 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
   sq = NA,
 
   #' @field alpha Significance level for confidence interval calculations.
-  #' For example, if alpha is 0.05, then confidence level is 95 \%.
+  #' For example, if alpha is 0.05, then the confidence level is 95\%.
   alpha = NA,
+
+  #' @field observer Observer to notify on updates.
+  observer = NULL,
 
   #' @description Initialise the WelfordStats object.
   #' @param data Initial data sample.
   #' @param alpha Significance level for confidence interval calculations.
+  #' @param observer Observer to notify on updates.
   #' @return A new `WelfordStats` object.
-  initialize = function(data = NULL, alpha = 0.05) {
-    # Set alpha using the provided value
+  initialize = function(data = NULL, alpha = 0.05, observer = NULL) {
+    # Set alpha and observer using the provided values/objects
     self$alpha <- alpha
+    self$observer <- observer
     # If an initial data sample is supplied, then run update()
     if (!is.null(data)) {
       for (x in as.matrix(data)) {
@@ -46,7 +54,10 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
   #' @description Update running statistics with a new data point.
   #' @param x A new data point.
   update = function(x) {
+    # Increment counter and save the latest data point
     self$n <- self$n + 1L
+    self$latest_data <- x
+    # Calculate the mean and sq
     if (self$n == 1L) {
       self$mean <- x
       self$sq <- 0L
@@ -54,6 +65,10 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
       updated_mean <- self$mean + ((x - self$mean) / self$n)
       self$sq <- self$sq + ((x - self$mean) * (x - updated_mean))
       self$mean <- updated_mean
+    }
+    # Update observer if present
+    if (!is.null(self$observer)) {
+      self$observer$update(self)
     }
   },
 
@@ -95,6 +110,62 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
   #' as the percentage deviation of the half width from the mean.
   deviation = function() {
     self$half_width() / self$mean
+  }
+))
+
+
+#' Observes and records results from WelfordStats.
+#'
+#' @description
+#' Updates each time new data is processed. Can generate a results dataframe.
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+ReplicationTabuliser <- R6Class("ReplicationTabuliser", list( # nolint: object_name_linter
+
+  #' @field data_points List containing each data point.
+  data_points = NULL,
+
+  #' @field cumulative_mean List of the running mean.
+  cumulative_mean = NULL,
+
+  #' @field std List of the standard deviation.
+  std = NULL,
+
+  #' @field lci List of the lower confidence interval bound.
+  lci = NULL,
+
+  #' @field uci List of the upper confidence interval bound.
+  uci = NULL,
+
+  #' @field deviation List of the percentage deviation of the confidence
+  #' interval half width from the mean.
+  deviation = NULL,
+
+  #' @description Add new results from WelfordStats to the appropriate lists.
+  #' @param stats An instance of WelfordStats containing updated statistical
+  #' measures like the mean, standard deviation and confidence intervals.
+  update = function(stats) {
+    self$data_points <- c(self$data_points, stats$latest_data)
+    self$cumulative_mean <- c(self$cumulative_mean, stats$mean)
+    self$std <- c(self$std, stats$std())
+    self$lci <- c(self$lci, stats$lci())
+    self$uci <- c(self$uci, stats$uci())
+    self$deviation <- c(self$deviation, stats$deviation())
+  },
+
+  #' @description Creates a results table from the stored lists.
+  #' @return Stored results compiled into a dataframe.
+  summary_table = function() {
+    data.frame(
+      replications = seq_len(length(self$data_points)),
+      data = self$data_points,
+      cumulative_mean = self$cumulative_mean,
+      stdev = self$std,
+      lower_ci = self$lci,
+      upper_ci = self$uci,
+      deviation = self$deviation
+    )
   }
 ))
 

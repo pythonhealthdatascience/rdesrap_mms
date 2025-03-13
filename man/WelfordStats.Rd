@@ -19,12 +19,16 @@ See Knuth. D `The Art of Computer Programming` Vol 2. 2nd ed. Page 216.
 \describe{
 \item{\code{n}}{Number of observations.}
 
+\item{\code{latest_data}}{Latest data point.}
+
 \item{\code{mean}}{Running mean.}
 
 \item{\code{sq}}{Running sum of squares of differences.}
 
 \item{\code{alpha}}{Significance level for confidence interval calculations.
-For example, if alpha is 0.05, then confidence level is 95 \%.}
+For example, if alpha is 0.05, then the confidence level is 95\%.}
+
+\item{\code{observer}}{Observer to notify on updates.}
 }
 \if{html}{\out{</div>}}
 }
@@ -49,7 +53,7 @@ For example, if alpha is 0.05, then confidence level is 95 \%.}
 \subsection{Method \code{new()}}{
 Initialise the WelfordStats object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WelfordStats$new(data = NULL, alpha = 0.05)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WelfordStats$new(data = NULL, alpha = 0.05, observer = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -58,6 +62,8 @@ Initialise the WelfordStats object.
 \item{\code{data}}{Initial data sample.}
 
 \item{\code{alpha}}{Significance level for confidence interval calculations.}
+
+\item{\code{observer}}{Observer to notify on updates.}
 }
 \if{html}{\out{</div>}}
 }
