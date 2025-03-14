@@ -4,8 +4,15 @@
 \name{ReplicationTabuliser}
 \alias{ReplicationTabuliser}
 \title{Observes and records results from WelfordStats.}
+\value{
+Object of `R6Class` with methods for storing and tabulising results.
+}
 \description{
 Updates each time new data is processed. Can generate a results dataframe.
+
+This class is based on the Python class `ReplicationTabulizer` from Tom
+Monks (2021) sim-tools: fundamental tools to support the simulation process
+in python (https://github.com/TomMonks/sim-tools) (MIT Licence).
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

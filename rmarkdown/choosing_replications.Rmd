@@ -110,6 +110,13 @@ ci_df %>%
 include_graphics(path)
 ```
 
+## Automated detection of the number of replications
+
+```{r}
+replications_algorithm()
+```
+
+
 ## Run time
 
 ```{r end_timer}

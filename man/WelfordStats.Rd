@@ -11,8 +11,13 @@ calculation.
 \description{
 They are computed via updates to a stored value, rather than storing lots of
 data and repeatedly taking the mean after new values have been added.
+
 Implements Welford's algorithm for updating mean and variance.
 See Knuth. D `The Art of Computer Programming` Vol 2. 2nd ed. Page 216.
+
+This class is based on the Python class `OnlineStatistics` from Tom Monks
+(2021) sim-tools: fundamental tools to support the simulation process in
+python (https://github.com/TomMonks/sim-tools) (MIT Licence).
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
