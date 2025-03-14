@@ -255,9 +255,9 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   #' replication for each metric
   summary_table = NA,
 
-  #' @description Initialise the ReplicationsAlgorithm object
-  #' @param metrics List of performance measure to track.
+  #' @description Initialise the ReplicationsAlgorithm object.
   #' @param param Model parameters.
+  #' @param metrics List of performance measure to track.
   #' @param desired_precision Target half width precision for the algorithm.
   #' @param initial_replications Number of initial replications to perform.
   #' @param look_ahead Minimum additional replications to look ahead.
@@ -282,8 +282,26 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     # Initially set reps to the number of initial replications
     self$reps <- initial_replications
 
-    # Run algorithm
-    self$select()
+    # Check validity of provided parameters
+    self$valid_inputs()
+  },
+
+  #' @description
+  #' Checks validity of provided parameters.
+  valid_inputs = function() {
+    for (p in c("initial_replications", "look_ahead")) {
+      if (self[[p]] %% 1L != 0L || self[[p]] < 0L) {
+        stop(p, " must be a non-negative integer, but provided ", self[[p]],
+             ".", call. = FALSE)
+      }
+    }
+    if (self$desired_precision <= 0L) {
+      stop("desired_precision must be greater than 0.", call. = FALSE)
+    }
+    if (self$replication_budget < self$initial_replications) {
+      stop("replication_budget must be less than initial_replications.",
+           call. = FALSE)
+    }
   },
 
   #' @description

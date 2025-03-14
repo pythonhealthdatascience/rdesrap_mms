@@ -69,6 +69,7 @@ replication for each metric}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-ReplicationsAlgorithm-new}{\code{ReplicationsAlgorithm$new()}}
+\item \href{#method-ReplicationsAlgorithm-valid_inputs}{\code{ReplicationsAlgorithm$valid_inputs()}}
 \item \href{#method-ReplicationsAlgorithm-klimit}{\code{ReplicationsAlgorithm$klimit()}}
 \item \href{#method-ReplicationsAlgorithm-select}{\code{ReplicationsAlgorithm$select()}}
 \item \href{#method-ReplicationsAlgorithm-clone}{\code{ReplicationsAlgorithm$clone()}}
@@ -78,7 +79,7 @@ replication for each metric}
 \if{html}{\out{<a id="method-ReplicationsAlgorithm-new"></a>}}
 \if{latex}{\out{\hypertarget{method-ReplicationsAlgorithm-new}{}}}
 \subsection{Method \code{new()}}{
-Initialise the ReplicationsAlgorithm object
+Initialise the ReplicationsAlgorithm object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ReplicationsAlgorithm$new(
   param,
@@ -107,6 +108,16 @@ Initialise the ReplicationsAlgorithm object
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ReplicationsAlgorithm-valid_inputs"></a>}}
+\if{latex}{\out{\hypertarget{method-ReplicationsAlgorithm-valid_inputs}{}}}
+\subsection{Method \code{valid_inputs()}}{
+Checks validity of provided parameters.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ReplicationsAlgorithm$valid_inputs()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ReplicationsAlgorithm-klimit"></a>}}

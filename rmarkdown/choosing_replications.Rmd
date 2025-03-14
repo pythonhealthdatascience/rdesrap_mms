@@ -115,7 +115,11 @@ include_graphics(path)
 Run the algorithm (which will run model with increasing reps) for a few different metrics.
 
 ```{r}
+# Set up and run algorithm
 alg <- ReplicationsAlgorithm$new(param = parameters())
+alg$select()
+
+# View results
 alg$nreps
 alg$summary_table
 ```

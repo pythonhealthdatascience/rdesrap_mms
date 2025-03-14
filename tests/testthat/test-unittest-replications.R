@@ -1,5 +1,59 @@
 # Unit testing for objects in choose_replications.R
 
+patrick::with_parameters_test_that(
+  "klimit calculations are correct",
+  {
+    # Calculate klimit
+    calc <- ReplicationsAlgorithm$new(param = parameters(),
+                                      look_ahead =  look_ahead,
+                                      initial_replications = n)$klimit()
+    # Check that it meets our expected value
+    expect_identical(calc, exp)
+  },
+  patrick::cases(
+    list(look_ahead = 100L, n = 100L, exp = 100L),
+    list(look_ahead = 100L, n = 101L, exp = 101L),
+    list(look_ahead = 0L, n = 500L, exp = 0L)
+  )
+)
+
+
+patrick::with_parameters_test_that(
+  "ReplicationsAlgorithm responds appropriately to invalid parameters",
+  {
+    inputs <- c(list(param = parameters()), setNames(list(value), arg))
+    expect_error(do.call(ReplicationsAlgorithm$new, inputs), msg)
+  },
+  patrick::cases(
+    list(arg = "initial_replications", value = -1L,
+         msg = paste0("initial_replications must be a non-negative integer, ",
+                      "but provided -1.")),
+    list(arg = "initial_replications", value = 0.5,
+         msg = paste0("initial_replications must be a non-negative integer, ",
+                      "but provided 0.5.")),
+    list(arg = "look_ahead", value = -1L,
+         msg = "look_ahead must be a non-negative integer, but provided -1."),
+    list(arg = "look_ahead", value = 0.5,
+         msg = "look_ahead must be a non-negative integer, but provided 0.5."),
+    list(arg = "desired_precision", value = 0L,
+         msg = "desired_precision must be greater than 0.")
+  )
+)
+
+
+test_that(
+  "ReplicationsAlgorithm errors if replication_budget < initial_replications",
+  {
+    expect_error(
+      ReplicationsAlgorithm$new(param = parameters(),
+                                initial_replications = 10L,
+                                replication_budget = 9L),
+      "replication_budget must be less than initial_replications."
+    )
+  }
+)
+
+
 test_that("WelfordStats calculations are correct", {
 
   # Initialise with three values
