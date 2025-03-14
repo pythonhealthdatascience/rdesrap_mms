@@ -219,25 +219,33 @@ include_graphics(path)
 
 ## Automated detection of the number of replications
 
+Run the algorithm (which will run model with increasing reps) for a few
+different metrics.
+
 ``` r
-replications_algorithm()
+alg <- ReplicationsAlgorithm$new(param = parameters())
 ```
 
     ## Warning: The replications did not reach the desired precision for the following
     ## metrics - mean_waiting_time_nurse
 
-    ## $nreps
-    ## $nreps$mean_waiting_time_nurse
+``` r
+alg$nreps
+```
+
+    ## $mean_waiting_time_nurse
     ## [1] NA
     ## 
-    ## $nreps$mean_serve_time_nurse
+    ## $mean_serve_time_nurse
     ## [1] 84
     ## 
-    ## $nreps$utilisation_nurse
+    ## $utilisation_nurse
     ## [1] 128
-    ## 
-    ## 
-    ## $summary_table
+
+``` r
+alg$summary_table
+```
+
     ##      replications         data cumulative_mean      stdev      lower_ci
     ## 1               1 2.971107e-02      0.02971107         NA            NA
     ## 2               2 1.010406e-01      0.06537582         NA            NA
@@ -2804,4 +2812,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 53s
+    ## Notebook run time: 0m 54s

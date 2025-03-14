@@ -112,10 +112,13 @@ include_graphics(path)
 
 ## Automated detection of the number of replications
 
-```{r}
-replications_algorithm()
-```
+Run the algorithm (which will run model with increasing reps) for a few different metrics.
 
+```{r}
+alg <- ReplicationsAlgorithm$new(param = parameters())
+alg$nreps
+alg$summary_table
+```
 
 ## Run time
 

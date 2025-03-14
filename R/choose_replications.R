@@ -183,23 +183,6 @@ ReplicationTabuliser <- R6Class("ReplicationTabuliser", list( # nolint: object_n
 ))
 
 
-#' Calculate the klimit
-#'
-#' Determines the number of additional replications to check after precision is
-#' reached, scaling with total replications if they are greater than 100.
-#' Rounded down to nearest integer.
-#'
-#' @param look_ahead Minimum additional replications to look ahead to assess
-#' stability of precision.
-#' @param n Number of replications performed so far.
-#'
-#' @return Number of additional replications to verify stability (integer).
-
-klimit <- function(look_ahead, n) {
-  as.integer((look_ahead / 100L) * max(n, 100L))
-}
-
-
 #' Replication algorithm to automatically select number of replications.
 #'
 #' @description
@@ -222,154 +205,222 @@ klimit <- function(look_ahead, n) {
 #' Monks (2021) sim-tools: fundamental tools to support the simulation process
 #' in python (https://github.com/TomMonks/sim-tools) (MIT Licence).
 #'
-#' @param metrics List of performance measure to track (should correspond to
-#' column names from the run results dataframe).
-#' @param param Model parameters (from parameters()).
-#' @param desired_precision The target half width precision for the algorithm
-#' (i.e. percentage deviation of the confidence interval from the mean,
-#' expressed as a proportion, e.g. 0.05 = 5\%).
-#' @param initial_replications Number of initial replications to perform.
-#' Note that the minimum solution will be the value of initial_replications
-#' (i.e. if require 20 initial replications but was resolved in 5, solution
-#' output will still be 20). Although, if initial_replications < 3, solution
-#' will still be at least 3, as that is the minimum required to calculate the
-#' confidence intervals.
-#' @param look_ahead Minimum additional replications to look ahead to assess
-#' stability of precision. When the number of replications is <= 100, the
-#' value of look_ahead is used. When they are > 100, then
-#' look_ahead / 100 * max(n, 100) is used.
-#' @param replication_budget Maximum allowed replications. Use for larger
-#' models where replication runtime is a constraint.
+#' @docType class
+#' @importFrom R6 R6Class
 #'
-#' @return Named list with `nreps` (a named list with minimum number of
-#' replications required to meet the precision for each metric) and
-#' `summary_table` (dataframe containing cumulative statistics for each
-#' replication for each metric).
+#' @return Object of `ReplicationsAlgorithm` with methods for determining the
+#' appropriate number of replications to use.
 #' @export
 
-replications_algorithm <- function(
-  metrics = c("mean_waiting_time_nurse",
-              "mean_serve_time_nurse",
-              "utilisation_nurse"),
-  param = parameters(),
-  desired_precision = 0.05,
-  initial_replications = 3L,
-  look_ahead = 5L,
-  replication_budget = 1000L
-) {
+ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object_name_linter
 
-  # Initially set n to the number of initial replications
-  n <- initial_replications
+  #' @field param Model parameters (from parameters()).
+  param = NA,
 
-  # Create instances of observers for each metric
-  observers <- setNames(
-    lapply(metrics, function(x) ReplicationTabuliser$new()), metrics
-  )
+  #' @field metrics List of performance measure to track (should correspond to
+  #' column names from the run results dataframe).
+  metrics  = NA,
 
-  # Create nested named list to store record for each metric of:
-  # - nreps (the solution - replications required for precision)
-  # - target_met (record of how many times in a row the target has been meet,
-  # used to check if lookahead period has passed)
-  # - solved (whether it has maintained precision for lookahead)
-  solutions <- setNames(
-    lapply(metrics, function(x) {
-      list(nreps = NA, target_met = 0L, solved = FALSE)
-    }), metrics
-  )
+  #' @field desired_precision The target half width precision for the algorithm
+  #' (i.e. percentage deviation of the confidence interval from the mean,
+  #' expressed as a proportion, e.g. 0.05 = 5\%).
+  desired_precision = NA,
 
-  # If there are no initial replications, create empty instances of WelfordStats
-  # for each metric...
-  if (initial_replications == 0L) {
-    stats <- setNames(
-      lapply(
-        metrics, function(x) WelfordStats$new(observer = observers[[x]])
-      ), metrics
+  #' @field initial_replications Number of initial replications to perform.
+  #' Note that the minimum solution will be the value of initial_replications
+  #' (i.e. if require 20 initial replications but was resolved in 5, solution
+  #' output will still be 20). Although, if initial_replications < 3, solution
+  #' will still be at least 3, as that is the minimum required to calculate the
+  #' confidence intervals.
+  initial_replications = NA,
+
+  #' @field look_ahead Minimum additional replications to look ahead to assess
+  #' stability of precision. When the number of replications is <= 100, the
+  #' value of look_ahead is used. When they are > 100, then
+  #' look_ahead / 100 * max(n, 100) is used.
+  look_ahead = NA,
+
+  #' @field replication_budget Maximum allowed replications. Use for larger
+  #' models where replication runtime is a constraint.
+  replication_budget = NA,
+
+  #' @field reps Number of replications performed.
+  reps = NA,
+
+  #' @field nreps The minimum number of replicatons required to achieve
+  #' desired precision for each metric.
+  nreps = NA,
+
+  #' @field summary_table Dataframe containing cumulative statistics for each
+  #' replication for each metric
+  summary_table = NA,
+
+  #' @description Initialise the ReplicationsAlgorithm object
+  #' @param metrics List of performance measure to track.
+  #' @param param Model parameters.
+  #' @param desired_precision Target half width precision for the algorithm.
+  #' @param initial_replications Number of initial replications to perform.
+  #' @param look_ahead Minimum additional replications to look ahead.
+  #' @param replication_budget Maximum allowed replications.
+  initialize = function(
+    param,
+    metrics = c("mean_waiting_time_nurse",
+                "mean_serve_time_nurse",
+                "utilisation_nurse"),
+    desired_precision = 0.05,
+    initial_replications = 3L,
+    look_ahead = 5L,
+    replication_budget = 1000L
+  ) {
+    self$param <- param
+    self$metrics <- metrics
+    self$desired_precision <- desired_precision
+    self$initial_replications <- initial_replications
+    self$look_ahead <- look_ahead
+    self$replication_budget <- replication_budget
+
+    # Initially set reps to the number of initial replications
+    self$reps <- initial_replications
+
+    # Run algorithm
+    self$select()
+  },
+
+  #' @description
+  #' Calculate the klimit. Determines the number of additional replications to
+  #' check after precision is reached, scaling with total replications if they
+  #' are greater than 100. Rounded down to nearest integer.
+  #' @return Number of additional replications to verify stability (integer).
+  klimit = function() {
+    as.integer((self$look_ahead / 100L) * max(self$reps, 100L))
+  },
+
+  #' @description
+  #' Executes the replication algorithm, determining the necessary number
+  #' of replications to achieve and maintain the desired precision.
+  select = function() {
+
+    # Create instances of observers for each metric
+    observers <- setNames(
+      lapply(self$metrics, function(x) ReplicationTabuliser$new()), self$metrics
     )
-  } else {
-    # If there are, run the replications, then create instances of WelfordStats
-    # pre-loaded with data from the initial replications... we use runner so
-    # allows for parallel processing if desired...
-    param[["number_of_runs"]] <- initial_replications
-    result <- runner(param)[["run_results"]]
-    stats <- setNames(
-      lapply(metrics, function(x) {
-        WelfordStats$new(data = result[[x]], observer = observers[[x]])
-      }), metrics
-    )
-  }
 
-  # After completing any replications, check if any have met precision, add
-  # solution and update count
-  for (metric in metrics) {
-    if (stats[[metric]]$deviation() < desired_precision) {
-      solutions[[metric]]$nreps <- n
-      solutions[[metric]]$target_met <- 1L
-      # If there is no lookahead, mark as solved
-      if (klimit(look_ahead, n) == 0L) {
-        solutions[[metric]]$solved <- TRUE
-      }
+    # Create nested named list to store record for each metric of:
+    # - nreps (the solution - replications required for precision)
+    # - target_met (record of how many times in a row the target has been meet,
+    # used to check if lookahead period has passed)
+    # - solved (whether it has maintained precision for lookahead)
+    solutions <- setNames(
+      lapply(self$metrics, function(x) {
+        list(nreps = NA, target_met = 0L, solved = FALSE)
+      }), self$metrics
+    )
+
+    # If there are no initial replications, create empty instances of
+    # WelfordStats for each metric...
+    if (self$initial_replications == 0L) {
+      stats <- setNames(
+        lapply(
+          self$metrics, function(x) WelfordStats$new(observer = observers[[x]])
+        ), self$metrics
+      )
+    } else {
+      # If there are, run the replications, then create instances of
+      # WelfordStatspre-loaded with data from the initial replications... we
+      # use runner so allows for parallel processing if desired...
+      self$param[["number_of_runs"]] <- self$initial_replications
+      result <- runner(self$param)[["run_results"]]
+      stats <- setNames(
+        lapply(self$metrics, function(x) {
+          WelfordStats$new(data = result[[x]], observer = observers[[x]])
+        }), self$metrics
+      )
     }
-  }
 
-  # Whilst have not yet got all metrics marked as solved = TRUE, and still under
-  # replication budget + lookahead...
-  while (!all(unlist(lapply(solutions, function(x) x$solved))) &&
-           n < replication_budget + klimit(look_ahead, n)) {
-    # Increment counter
-    n <- n + 1L
-    # Run another replication
-    result <- model(run_number = n, param = param)[["run_results"]]
-    # Loop through the metrics...
-    for (metric in metrics) {
-      # If it is not yet solved...
-      if (!solutions[[metric]]$solved) {
-        # Update the running statistics for that metric
-        stats[[metric]]$update(result[[metric]])
-        # If precision has been achieved...
-        if (stats[[metric]]$deviation() < desired_precision) {
-          # Check if target met the time prior - if not, record the solution
-          if (solutions[[metric]]$target_met == 0L) {
-            solutions[[metric]]$nreps <- n
-          }
-          # Update how many times precision has been met in a row
-          solutions[[metric]]$target_met <- solutions[[metric]]$target_met + 1L
-          # Mark as solved if have finished lookahead period
-          if (solutions[[metric]]$target_met > klimit(look_ahead, n)) {
-            solutions[[metric]]$solved <- TRUE
-          }
-        } else {
-          # If precision was not achieved, ensure nreps is None (e.g. in cases
-          # where precision is lost after a success)
-          solutions[[metric]]$nreps <- NA
+    # After completing any replications, check if any have met precision, add
+    # solution and update count
+    for (metric in self$metrics) {
+      if (stats[[metric]]$deviation() < self$desired_precision) {
+        solutions[[metric]]$nreps <- self$reps
+        solutions[[metric]]$target_met <- 1L
+        # If there is no lookahead, mark as solved
+        if (klimit(look_ahead, n) == 0L) {
+          solutions[[metric]]$solved <- TRUE
         }
-
       }
     }
+
+    # Whilst have not yet got all metrics marked as solved = TRUE, and still
+    # under replication budget + lookahead...
+    while (!all(unlist(lapply(solutions, function(x) x$solved))) &&
+             self$reps < self$replication_budget + self$klimit()) {
+
+      # Increment counter
+      self$reps <- self$reps + 1L
+
+      # Run another replication
+      result <- model(run_number = self$reps,
+                      param = self$param)[["run_results"]]
+
+      # Loop through the metrics...
+      for (metric in self$metrics) {
+
+        # If it is not yet solved...
+        if (!solutions[[metric]]$solved) {
+
+          # Update the running statistics for that metric
+          stats[[metric]]$update(result[[metric]])
+
+          # If precision has been achieved...
+          if (stats[[metric]]$deviation() < self$desired_precision) {
+
+            # Check if target met the time prior - if not, record the solution
+            if (solutions[[metric]]$target_met == 0L) {
+              solutions[[metric]]$nreps <- self$reps
+            }
+
+            # Update how many times precision has been met in a row
+            solutions[[metric]]$target_met <- (
+              solutions[[metric]]$target_met + 1L
+            )
+
+            # Mark as solved if have finished lookahead period
+            if (solutions[[metric]]$target_met > self$klimit()) {
+              solutions[[metric]]$solved <- TRUE
+            }
+
+          } else {
+            # If precision was not achieved, ensure nreps is None (e.g. in cases
+            # where precision is lost after a success)
+            solutions[[metric]]$nreps <- NA
+          }
+
+        }
+      }
+    }
+
+    # Extract minimum replications for each metric
+    self$nreps <- lapply(solutions, function(x) x$nreps)
+
+    # Extract any metrics that were not solved and return warning
+    if (anyNA(self$nreps)) {
+      unsolved <- names(self$nreps)[vapply(self$nreps, is.na, logical(1L))]
+      warning(
+        "The replications did not reach the desired precision ",
+        "for the following metrics - ", toString(unsolved),
+        call. = FALSE
+      )
+    }
+
+    # Combine observer summary frames into a single table
+    summary_tables <- lapply(names(observers), function(name) {
+      tab <- observers[[name]]$summary_table()
+      tab$metric <- name
+      tab
+    })
+    self$summary_table <- do.call(rbind, summary_tables)
   }
-
-  # Extract minimum replications for each metric
-  nreps <- lapply(solutions, function(x) x$nreps)
-
-  # Combine observer summary frames into a single table
-  summary_tables <- lapply(names(observers), function(name) {
-    tab <- observers[[name]]$summary_table()
-    tab$metric <- name
-    tab
-  })
-  combined_table <- do.call(rbind, summary_tables)
-
-  # Extract any metrics that were not solved and return warning
-  if (anyNA(nreps)) {
-    unsolved <- names(nreps)[vapply(nreps, is.na, logical(1L))]
-    warning(
-      "The replications did not reach the desired precision ",
-      "for the following metrics - ", toString(unsolved),
-      call. = FALSE
-    )
-  }
-
-  return(list(nreps = nreps, summary_table = combined_table))
-}
+))
 
 
 #' Use the confidence interval method to select the number of replications.
