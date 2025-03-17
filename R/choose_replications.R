@@ -459,12 +459,6 @@ confidence_interval_method <- function(replications, desired_precision,
   param <- parameters(number_of_runs = replications)
   results <- runner(param, use_future_seeding = FALSE)[["run_results"]]
 
-  # If mean of metric is less than 1, multiply by 100
-  # if (mean(results[[metric]]) < 1L) {
-  #   results[[paste0("adj_", metric)]] <- results[[metric]] * 100L
-  #   metric <- paste0("adj_", metric)
-  # }
-
   # Initialise list to store the results
   cumulative_list <- list()
 
@@ -476,7 +470,7 @@ confidence_interval_method <- function(replications, desired_precision,
     subset_data <- results[[metric]][1L:i]
 
     # Get latest data point
-    last_data_point <- tail(subset_data, n=1)
+    last_data_point <- tail(subset_data, n = 1L)
 
     # Calculate mean
     mean_value <- mean(subset_data)
@@ -530,28 +524,31 @@ confidence_interval_method <- function(replications, desired_precision,
     warning("Running ", replications, " replications did not reach ",
             "desired precision (", desired_precision, ").", call. = FALSE)
   }
-  return(cumulative)
+  cumulative
 }
 
 
-#' Generate a plot of metric and confidence intervals with increasing simulation replications
+#' Generate a plot of metric and confidence intervals with increasing
+#' simulation replications
 #'
-#' @param conf_ints A dataframe containing confidence interval statistics, including cumulative mean, upper/lower bounds, and deviations. As returned by ReplicationTabuliser summary_table() method.
+#' @param conf_ints A dataframe containing confidence interval statistics,
+#' including cumulative mean, upper/lower bounds, and deviations. As returned
+#' by ReplicationTabuliser summary_table() method.
 #' @param yaxis_title Label for y axis.
 #' @param file_path Path and filename to save the plot to.
-#' @param min_rep The number of replications required to meet the desired precision.
+#' @param min_rep The number of replications required to meet the desired
+#' precision.
 
-plot_replication_ci = function(
-    conf_ints, yaxis_title, file_path = NULL, min_rep = NULL
-)
-{
+plot_replication_ci <- function(
+  conf_ints, yaxis_title, file_path = NULL, min_rep = NULL
+) {
   # Plot the cumulative mean and confidence interval
   p <- ggplot2::ggplot(conf_ints,
                        ggplot2::aes(x = .data[["replications"]],
                                     y = .data[["cumulative_mean"]])) +
     ggplot2::geom_line() +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = lower_ci, ymax = upper_ci),
+      ggplot2::aes(ymin = .data[["lower_ci"]], ymax = .data[["upper_ci"]]),
       alpha = 0.2
     )
 

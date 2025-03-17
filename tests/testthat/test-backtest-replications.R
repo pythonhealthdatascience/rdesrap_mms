@@ -12,7 +12,7 @@ test_that("results from confidence_interval_method are consistent", {
 
   # Run the confidence_interval_method()
   rep_results <- suppressWarnings(confidence_interval_method(
-    replications = 15,
+    replications = 15L,
     desired_precision = 0.05,
     metric = "mean_serve_time_nurse"
   ))
@@ -21,7 +21,7 @@ test_that("results from confidence_interval_method are consistent", {
   exp_results <- read.csv(test_path("testdata", "choose_rep_results.csv"))
 
   # Compare to those generated
-  expect_equal(rep_results, exp_results)
+  expect_equal(rep_results, exp_results) # nolint: expect_identical_linter
 })
 
 
@@ -38,11 +38,12 @@ test_that("results from ReplicationsAlgorithm are consistent", {
   # Run the confidence_interval_method()
   alg <- ReplicationsAlgorithm$new(
     param = param,
-    metrics = c("mean_serve_time_nurse"),
+    metrics = "mean_serve_time_nurse",
     desired_precision = 0.05,
-    initial_replications = 15,
-    look_ahead = 0,
-    replication_budget = 15)
+    initial_replications = 15L,
+    look_ahead = 0L,
+    replication_budget = 15L
+  )
   suppressWarnings(alg$select())
   rep_results <- alg$summary_table
 
@@ -50,5 +51,5 @@ test_that("results from ReplicationsAlgorithm are consistent", {
   exp_results <- read.csv(test_path("testdata", "choose_rep_results.csv"))
 
   # Compare to those generated
-  expect_equal(rep_results, exp_results)
+  expect_equal(rep_results, exp_results) # nolint: expect_identical_linter
 })

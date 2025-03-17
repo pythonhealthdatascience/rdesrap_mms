@@ -93,7 +93,7 @@ head(results[["arrivals"]])
     ## 6     7.809445         0               NA
 
 ``` r
-write.csv(results[["arrivals"]] %>% arrange(replication, start_time),
+write.csv(arrange(results[["arrivals"]], replication, start_time),
           file.path(testdata_dir, "base_arrivals.csv"),
           row.names = FALSE)
 
@@ -248,7 +248,7 @@ param <- parameters(
 
 # Run the confidence_interval_method()
 rep_results <- confidence_interval_method(
-  replications = 15,
+  replications = 15L,
   desired_precision = 0.05,
   metric = "mean_serve_time_nurse"
 )
@@ -295,4 +295,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 4s
+    ## Notebook run time: 0m 2s

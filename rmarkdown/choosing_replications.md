@@ -384,7 +384,8 @@ plot_replication_ci(
   conf_ints = filter(alg$summary_table, metric == "mean_serve_time_nurse"),
   yaxis_title = "Mean time with nurse",
   file_path = path,
-  min_rep = alg$nreps[["mean_serve_time_nurse"]])
+  min_rep = alg$nreps[["mean_serve_time_nurse"]]
+)
 include_graphics(path)
 ```
 
@@ -416,4 +417,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 3m 1s
+    ## Notebook run time: 1m 37s

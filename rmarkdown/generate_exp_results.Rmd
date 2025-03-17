@@ -61,7 +61,7 @@ results <- runner(param)
 
 # Arrivals
 head(results[["arrivals"]])
-write.csv(results[["arrivals"]] %>% arrange(replication, start_time),
+write.csv(arrange(results[["arrivals"]], replication, start_time),
           file.path(testdata_dir, "base_arrivals.csv"),
           row.names = FALSE)
 
@@ -147,7 +147,7 @@ param <- parameters(
 
 # Run the confidence_interval_method()
 rep_results <- confidence_interval_method(
-  replications = 15,
+  replications = 15L,
   desired_precision = 0.05,
   metric = "mean_serve_time_nurse"
 )

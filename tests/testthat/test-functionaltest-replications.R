@@ -42,13 +42,13 @@ test_that(
       metrics = c(metric),
       desired_precision = desired_precision,
       initial_replications = reps,
-      look_ahead = 0,
+      look_ahead = 0L,
       replication_budget = reps
     )
     suppressWarnings(alg$select())
 
     # Compare dataframes
-    expect_equal(man_df, alg$summary_table)
+    expect_equal(man_df, alg$summary_table) # nolint: expect_identical_linter
   }
 )
 
@@ -56,34 +56,34 @@ test_that(
 test_that("ReplicationsAlgorithm initial_replications consistent to without", {
 
   #' Helper function to run the algorithm (ignoring unsolved warnings)
-  helper_alg <- function(initial_replications){
+  helper_alg <- function(initial_replications) {
     alg <- ReplicationsAlgorithm$new(
       param = parameters(),
-      metrics = c("mean_serve_time_nurse"),
+      metrics = "mean_serve_time_nurse",
       desired_precision = 0.05,
       initial_replications = initial_replications,
-      look_ahead = 10,
-      replication_budget = 10
+      look_ahead = 10L,
+      replication_budget = 10L
     )
     suppressWarnings(alg$select())
-    head(alg$summary_table, 10)
+    head(alg$summary_table, 10L)
   }
 
   # Run with three initial replications
-  alg_3 <- helper_alg(initial_replications = 3)
+  alg_3 <- helper_alg(initial_replications = 3L)
 
   # Run with ten initial replications (matches budget)
-  alg_10 <- helper_alg(initial_replications = 10)
+  alg_10 <- helper_alg(initial_replications = 10L)
 
-  expect_equal(alg_3, alg_10)
+  expect_equal(alg_3, alg_10) # nolint: expect_identical_linter
 })
 
 
 test_that("running algorithm with < 3 replications has no solution", {
   alg <- ReplicationsAlgorithm$new(param = parameters(),
-                                   initial_replications=0,
-                                   replication_budget=2,
-                                   look_ahead=0)
+                                   initial_replications = 0L,
+                                   replication_budget = 2L,
+                                   look_ahead = 0L)
   # Check that it runs with a warning
   expect_warning(alg$select())
   # Check that there is no solution
