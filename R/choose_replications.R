@@ -347,7 +347,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
       # WelfordStats pre-loaded with data from the initial replications... we
       # use runner so allows for parallel processing if desired...
       self$param[["number_of_runs"]] <- self$initial_replications
-      result <- runner(self$param)[["run_results"]]
+      result <- runner(self$param, use_future_seeding = FALSE)[["run_results"]]
       stats <- setNames(
         lapply(self$metrics, function(x) {
           WelfordStats$new(data = result[[x]], observer = observers[[x]])
@@ -457,7 +457,7 @@ confidence_interval_method <- function(replications, desired_precision,
                                        metric) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
-  results <- runner(param)[["run_results"]]
+  results <- runner(param, use_future_seeding = FALSE)[["run_results"]]
 
   # If mean of metric is less than 1, multiply by 100
   # if (mean(results[[metric]]) < 1L) {
