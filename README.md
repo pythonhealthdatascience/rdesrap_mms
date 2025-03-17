@@ -30,6 +30,7 @@ Table of contents:
 * [📝 Citation](#-citation)
 * [📜 Licence](#-licence)
 * [💰 Funding](#-funding)
+* [👨‍👨‍👧 Acknowledgements](#-acknowledgements)
 * [📄 Template README for your project](#-template-readme-for-your-project)
 
 <br>
@@ -38,12 +39,12 @@ Table of contents:
 
 This repository provides a template for building discrete-event simulation (DES) models in R.
 
-😊 **Simple:** Easy-to-follow code structure using [simmer](https://r-simmer.org/). Implements a simple M/M/s queueing model in which patients arrive, wait to see a nurse, have a consultation with the nurse and then leave.
-
 ♻️ **Reproducible:** This template is designed to function as a RAP. It adheres to reproducibility recommendations from:
 
 * ["Levels of RAP" framework](https://nhsdigital.github.io/rap-community-of-practice/introduction_to_RAP/levels_of_RAP/) from the NHS RAP Community of Practice (as documented in `nhs_rap.md`).
 * Recommendations from [Heather et al. 2025](TODO:ADDLINK) "*On the reproducibility of discrete-event simulation studies in health research: a computational investigation using open models*" (as documented in `heather_2025.md`).
+
+😊 **Simple:** Easy-to-follow code structure using [simmer](https://r-simmer.org/). Implements a simple M/M/s queueing model in which patients arrive, wait to see a nurse, have a consultation with the nurse and then leave.
 
 ✨ **Design practices:** Functions are documented with `roxygen2` docstrings and `lintr` is used to lint `.R` and `.Rmd` files.
 
@@ -204,7 +205,17 @@ The `lint_package()` function will run on files typically included in a package 
 
 ## ❓ How does the model work?
 
-TBC <!-- TODO: Write this section -->
+**Model run process**
+
+1. **Set parameters:** Use `parameters()` to create a list with the desired model parameters.
+
+2. **Run simulation:** Use `model()` to execute the simulation once, or `runner()` to perform multiple replications of the model.
+
+**Relationships between functions:**
+
+![Model structure diagram](images/model_structure.png)
+
+*Illustration of functions created using [draw.io](https://draw.io/).*
 
 <br>
 
@@ -234,7 +245,8 @@ repo/
 ├── NEWS.md                     # Describes changes between releases (equivalent to a changelog for R packages)
 ├── rap_template_r_des.Rproject # Project settings
 ├── README.md                   # This file! Describes the repository
-└── renv.lock                   # Lists R version and all packages in the R environment
+├── renv.lock                   # Lists R version and all packages in the R environment
+└── run_rmarkdown.sh            # Bash script to run knit all .Rmd from the command line
 ```
 
 <br>
@@ -300,6 +312,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+<br>
+
+## 👨‍👨‍👧 Acknowledgements
+
+This repository was developed with thanks to a few others sources. These are acknowledged throughout in the relevant scipts, and also summarised here:
+
+| Source | Find out more about how it was used... |
+| - | - |
+| Ucar I, Smeets B (2023). simmer.plot: Plotting Methods for 'simmer'. https://r-simmer.org. https://github.com/r-simmer/simmer.plot. | `R/get_run_results.R` |
+| Tom Monks (2021) sim-tools: fundamental tools to support the simulation process in python (https://github.com/TomMonks/sim-tools) (MIT Licence).<br> Who themselves cite Hoad, Robinson, & Davies (2010). Automated selection of the number of replications for a discrete-event simulation (https://www.jstor.org/stable/40926090), and Knuth. D "The Art of Computer Programming" Vol 2. 2nd ed. Page 216. | `R/choose_replications.R` |
 
 <br>
 
