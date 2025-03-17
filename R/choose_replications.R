@@ -360,7 +360,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
           solutions[[metric]]$nreps <- self$reps
           solutions[[metric]]$target_met <- 1L
           # If there is no lookahead, mark as solved
-          if (klimit(look_ahead, n) == 0L) {
+          if (self$klimit() == 0L) {
             solutions[[metric]]$solved <- TRUE
           }
         }
@@ -377,7 +377,8 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 
       # Run another replication
       result <- model(run_number = self$reps,
-                      param = self$param)[["run_results"]]
+                      param = self$param,
+                      set_seed = TRUE)[["run_results"]]
 
       # Loop through the metrics...
       for (metric in self$metrics) {
@@ -459,10 +460,10 @@ confidence_interval_method <- function(replications, desired_precision,
   results <- runner(param)[["run_results"]]
 
   # If mean of metric is less than 1, multiply by 100
-  if (mean(results[[metric]]) < 1L) {
-    results[[paste0("adj_", metric)]] <- results[[metric]] * 100L
-    metric <- paste0("adj_", metric)
-  }
+  # if (mean(results[[metric]]) < 1L) {
+  #   results[[paste0("adj_", metric)]] <- results[[metric]] * 100L
+  #   metric <- paste0("adj_", metric)
+  # }
 
   # Initialise list to store the results
   cumulative_list <- list()
@@ -474,43 +475,48 @@ confidence_interval_method <- function(replications, desired_precision,
     # Filter rows up to the i-th replication
     subset_data <- results[[metric]][1L:i]
 
+    # Get latest data point
+    last_data_point <- tail(subset_data, n=1)
+
     # Calculate mean
     mean_value <- mean(subset_data)
 
     # Some calculations require a few observations else will error...
     if (i < 3L) {
       # When only one observation, set to NA
-      std_dev <- NA
+      stdev <- NA
       lower_ci <- NA
       upper_ci <- NA
       deviation <- NA
     } else {
       # Else, calculate standard deviation, 95% confidence interval, and
       # percentage deviation
-      std_dev <- stats::sd(subset_data)
+      stdev <- stats::sd(subset_data)
       ci <- stats::t.test(subset_data)[["conf.int"]]
       lower_ci <- ci[[1L]]
       upper_ci <- ci[[2L]]
-      deviation <- ((upper_ci - mean_value) / mean_value) * 100L
+      deviation <- ((upper_ci - mean_value) / mean_value)
     }
 
     # Append to the cumulative list
     cumulative_list[[i]] <- data.frame(
       replications = i,
+      data = last_data_point,
       cumulative_mean = mean_value,
-      cumulative_std = std_dev,
+      stdev = stdev,
       lower_ci = lower_ci,
       upper_ci = upper_ci,
-      perc_deviation = deviation
+      deviation = deviation
     )
   }
 
   # Combine the list into a single data frame
   cumulative <- do.call(rbind, cumulative_list)
+  cumulative[["metric"]] <- metric
 
   # Get the minimum number of replications where deviation is less than target
   compare <- dplyr::filter(
-    cumulative, .data[["perc_deviation"]] <= desired_precision * 100L
+    cumulative, .data[["deviation"]] <= desired_precision
   )
   if (nrow(compare) > 0L) {
     # Get minimum number
@@ -536,7 +542,7 @@ confidence_interval_method <- function(replications, desired_precision,
 #' @param min_rep The number of replications required to meet the desired precision.
 
 plot_replication_ci = function(
-    conf_ints, yaxis_title, file_path, min_rep = NULL
+    conf_ints, yaxis_title, file_path = NULL, min_rep = NULL
 )
 {
   # Plot the cumulative mean and confidence interval
@@ -563,5 +569,10 @@ plot_replication_ci = function(
     ggplot2::theme_minimal()
 
   # Save the plot
-  ggplot2::ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
+  if (!is.null(file_path)) {
+    ggplot2::ggsave(filename = file_path,
+                    width = 6.5, height = 4L, bg = "white")
+  } else {
+    p
+  }
 }

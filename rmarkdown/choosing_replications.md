@@ -134,36 +134,54 @@ ci_df <- confidence_interval_method(
 head(ci_df)
 ```
 
-    ##   replications cumulative_mean cumulative_std lower_ci  upper_ci perc_deviation
-    ## 1            1        7.631520             NA       NA        NA             NA
-    ## 2            2        8.410155             NA       NA        NA             NA
-    ## 3            3        9.096810      1.4215325 5.565527 12.628092       38.81891
-    ## 4            4        9.119762      1.1615839 7.271423 10.968101       20.26741
-    ## 5            5        9.073830      1.0111905 7.818272 10.329389       13.83714
-    ## 6            6        8.934846      0.9663877 7.920684  9.949008       11.35063
+    ##   replications      data cumulative_mean     stdev lower_ci  upper_ci deviation
+    ## 1            1  7.631520        7.631520        NA       NA        NA        NA
+    ## 2            2  9.188790        8.410155        NA       NA        NA        NA
+    ## 3            3 10.470118        9.096810 1.4215325 5.565527 12.628092 0.3881891
+    ## 4            4  9.188619        9.119762 1.1615839 7.271423 10.968101 0.2026741
+    ## 5            5  8.890105        9.073830 1.0111905 7.818272 10.329389 0.1383714
+    ## 6            6  8.239924        8.934846 0.9663877 7.920684  9.949008 0.1135063
+    ##                  metric
+    ## 1 mean_serve_time_nurse
+    ## 2 mean_serve_time_nurse
+    ## 3 mean_serve_time_nurse
+    ## 4 mean_serve_time_nurse
+    ## 5 mean_serve_time_nurse
+    ## 6 mean_serve_time_nurse
 
 ``` r
 # View first ten rows where percentage deviation is below 5
 ci_df %>%
-  filter(perc_deviation < 5L) %>%
+  filter(deviation < 5L) %>%
   head(10L)
 ```
 
-    ##    replications cumulative_mean cumulative_std lower_ci upper_ci perc_deviation
-    ## 1            86        9.337477       2.175400 8.871071 9.803884       4.994996
-    ## 2            87        9.335636       2.162783 8.874685 9.796588       4.937549
-    ## 3            88        9.383374       2.196453 8.917990 9.848758       4.959666
-    ## 4            89        9.423444       2.216412 8.956552 9.890336       4.954583
-    ## 5            90        9.403929       2.211688 8.940700 9.867158       4.925909
-    ## 6            91        9.376650       2.214708 8.915415 9.837885       4.918976
-    ## 7            92        9.389447       2.205923 8.932613 9.846281       4.865395
-    ## 8            93        9.365730       2.205791 8.911453 9.820007       4.850421
-    ## 9            94        9.381749       2.199390 8.931270 9.832228       4.801650
-    ## 10           95        9.415707       2.212557 8.964986 9.866428       4.786905
+    ##    replications      data cumulative_mean     stdev lower_ci  upper_ci
+    ## 1             3 10.470118        9.096810 1.4215325 5.565527 12.628092
+    ## 2             4  9.188619        9.119762 1.1615839 7.271423 10.968101
+    ## 3             5  8.890105        9.073830 1.0111905 7.818272 10.329389
+    ## 4             6  8.239924        8.934846 0.9663877 7.920684  9.949008
+    ## 5             7  5.537885        8.449566 1.5577971 7.008844  9.890288
+    ## 6             8  9.689668        8.604579 1.5074109 7.344352  9.864806
+    ## 7             9  5.694695        8.281258 1.7114546 6.965718  9.596799
+    ## 8            10  7.866917        8.239824 1.6188859 7.081743  9.397905
+    ## 9            11 10.411363        8.437237 1.6695514 7.315617  9.558857
+    ## 10           12 12.147762        8.746447 1.9186805 7.527376  9.965519
+    ##    deviation                metric
+    ## 1  0.3881891 mean_serve_time_nurse
+    ## 2  0.2026741 mean_serve_time_nurse
+    ## 3  0.1383714 mean_serve_time_nurse
+    ## 4  0.1135063 mean_serve_time_nurse
+    ## 5  0.1705084 mean_serve_time_nurse
+    ## 6  0.1464601 mean_serve_time_nurse
+    ## 7  0.1588576 mean_serve_time_nurse
+    ## 8  0.1405468 mean_serve_time_nurse
+    ## 9  0.1329369 mean_serve_time_nurse
+    ## 10 0.1393790 mean_serve_time_nurse
 
 ``` r
 # Create plot
-path <- file.path(output_dir, "choose_param_conf_int_1.png")
+path <- file.path(output_dir, "conf_int_method_serve_time.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean time with nurse",
@@ -174,12 +192,57 @@ plot_replication_ci(
 include_graphics(path)
 ```
 
-![](../outputs/choose_param_conf_int_1.png)<!-- -->
+![](../outputs/conf_int_method_serve_time.png)<!-- -->
 
 It is also important to check across multiple metrics.
 
 ``` r
-# Run calculations and produce plot
+# Run calculations
+ci_df <- confidence_interval_method(
+  replications = 1000L,
+  desired_precision = 0.05,
+  metric = "mean_waiting_time_nurse"
+)
+```
+
+    ## Warning: Running 1000 replications did not reach desired precision (0.05).
+
+``` r
+# Preview dataframe
+tail(ci_df)
+```
+
+    ##      replications      data cumulative_mean     stdev  lower_ci  upper_ci
+    ## 995           995 1.4282777       0.2589276 0.6058864 0.2212350 0.2966203
+    ## 996           996 0.0000000       0.2586677 0.6056374 0.2210094 0.2963259
+    ## 997           997 0.0000000       0.2584082 0.6053888 0.2207844 0.2960320
+    ## 998           998 0.1405404       0.2582901 0.6050966 0.2207033 0.2958769
+    ## 999           999 0.0000000       0.2580316 0.6048485 0.2204790 0.2955841
+    ## 1000         1000 0.0000000       0.2577735 0.6046008 0.2202552 0.2952918
+    ##      deviation                  metric
+    ## 995  0.1455722 mean_waiting_time_nurse
+    ## 996  0.1455853 mean_waiting_time_nurse
+    ## 997  0.1455984 mean_waiting_time_nurse
+    ## 998  0.1455215 mean_waiting_time_nurse
+    ## 999  0.1455346 mean_waiting_time_nurse
+    ## 1000 0.1455476 mean_waiting_time_nurse
+
+``` r
+# Create plot
+path <- file.path(output_dir, "conf_int_method_wait_time.png")
+plot_replication_ci(
+  conf_ints = ci_df,
+  yaxis_title = "Mean wait time for the nurse",
+  file_path = path
+)
+# View plot
+include_graphics(path)
+```
+
+![](../outputs/conf_int_method_wait_time.png)<!-- -->
+
+``` r
+# Run calculations
 ci_df <- confidence_interval_method(
   replications = 200L,
   desired_precision = 0.05,
@@ -194,36 +257,54 @@ ci_df <- confidence_interval_method(
 head(ci_df)
 ```
 
-    ##   replications cumulative_mean cumulative_std  lower_ci upper_ci perc_deviation
-    ## 1            1        32.17813             NA        NA       NA             NA
-    ## 2            2        38.70818             NA        NA       NA             NA
-    ## 3            3        47.52188       16.60378  6.275804 88.76796       86.79387
-    ## 4            4        44.42978       14.90083 20.719243 68.14033       53.36632
-    ## 5            5        47.48544       14.60176 29.354969 65.61592       38.18112
-    ## 6            6        45.58819       13.86241 31.040487 60.13590       31.91113
+    ##   replications      data cumulative_mean     stdev   lower_ci  upper_ci
+    ## 1            1 0.3217813       0.3217813        NA         NA        NA
+    ## 2            2 0.4523824       0.3870818        NA         NA        NA
+    ## 3            3 0.6514928       0.4752188 0.1660378 0.06275804 0.8876796
+    ## 4            4 0.3515349       0.4442978 0.1490083 0.20719243 0.6814033
+    ## 5            5 0.5970808       0.4748544 0.1460176 0.29354969 0.6561592
+    ## 6            6 0.3610194       0.4558819 0.1386241 0.31040487 0.6013590
+    ##   deviation            metric
+    ## 1        NA utilisation_nurse
+    ## 2        NA utilisation_nurse
+    ## 3 0.8679387 utilisation_nurse
+    ## 4 0.5336632 utilisation_nurse
+    ## 5 0.3818112 utilisation_nurse
+    ## 6 0.3191113 utilisation_nurse
 
 ``` r
 # View first ten rows where percentage deviation is below 5
 ci_df %>%
-  filter(perc_deviation < 5L) %>%
+  filter(deviation < 5L) %>%
   head(10L)
 ```
 
-    ##    replications cumulative_mean cumulative_std lower_ci upper_ci perc_deviation
-    ## 1           151        46.19744       14.35729 43.88883 48.50605       4.997262
-    ## 2           154        46.26876       14.45690 43.96726 48.57027       4.974207
-    ## 3           155        46.11886       14.53024 43.81327 48.42444       4.999226
-    ## 4           156        46.01632       14.53980 43.71674 48.31590       4.997313
-    ## 5           158        45.85531       14.54490 43.56976 48.14086       4.984266
-    ## 6           159        45.86608       14.49943 43.59496 48.13719       4.951630
-    ## 7           160        45.93341       14.47884 43.67272 48.19409       4.921656
-    ## 8           161        45.95768       14.43680 43.71068 48.20468       4.889286
-    ## 9           162        46.07486       14.46898 43.82992 48.31980       4.872380
-    ## 10          163        46.12769       14.44001 43.89423 48.36115       4.841908
+    ##    replications      data cumulative_mean     stdev   lower_ci  upper_ci
+    ## 1             3 0.6514928       0.4752188 0.1660378 0.06275804 0.8876796
+    ## 2             4 0.3515349       0.4442978 0.1490083 0.20719243 0.6814033
+    ## 3             5 0.5970808       0.4748544 0.1460176 0.29354969 0.6561592
+    ## 4             6 0.3610194       0.4558819 0.1386241 0.31040487 0.6013590
+    ## 5             7 0.3213952       0.4366695 0.1363733 0.31054527 0.5627938
+    ## 6             8 0.4477631       0.4380562 0.1263180 0.33245170 0.5436608
+    ## 7             9 0.2719785       0.4196031 0.1304851 0.31930340 0.5199029
+    ## 8            10 0.4053346       0.4181763 0.1231053 0.33011209 0.5062405
+    ## 9            11 0.5388238       0.4291442 0.1223220 0.34696721 0.5113213
+    ## 10           12 0.7091560       0.4524786 0.1419025 0.36231803 0.5426391
+    ##    deviation            metric
+    ## 1  0.8679387 utilisation_nurse
+    ## 2  0.5336632 utilisation_nurse
+    ## 3  0.3818112 utilisation_nurse
+    ## 4  0.3191113 utilisation_nurse
+    ## 5  0.2888323 utilisation_nurse
+    ## 6  0.2410753 utilisation_nurse
+    ## 7  0.2390348 utilisation_nurse
+    ## 8  0.2105911 utilisation_nurse
+    ## 9  0.1914905 utilisation_nurse
+    ## 10 0.1992592 utilisation_nurse
 
 ``` r
 # Create plot
-path <- file.path(output_dir, "choose_param_conf_int_3.png")
+path <- file.path(output_dir, "conf_int_method_utilisation.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean nurse utilisation",
@@ -234,7 +315,7 @@ plot_replication_ci(
 include_graphics(path)
 ```
 
-![](../outputs/choose_param_conf_int_3.png)<!-- -->
+![](../outputs/conf_int_method_utilisation.png)<!-- -->
 
 ## Automated detection of the number of replications
 
@@ -335,4 +416,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 54s
+    ## Notebook run time: 1m 36s

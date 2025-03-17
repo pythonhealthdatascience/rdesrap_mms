@@ -74,13 +74,13 @@ head(ci_df)
 
 # View first ten rows where percentage deviation is below 5
 ci_df %>%
-  filter(perc_deviation < 5L) %>%
+  filter(deviation < 5L) %>%
   head(10L)
 ```
 
 ```{r}
 # Create plot
-path <- file.path(output_dir, "choose_param_conf_int_1.png")
+path <- file.path(output_dir, "conf_int_method_serve_time.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean time with nurse",
@@ -94,7 +94,29 @@ include_graphics(path)
 It is also important to check across multiple metrics.
 
 ```{r}
-# Run calculations and produce plot
+# Run calculations
+ci_df <- confidence_interval_method(
+  replications = 1000L,
+  desired_precision = 0.05,
+  metric = "mean_waiting_time_nurse"
+)
+
+# Preview dataframe
+tail(ci_df)
+
+# Create plot
+path <- file.path(output_dir, "conf_int_method_wait_time.png")
+plot_replication_ci(
+  conf_ints = ci_df,
+  yaxis_title = "Mean wait time for the nurse",
+  file_path = path
+)
+# View plot
+include_graphics(path)
+```
+
+```{r}
+# Run calculations
 ci_df <- confidence_interval_method(
   replications = 200L,
   desired_precision = 0.05,
@@ -106,13 +128,11 @@ head(ci_df)
 
 # View first ten rows where percentage deviation is below 5
 ci_df %>%
-  filter(perc_deviation < 5L) %>%
+  filter(deviation < 5L) %>%
   head(10L)
-```
 
-```{r}
 # Create plot
-path <- file.path(output_dir, "choose_param_conf_int_3.png")
+path <- file.path(output_dir, "conf_int_method_utilisation.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean nurse utilisation",
