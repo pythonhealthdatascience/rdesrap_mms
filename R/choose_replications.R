@@ -344,7 +344,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
       )
     } else {
       # If there are, run the replications, then create instances of
-      # WelfordStatspre-loaded with data from the initial replications... we
+      # WelfordStats pre-loaded with data from the initial replications... we
       # use runner so allows for parallel processing if desired...
       self$param[["number_of_runs"]] <- self$initial_replications
       result <- runner(self$param)[["run_results"]]
@@ -353,17 +353,16 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
           WelfordStats$new(data = result[[x]], observer = observers[[x]])
         }), self$metrics
       )
-    }
-
-    # After completing any replications, check if any have met precision, add
-    # solution and update count
-    for (metric in self$metrics) {
-      if (stats[[metric]]$deviation() < self$desired_precision) {
-        solutions[[metric]]$nreps <- self$reps
-        solutions[[metric]]$target_met <- 1L
-        # If there is no lookahead, mark as solved
-        if (klimit(look_ahead, n) == 0L) {
-          solutions[[metric]]$solved <- TRUE
+      # After completing any replications, check if any have met precision, add
+      # solution and update count
+      for (metric in self$metrics) {
+        if (isTRUE(stats[[metric]]$deviation() < self$desired_precision)) {
+          solutions[[metric]]$nreps <- self$reps
+          solutions[[metric]]$target_met <- 1L
+          # If there is no lookahead, mark as solved
+          if (klimit(look_ahead, n) == 0L) {
+            solutions[[metric]]$solved <- TRUE
+          }
         }
       }
     }
@@ -390,7 +389,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
           stats[[metric]]$update(result[[metric]])
 
           # If precision has been achieved...
-          if (stats[[metric]]$deviation() < self$desired_precision) {
+          if (isTRUE(stats[[metric]]$deviation() < self$desired_precision)) {
 
             # Check if target met the time prior - if not, record the solution
             if (solutions[[metric]]$target_met == 0L) {
@@ -453,8 +452,8 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @return Dataframe with results from each replication.
 #' @export
 
-confidence_interval_method <- function(replications, desired_precision, metric,
-                                       yaxis_title, path, min_rep = NULL) {
+confidence_interval_method <- function(replications, desired_precision,
+                                       metric) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
   results <- runner(param)[["run_results"]]
@@ -482,17 +481,17 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     if (i < 3L) {
       # When only one observation, set to NA
       std_dev <- NA
-      ci_lower <- NA
-      ci_upper <- NA
+      lower_ci <- NA
+      upper_ci <- NA
       deviation <- NA
     } else {
       # Else, calculate standard deviation, 95% confidence interval, and
       # percentage deviation
       std_dev <- stats::sd(subset_data)
       ci <- stats::t.test(subset_data)[["conf.int"]]
-      ci_lower <- ci[[1L]]
-      ci_upper <- ci[[2L]]
-      deviation <- ((ci_upper - mean_value) / mean_value) * 100L
+      lower_ci <- ci[[1L]]
+      upper_ci <- ci[[2L]]
+      deviation <- ((upper_ci - mean_value) / mean_value) * 100L
     }
 
     # Append to the cumulative list
@@ -500,8 +499,8 @@ confidence_interval_method <- function(replications, desired_precision, metric,
       replications = i,
       cumulative_mean = mean_value,
       cumulative_std = std_dev,
-      ci_lower = ci_lower,
-      ci_upper = ci_upper,
+      lower_ci = lower_ci,
+      upper_ci = upper_ci,
       perc_deviation = deviation
     )
   }
@@ -525,14 +524,28 @@ confidence_interval_method <- function(replications, desired_precision, metric,
     warning("Running ", replications, " replications did not reach ",
             "desired precision (", desired_precision, ").", call. = FALSE)
   }
+  return(cumulative)
+}
 
+
+#' Generate a plot of metric and confidence intervals with increasing simulation replications
+#'
+#' @param conf_ints A dataframe containing confidence interval statistics, including cumulative mean, upper/lower bounds, and deviations. As returned by ReplicationTabuliser summary_table() method.
+#' @param yaxis_title Label for y axis.
+#' @param file_path Path and filename to save the plot to.
+#' @param min_rep The number of replications required to meet the desired precision.
+
+plot_replication_ci = function(
+    conf_ints, yaxis_title, file_path, min_rep = NULL
+)
+{
   # Plot the cumulative mean and confidence interval
-  p <- ggplot2::ggplot(cumulative,
+  p <- ggplot2::ggplot(conf_ints,
                        ggplot2::aes(x = .data[["replications"]],
                                     y = .data[["cumulative_mean"]])) +
     ggplot2::geom_line() +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = ci_lower, ymax = ci_upper),
+      ggplot2::aes(ymin = lower_ci, ymax = upper_ci),
       alpha = 0.2
     )
 
@@ -551,6 +564,4 @@ confidence_interval_method <- function(replications, desired_precision, metric,
 
   # Save the plot
   ggplot2::ggsave(filename = path, width = 6.5, height = 4L, bg = "white")
-
-  return(cumulative)
 }
