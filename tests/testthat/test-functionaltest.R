@@ -453,3 +453,28 @@ test_that("the count of unseen patients and mean unseen wait are consistent", {
   some_unseen <- filter(result, count_unseen_nurse > 0L)
   expect_true(all(some_unseen[["mean_waiting_time_unseen_nurse"]] > 0L))
 })
+
+
+test_that("model and runner produce same results if override future.seed", {
+  # Specify parameters
+  param = parameters(
+    patient_inter = 4,
+    mean_n_consult_time = 10,
+    number_of_nurses = 5,
+    warm_up_period = 0,
+    data_collection_period = 80,
+    number_of_runs = 5
+  )
+
+  # Get results from runner - overriding future seeding to use run numbers
+  # to use run numbers as seeds
+  runner_res <- runner(param, use_future_seeding = FALSE)[["run_results"]]
+
+  # Get results from model run in a loop
+  model_res <- bind_rows(lapply(1:param$number_of_runs, function(i) {
+    model(run_number = i, param = param, set_seed = TRUE)[["run_results"]]
+  }))
+
+  # Compare the results
+  expect_equal(runner_res, model_res)
+})
