@@ -53,15 +53,6 @@ test_that(
 )
 
 
-# test_that(
-#   paste0("solution from the ReplicationsAlgorithm is as expected when there ",
-#          "is a high number of initial replications specified."),
-#   {
-#     # TODO
-#   }
-# )
-
-
 test_that("ReplicationsAlgorithm initial_replications consistent to without", {
 
   #' Helper function to run the algorithm (ignoring unsolved warnings)
