@@ -115,7 +115,7 @@ test_that("parallel processing runs successfully", {
     )
   }
   mockery::stub(runner, "simulation::model", test_model)
-  param <- list(cores = 22L, number_of_runs = 5L)
+  param <- list(cores = 2L, number_of_runs = 5L)
   result <- runner(param, use_future_seeding = TRUE)
 
   # Check if results contain expected structure
