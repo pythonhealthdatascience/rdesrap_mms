@@ -443,6 +443,9 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 
 #' Use the confidence interval method to select the number of replications.
 #'
+#' This could be altered to use WelfordStats and ReplicationTabuliser if
+#' desired, but currently is independent.
+#'
 #' @param replications Number of times to run the model.
 #' @param desired_precision Desired mean deviation from confidence interval.
 #' @param metric Name of performance metric to assess.

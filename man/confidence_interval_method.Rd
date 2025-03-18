@@ -17,5 +17,6 @@ confidence_interval_method(replications, desired_precision, metric)
 Dataframe with results from each replication.
 }
 \description{
-Use the confidence interval method to select the number of replications.
+This could be altered to use WelfordStats and ReplicationTabuliser if
+desired, but currently is independent.
 }
