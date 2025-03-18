@@ -446,9 +446,8 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @param replications Number of times to run the model.
 #' @param desired_precision Desired mean deviation from confidence interval.
 #' @param metric Name of performance metric to assess.
-#' @param yaxis_title Label for y axis.
-#' @param path Path inc. filename to save figure to.
-#' @param min_rep A suggested minimum number of replications (default=NULL).
+#'
+#' @importFrom utils tail
 #'
 #' @return Dataframe with results from each replication.
 #' @export
