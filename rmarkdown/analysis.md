@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-12
+2025-03-17
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -105,8 +105,8 @@ run_results %>%
   group_by(key) %>%
   reframe(mean = mean(value, na.rm = TRUE),
           std_dev = stats::sd(value, na.rm = TRUE),
-          ci_lower = stats::t.test(value)[["conf.int"]][[1]],
-          ci_upper = stats::t.test(value)[["conf.int"]][[2]])
+          ci_lower = stats::t.test(value)[["conf.int"]][[1L]],
+          ci_upper = stats::t.test(value)[["conf.int"]][[2L]])
 ```
 
     ## # A tibble: 5 × 5
@@ -391,7 +391,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Mar 12 16:11:33 2025
+    ## % Mon Mar 17 15:49:56 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -647,7 +647,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Mar 12 16:12:14 2025
+    ## % Mon Mar 17 15:50:37 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -694,18 +694,18 @@ tail(nan_experiment[["arrivals"]])
 ```
 
     ##             name start_time end_time activity_time resource replication
-    ## 16136 patient131   64.07388       NA            NA    nurse         100
-    ## 16137  patient63   32.62716       NA            NA    nurse         100
+    ## 16136  patient78   38.80769       NA            NA    nurse         100
+    ## 16137  patient74   37.63360       NA            NA    nurse         100
     ## 16138  patient76   38.71731       NA            NA    nurse         100
-    ## 16139  patient99   49.99761       NA            NA    nurse         100
-    ## 16140  patient69   35.83208       NA            NA    nurse         100
+    ## 16139 patient134   64.35663       NA            NA    nurse         100
+    ## 16140  patient73   36.35539       NA            NA    nurse         100
     ## 16141  patient77   38.74436       NA            NA    nurse         100
     ##       serve_start serve_length wait_time wait_time_unseen
-    ## 16136          NA           NA        NA         15.92612
-    ## 16137          NA           NA        NA         47.37284
+    ## 16136          NA           NA        NA         41.19231
+    ## 16137          NA           NA        NA         42.36640
     ## 16138          NA           NA        NA         41.28269
-    ## 16139          NA           NA        NA         30.00239
-    ## 16140          NA           NA        NA         44.16792
+    ## 16139          NA           NA        NA         15.64337
+    ## 16140          NA           NA        NA         43.64461
     ## 16141          NA           NA        NA         41.25564
 
 ``` r
@@ -764,4 +764,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 5s
+    ## Notebook run time: 2m 19s

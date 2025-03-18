@@ -74,8 +74,8 @@ run_results %>%
   group_by(key) %>%
   reframe(mean = mean(value, na.rm = TRUE),
           std_dev = stats::sd(value, na.rm = TRUE),
-          ci_lower = stats::t.test(value)[["conf.int"]][[1]],
-          ci_upper = stats::t.test(value)[["conf.int"]][[2]])
+          ci_lower = stats::t.test(value)[["conf.int"]][[1L]],
+          ci_upper = stats::t.test(value)[["conf.int"]][[2L]])
 ```
 
 ## View spread of results across replication

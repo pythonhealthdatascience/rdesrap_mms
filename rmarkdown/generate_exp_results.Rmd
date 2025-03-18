@@ -60,19 +60,19 @@ param <- parameters(
 results <- runner(param)
 
 # Arrivals
-results[["arrivals"]]
-write.csv(results[["arrivals"]],
+head(results[["arrivals"]])
+write.csv(arrange(results[["arrivals"]], replication, start_time),
           file.path(testdata_dir, "base_arrivals.csv"),
           row.names = FALSE)
 
 # Resources
-results[["resources"]]
+head(results[["resources"]])
 write.csv(results[["resources"]],
           file.path(testdata_dir, "base_resources.csv"),
           row.names = FALSE)
 
 # Run results
-results[["run_results"]]
+head(results[["run_results"]])
 write.csv(results[["run_results"]],
           file.path(testdata_dir, "base_run_results.csv"),
           row.names = FALSE)
@@ -128,6 +128,35 @@ head(scenario_results)
 
 # Save to csv
 write.csv(scenario_results, file.path(testdata_dir, "scenario_results.csv"),
+          row.names = FALSE)
+```
+
+## Running the simulation when attempting to determine an appropriate number of parameters
+
+The `confidence_interval_method` and `ReplicationsAlgorithm` should return the same results, so we will just run one to use in the back tests.
+
+```{r}
+# Specify parameters (so consistent even if defaults change)
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  warm_up_period = 0L,
+  data_collection_period = 80L
+)
+
+# Run the confidence_interval_method()
+rep_results <- confidence_interval_method(
+  replications = 15L,
+  desired_precision = 0.05,
+  metric = "mean_serve_time_nurse"
+)
+
+# Preview results
+head(rep_results)
+
+# Save to csv
+write.csv(rep_results, file.path(testdata_dir, "choose_rep_results.csv"),
           row.names = FALSE)
 ```
 
