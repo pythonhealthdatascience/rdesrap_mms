@@ -100,3 +100,31 @@ test_that("warm-up filtering works as expected", {
                    mock_result[["arrivals"]])
   expect_identical(short_warm_up[["resources"]], mock_result[["resources"]])
 })
+
+
+test_that("parallel processing runs successfully", {
+
+  # Mock simulation model function so it can run without other dependencies
+  # This will allows us to execute runner, but when it calls model(), instead
+  # of attempting to run a simulation, it will just return a list of dataframes
+  test_model <- function(run_number, param, set_seed) {
+    list(
+      arrivals = data.frame(run = run_number, value = rnorm(1L)),
+      resources = data.frame(run = run_number, value = rnorm(1L)),
+      run_results = data.frame(run = run_number, success = TRUE)
+    )
+  }
+  mockery::stub(runner, "simulation::model", test_model)
+  param <- list(cores = 22L, number_of_runs = 5L)
+  result <- runner(param, use_future_seeding = TRUE)
+
+  # Check if results contain expected structure
+  expect_true("arrivals" %in% names(result))
+  expect_true("resources" %in% names(result))
+  expect_true("run_results" %in% names(result))
+
+  # Ensure results have 5 runs worth of data
+  expect_identical(nrow(result$arrivals), 5L)
+  expect_identical(nrow(result$resources), 5L)
+  expect_identical(nrow(result$run_results), 5L)
+})

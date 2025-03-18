@@ -4,10 +4,20 @@
 \alias{runner}
 \title{Run simulation for multiple replications, sequentially or in parallel.}
 \usage{
-runner(param)
+runner(param, use_future_seeding = TRUE)
 }
 \arguments{
 \item{param}{Named list of model parameters.}
+
+\item{use_future_seeding}{Logical. If TRUE, the function will use the
+seeding mechanism provided by `future.seed = seed`,  which is generally
+recommended and ensures reproducibility across parallel executions. However,
+this will not align exactly with the seeding approach used in `model()`. If
+FALSE, the function will override future's default seeding and instead
+generate a list of run numbers to use as seeds,similar to `model()`. Be
+aware that this approach is not recommended according to `future_lapply`
+documentation, which states: "Note that as.list(seq_along(x)) is not a valid
+set of such .Random.seed values."}
 }
 \value{
 Named list with three tables: monitored arrivals, monitored

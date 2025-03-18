@@ -4,14 +4,7 @@
 \alias{confidence_interval_method}
 \title{Use the confidence interval method to select the number of replications.}
 \usage{
-confidence_interval_method(
-  replications,
-  desired_precision,
-  metric,
-  yaxis_title,
-  path,
-  min_rep = NULL
-)
+confidence_interval_method(replications, desired_precision, metric)
 }
 \arguments{
 \item{replications}{Number of times to run the model.}
@@ -19,16 +12,11 @@ confidence_interval_method(
 \item{desired_precision}{Desired mean deviation from confidence interval.}
 
 \item{metric}{Name of performance metric to assess.}
-
-\item{yaxis_title}{Label for y axis.}
-
-\item{path}{Path inc. filename to save figure to.}
-
-\item{min_rep}{A suggested minimum number of replications (default=NULL).}
 }
 \value{
 Dataframe with results from each replication.
 }
 \description{
-Use the confidence interval method to select the number of replications.
+This could be altered to use WelfordStats and ReplicationTabuliser if
+desired, but currently is independent.
 }

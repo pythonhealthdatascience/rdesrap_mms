@@ -1,13 +1,18 @@
 Choosing replications
 ================
 Amy Heather
-2025-03-17
+2025-03-18
 
 - [Set up](#set-up)
 - [Choosing the number of
   replications](#choosing-the-number-of-replications)
 - [Automated detection of the number of
   replications](#automated-detection-of-the-number-of-replications)
+- [Explanation of the automated
+  method](#explanation-of-the-automated-method)
+  - [WelfordStats](#welfordstats)
+  - [ReplicationTabuliser](#replicationtabuliser)
+  - [ReplicationsAlgorithm](#replicationsalgorithm)
 - [Run time](#run-time)
 
 This notebook documents the choice of the number of replications.
@@ -404,6 +409,158 @@ include_graphics(path)
 
 ![](../outputs/reps_algorithm_utilisation.png)<!-- -->
 
+## Explanation of the automated method
+
+This section walks through how the automation code is structured. The
+algorithm that determines the number of replications is
+`ReplicationsAlgorithm`. This depends on other R6 classes including
+`WelfordStats` and `ReplicationTabuliser`.
+
+### WelfordStats
+
+`WelfordStats` is designed to:
+
+- Keep a **running mean and sum of squares**.
+- Return **other statistics** based on these (e.g. standard deviation,
+  confidence intervals).
+- **Call the `update()`** method of `ReplicationTabuliser` whenever a
+  new data point is processed by `WelfordStats`
+
+#### How do the running mean and sum of squares calculations work?
+
+The running mean and sum of squares are updated iteratively with each
+new data point provided, **without requiring the storage of all previous
+data points**. This approach can be referred to as “online” because we
+only need to store a small set of values (such as the current mean and
+sum of squares), rather than maintaining an entire list of past values.
+
+For example, focusing on the mean, normally you would need to store all
+the data points in a list and sum them up to compute the average - for
+example:
+
+    data_points <- c(1, 2, 3, 4, 5)
+    mean <- sum(data_points) / length(data_points)
+
+This works fine for small datasets, but as the data grows, maintaining
+the entire list becomes impractical. Instead, we can update the mean
+without storing the previous data points using **Welford’s online
+algorithm**. The formula for the running mean is:
+
+$$
+\mu_n = \mu_{n-1} + \frac{x_n - \mu_{n-1}}{n}
+$$
+
+Where:
+
+- $\mu_n$ is the running mean after the $n$-th data point.
+- $x_n$ is the new data point.
+- $\mu_{n-1}$ is the running mean before the new data point.
+
+The key thing to notice here is that, to update the mean, **all we
+needed to know was the current running mean, the new data point, and the
+number of data points**. A similar formula exists for calculating the
+sum of squares.
+
+In our code, every time we call `update()` with a new data point, the
+mean and sum of squares are adjusted, with `n` keeping track of the
+number of data points so far - for example:
+
+    WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
+
+      n = 0L,
+      mean = NA,
+      ...
+
+      update = function(x) {
+        self$n <- self$n + 1L
+        ...
+          updated_mean <- self$mean + ((x - self$mean) / self$n)
+          ...
+          self$mean <- updated_meam
+          ...
+
+#### What other statistics can it calculate?
+
+`WelfordStats` then has a series of methods which can return other
+statistics based on the current mean, sum of squares, and count:
+
+- Variance
+- Standard deviation
+- Standard error
+- Half width of the confidence interval
+- Lower confidence interval bound
+- Upper confidence interval bound
+- Deviation of confidence interval from the mean
+
+### ReplicationTabuliser
+
+`ReplicationTabuliser` keeps track of our results. It:
+
+- Stores **lists with various statistics**, which are updated whenever
+  `update()` is called.
+- Can convert these into a **dataframe** using the `summary_table()`
+  method.
+
+<figure>
+<img src="../images/replications_statistics.png"
+alt="Interaction between WelfordStats and ReplicationTabuliser" />
+<figcaption aria-hidden="true">Interaction between WelfordStats and
+ReplicationTabuliser</figcaption>
+</figure>
+
+### ReplicationsAlgorithm
+
+The diagram below is a visual representation of the logic in the
+**ReplicationsAlgorithm**.
+
+Once set up with the relevant parameters, it will first check if there
+are **initial_replications** to run. These might be specified if the
+user knows that the model will need at least X amount of replications
+before any metrics start to get close to the desired precision. The
+benefit of specifying these is that they are run using **runner()** and
+so can be run in parallel if chosen.
+
+Once these are run, it checks if any metrics meet precision already.
+Typically more replications will be required (for the length of the
+lookahead period) - but if there is no lookahead, they can be marked as
+solved.
+
+> **What is the lookahead period?**
+>
+> We want to make sure that the desired precision is stable and
+> maintained for several replications. Here, we refer to this as the
+> lookahead period.
+>
+> The user will specify **look_ahead** - as noted in
+> [sim-tools](https://tommonks.github.io/sim-tools/04_replications/01_automated_reps.html),
+> this is recommended to be **5** by [Hoad et
+> al. (2010)](https://www.jstor.org/stable/40926090).
+>
+> The algorithm contains a method **klimit()** which will scale up the
+> lookahead if more than 100 replications have been run, to ensure a
+> sufficient period is being checked for stability, relative to the
+> number of replications. This is simply:
+> `look_ahead/100 * replications`. For example, if we have run 200
+> replications and look_ahead is 5: `5/100 * 200 = 10`.
+
+After any initial replications, the algorithm enters a while loop. This
+continues until all metrics are solved or the number of replications
+surpasses the user-specified **replication_budget** - whichever comes
+first!
+
+With each loop, it runs the model for another replication, then updates
+the results for any unsolved metrics from this replication, and checks
+if precision is met. The **target_met** is a record of how many times in
+a row precision has been met - once this passes the lookahead period,
+the metric is marked as solved.
+
+<figure>
+<img src="../images/replications_algorithm.png"
+alt="Visual representation of logic in ReplicationsAlgorithm" />
+<figcaption aria-hidden="true">Visual representation of logic in
+ReplicationsAlgorithm</figcaption>
+</figure>
+
 ## Run time
 
 ``` r
@@ -417,4 +574,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 37s
+    ## Notebook run time: 1m 29s

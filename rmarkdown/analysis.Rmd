@@ -413,7 +413,10 @@ These patients will be ignored in calculation of metrics like mean time with nur
 
 ```{r}
 nan_experiment <- runner(parameters(patient_inter = 0.5))
-tail(nan_experiment[["arrivals"]])
+
+nan_experiment[["arrivals"]] %>%
+  arrange(replication, start_time) %>%
+  tail()
 ```
 
 ```{r}

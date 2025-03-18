@@ -36,5 +36,6 @@ Suggests:
     lintr,
     devtools,
     xtable,
-    data.table
+    data.table,
+    mockery
 Config/testthat/edition: 3
