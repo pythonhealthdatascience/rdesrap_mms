@@ -109,13 +109,13 @@ test_that("parallel processing runs successfully", {
   # of attempting to run a simulation, it will just return a list of dataframes
   test_model <- function(run_number, param, set_seed) {
     list(
-      arrivals = data.frame(run = run_number, value = rnorm(1)),
-      resources = data.frame(run = run_number, value = rnorm(1)),
+      arrivals = data.frame(run = run_number, value = rnorm(1L)),
+      resources = data.frame(run = run_number, value = rnorm(1L)),
       run_results = data.frame(run = run_number, success = TRUE)
     )
   }
   mockery::stub(runner, "simulation::model", test_model)
-  param <- list(cores = 2, number_of_runs = 5)
+  param <- list(cores = 22L, number_of_runs = 5L)
   result <- runner(param, use_future_seeding = TRUE)
 
   # Check if results contain expected structure
@@ -124,7 +124,7 @@ test_that("parallel processing runs successfully", {
   expect_true("run_results" %in% names(result))
 
   # Ensure results have 5 runs worth of data
-  expect_equal(nrow(result$arrivals), 5)
-  expect_equal(nrow(result$resources), 5)
-  expect_equal(nrow(result$run_results), 5)
+  expect_identical(nrow(result$arrivals), 5L)
+  expect_identical(nrow(result$resources), 5L)
+  expect_identical(nrow(result$run_results), 5L)
 })
