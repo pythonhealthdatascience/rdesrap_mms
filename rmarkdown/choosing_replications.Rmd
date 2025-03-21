@@ -74,7 +74,7 @@ head(ci_df)
 
 # View first ten rows where percentage deviation is below 5
 ci_df %>%
-  filter(deviation < 5L) %>%
+  filter(deviation < 0.05) %>%
   head(10L)
 ```
 
@@ -128,7 +128,7 @@ head(ci_df)
 
 # View first ten rows where percentage deviation is below 5
 ci_df %>%
-  filter(deviation < 5L) %>%
+  filter(deviation < 0.05) %>%
   head(10L)
 
 # Create plot
