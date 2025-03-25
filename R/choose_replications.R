@@ -458,7 +458,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
       # Use find_position() to check for solution in initial replications
       adj_nreps <- self$find_position(as.list(observers[[metric]]$deviation))
       # If there was a maintained solution, replace in solutions
-      if (!is.null(adj_nreps) && !is.na(solutions[[metric]]$nreps)){
+      if (!is.null(adj_nreps) && !is.na(solutions[[metric]]$nreps)) {
         solutions[[metric]]$nreps <- adj_nreps
       }
     }
