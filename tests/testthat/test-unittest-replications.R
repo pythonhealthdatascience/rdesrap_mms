@@ -145,25 +145,25 @@ patrick::with_parameters_test_that(
   },
   patrick::cases(
     # Normal case
-    list(lst = list(NULL, NULL, 0.8, 0.4, 0.3),
+    list(lst = list(NA, NA, 0.8, 0.4, 0.3),
          exp = 4L, look_ahead = 0L),
-    # No NULL values
+    # No NA values
     list(lst = list(0.4, 0.3, 0.2, 0.1),
          exp = 1L, look_ahead = 0L),
     # No values below threshold
     list(lst = list(0.8, 0.9, 0.8, 0.7),
          exp = NULL, look_ahead = 0L),
     # No values
-    list(lst = list(NULL, NULL, NULL, NULL),
+    list(lst = list(NA, NA, NA, NA),
          exp = NULL, look_ahead = 0L),
     # Empty list
     list(lst = list(),
          exp = NULL, look_ahead = 0L),
     # Not full lookahead
-    list(lst = list(NULL, NULL, 0.8, 0.8, 0.3, 0.3, 0.3),
+    list(lst = list(NA, NA, 0.8, 0.8, 0.3, 0.3, 0.3),
          exp = NULL, look_ahead = 3L),
     # Meets lookahead
-    list(lst = list(NULL, NULL, 0.8, 0.8, 0.3, 0.3, 0.3, 0.3),
+    list(lst = list(NA, NA, 0.8, 0.8, 0.3, 0.3, 0.3, 0.3),
          exp = 5L, look_ahead = 3L)
   )
 )

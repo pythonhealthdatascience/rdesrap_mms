@@ -324,12 +324,12 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     }
 
     # Check if list is empty or no values below threshold
-    if (is.null(lst) || !any(unlist(lst) < 0.5)) {
+    if (length(lst) == 0L || all(is.na(lst)) || !any(unlist(lst) < 0.5)) {
       return(NULL)
     }
 
     # Find the first non-null value in the list
-    start_index <- which(!vapply(lst, is.null, logical(1L)))[1L]
+    start_index <- which(!vapply(lst, is.na, logical(1L)))[1L]
 
     # Iterate through the list, stopping when at last point where we still
     # have enough elements to look ahead
@@ -456,7 +456,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     # Correction to result...
     for (metric in names(solutions)){
       # Use find_position() to check for solution in initial replications
-      adj_nreps <- self$find_position(observers[[metric]]$deviation)
+      adj_nreps <- self$find_position(as.list(observers[[metric]]$deviation))
       # If there was a maintained solution, replace in solutions
       if (!is.null(adj_nreps) && !is.na(solutions[[metric]]$nreps)){
         solutions[[metric]]$nreps <- adj_nreps
