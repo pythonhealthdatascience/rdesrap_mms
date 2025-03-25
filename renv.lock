@@ -1128,7 +1128,7 @@
     },
     "parallelly": {
       "Package": "parallelly",
-      "Version": "1.42.0",
+      "Version": "1.43.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1136,7 +1136,7 @@
         "tools",
         "utils"
       ],
-      "Hash": "78f830734a4b488f2c72bf00cde6381e"
+      "Hash": "ca40f736e4d2dc6981c1dc9d14ea3dcf"
     },
     "patrick": {
       "Package": "patrick",
