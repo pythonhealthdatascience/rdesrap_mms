@@ -130,3 +130,46 @@ test_that("ReplicationTaubliser's update method appends new data + makes df", {
   )
   expect_identical(tab$summary_table(), mock_df)
 })
+
+
+patrick::with_parameters_test_that(
+  "the find_position() method from ReplicationsAlgorithm is correct",
+  {
+    # Set threshold to 0.5, with provided look_ahead
+    alg <- ReplicationsAlgorithm$new(param = parameters(),
+                                     desired_precision = 0.5,
+                                     look_ahead = look_ahead)
+    # Get result from algorithm and compare to expected
+    result <- alg$find_position(lst)
+    expect_identical(result, exp)
+  },
+  patrick::cases(
+    # Normal case
+    list(lst = list(NA, NA, 0.8, 0.4, 0.3),
+         exp = 4L, look_ahead = 0L),
+    # No NA values
+    list(lst = list(0.4, 0.3, 0.2, 0.1),
+         exp = 1L, look_ahead = 0L),
+    # No values below threshold
+    list(lst = list(0.8, 0.9, 0.8, 0.7),
+         exp = NULL, look_ahead = 0L),
+    # No values
+    list(lst = list(NA, NA, NA, NA),
+         exp = NULL, look_ahead = 0L),
+    # Empty list
+    list(lst = list(),
+         exp = NULL, look_ahead = 0L),
+    # Not full lookahead
+    list(lst = list(NA, NA, 0.8, 0.8, 0.3, 0.3, 0.3),
+         exp = NULL, look_ahead = 3L),
+    # Meets lookahead
+    list(lst = list(NA, NA, 0.8, 0.8, 0.3, 0.3, 0.3, 0.3),
+         exp = 5L, look_ahead = 3L)
+  )
+)
+
+
+test_that("find_position() fails if not supplied a list", {
+  alg <- ReplicationsAlgorithm$new(param = parameters())
+  expect_error(alg$find_position(c(1L, 2L, 3L)))
+})

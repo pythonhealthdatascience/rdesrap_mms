@@ -227,11 +227,6 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   desired_precision = NA,
 
   #' @field initial_replications Number of initial replications to perform.
-  #' Note that the minimum solution will be the value of initial_replications
-  #' (i.e. if require 20 initial replications but was resolved in 5, solution
-  #' output will still be 20). Although, if initial_replications < 3, solution
-  #' will still be at least 3, as that is the minimum required to calculate the
-  #' confidence intervals.
   initial_replications = NA,
 
   #' @field look_ahead Minimum additional replications to look ahead to assess
@@ -311,6 +306,47 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   #' @return Number of additional replications to verify stability (integer).
   klimit = function() {
     as.integer((self$look_ahead / 100L) * max(self$reps, 100L))
+  },
+
+  #' @description
+  #' Find the first position where element is below deviation, and this is
+  #' maintained through the lookahead period.
+  #' This is used to correct the ReplicationsAlgorithm, which cannot return
+  #' a solution below the initial_replications.
+  #' @param lst List of numbers to compare against desired deviation.
+  #' @return Integer, minimum replications required to meet and maintain
+  #' precision.
+  find_position = function(lst) {
+    # Ensure that the input is a list
+    if (!is.list(lst)) {
+      stop("find_position requires a list but was supplied: ", typeof(lst),
+           call. = FALSE)
+    }
+
+    # Check if list is empty or no values below threshold
+    if (length(lst) == 0L || all(is.na(lst)) || !any(unlist(lst) < 0.5)) {
+      return(NULL)
+    }
+
+    # Find the first non-null value in the list
+    start_index <- which(!vapply(lst, is.na, logical(1L)))[1L]
+
+    # Iterate through the list, stopping when at last point where we still
+    # have enough elements to look ahead
+    max_index <- length(lst) - self$look_ahead
+    if (start_index > max_index) {
+      return(NULL)
+    }
+    for (i in start_index:max_index) {
+      # Trim to list with current value + lookahead
+      # Check if all fall below the desired deviation
+      segment <- lst[i:(i + self$look_ahead)]
+      if (all(vapply(segment,
+                     function(x) x < self$desired_precision, logical(1L)))) {
+        return(i)
+      }
+    }
+    return(NULL) # nolint: return_linter
   },
 
   #' @description
@@ -414,6 +450,16 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
           }
 
         }
+      }
+    }
+
+    # Correction to result...
+    for (metric in names(solutions)){
+      # Use find_position() to check for solution in initial replications
+      adj_nreps <- self$find_position(as.list(observers[[metric]]$deviation))
+      # If there was a maintained solution, replace in solutions
+      if (!is.null(adj_nreps) && !is.na(solutions[[metric]]$nreps)) {
+        solutions[[metric]]$nreps <- adj_nreps
       }
     }
 
