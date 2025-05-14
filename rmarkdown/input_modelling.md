@@ -48,15 +48,17 @@ approach, as when testing lots of distributions using a tool it:
 ## Set-up
 
 ``` r
+# nolint start: undesirable_function_linter
 # Import required packages
 library(dplyr)
-library(fitdistrplus) 
+library(fitdistrplus)
 library(ggplot2)
 library(knitr)
 library(lubridate)
 library(plotly)
 library(readr)
 library(tidyr)
+# nolint end
 ```
 
 ``` r
@@ -66,7 +68,9 @@ output_dir <- file.path("..", "outputs")
 
 ``` r
 # Import data
-data <- read_csv("../inputs/NHS_synthetic.csv", show_col_types = FALSE)
+data <- read_csv(
+  file.path("..", "inputs", "NHS_synthetic.csv"), show_col_types = FALSE
+)
 
 # Preview data
 head(data)
@@ -92,8 +96,13 @@ data <- data %>%
   # Sort by arrival time
   arrange(arrival_datetime) %>%
   # Calculate inter-arrival times
-  mutate(iat_mins = as.numeric(difftime(
-    arrival_datetime, lag(arrival_datetime), units = "mins")))
+  mutate(
+    iat_mins = as.numeric(
+      difftime(
+        arrival_datetime, lag(arrival_datetime), units = "mins"
+      )
+    )
+  )
 
 # Preview
 data %>%
@@ -119,7 +128,8 @@ data <- data %>%
     service_datetime   = ymd_hm(paste(SERVICE_DATE, SERVICE_TIME)),
     departure_datetime = ymd_hm(paste(DEPARTURE_DATE, DEPARTURE_TIME)),
     service_mins = as.numeric(
-      difftime(departure_datetime, service_datetime, units = "mins"))
+      difftime(departure_datetime, service_datetime, units = "mins")
+    )
   )
 
 # Preview
@@ -160,7 +170,7 @@ inspect_time_series <- function(
   time_series, date_col, value_col, y_lab, interactive, save_path = NULL
 ) {
   #' Plot time-series
-  #' 
+  #'
   #' @param time_series Dataframe with date column and numeric column to plot.
   #' @param date_col String. Name of column with dates.
   #' @param value_col String. Name of column with numeric values.
@@ -172,24 +182,26 @@ inspect_time_series <- function(
   # Create custom tooltip text
   time_series$tooltip_text <- paste0(
     "<span style='color:white'>",
-    "Date: ", time_series[[date_col]], "<br>", 
+    "Date: ", time_series[[date_col]], "<br>",
     y_lab, ": ", time_series[[value_col]], "</span>"
   )
 
   # Create plot
-  p <- ggplot(time_series, aes(x = .data[[date_col]], y = .data[[value_col]], text = tooltip_text)) +
-    geom_line(group = 1, color = "#727af4") +
+  p <- ggplot(time_series, aes(x = .data[[date_col]],
+                               y = .data[[value_col]],
+                               text = tooltip_text)) +  # nolint: object_usage_linter
+    geom_line(group = 1L, color = "#727af4") +
     labs(x = "Date", y = y_lab) +
     theme_minimal()
 
   # Save file if path provided
-  if(!is.null(save_path)){
+  if (!is.null(save_path)) {
     ggsave(save_path, p, width = 7L, height = 4L)
   }
 
   # Display as interactive or static figure
-  if(interactive) {
-    ggplotly(p, tooltip = "text", width = 700, height = 400)
+  if (interactive) {
+    ggplotly(p, tooltip = "text", width = 700L, height = 400L)
   } else {
     p
   }
@@ -202,7 +214,8 @@ path <- file.path(output_dir, "input_model_daily_arrivals.png")
 daily_arrivals <- data %>% group_by(ARRIVAL_DATE) %>% count()
 p <- inspect_time_series(
   time_series = daily_arrivals, date_col = "ARRIVAL_DATE", value_col = "n",
-  y_lab = "Number of arrivals", interactive = FALSE, save_path = path)
+  y_lab = "Number of arrivals", interactive = FALSE, save_path = path
+)
 include_graphics(path)
 ```
 
@@ -213,14 +226,15 @@ include_graphics(path)
 daily_service <- data %>%
   group_by(SERVICE_DATE) %>%
   summarise(mean_service = mean(service_mins)) %>%
-  filter(row_number() <= n() - 1)
+  filter(row_number() <= n() - 1L)
 
 # Plot mean service length each day
 path <- file.path(output_dir, "input_model_mean_service.png")
 p <- inspect_time_series(
   time_series = daily_service, date_col = "SERVICE_DATE",
   value_col = "mean_service", y_lab = "Mean consultation length (min)",
-  interactive = FALSE, save_path = path)
+  interactive = FALSE, save_path = path
+)
 include_graphics(path)
 ```
 
@@ -233,7 +247,7 @@ exponential, gamma and Weibull distributions.
 ``` r
 inspect_histogram <- function(data, var, x_lab, interactive, save_path) {
   #' Plot histogram
-  #' 
+  #'
   #' @param data A dataframe or tibble containing the variable to plot.
   #' @param var String. Name of the column to plot as a histogram.
   #' @param x_lab String. X axis label.
@@ -247,21 +261,21 @@ inspect_histogram <- function(data, var, x_lab, interactive, save_path) {
   # Create plot
   p <- ggplot(data, aes(x = .data[[var]])) +
     geom_histogram(aes(text = paste0("<span style='color:white'>", x_lab, ": ",
-                                     round(after_stat(x),2), "<br>Count: ",
+                                     round(after_stat(x), 2L), "<br>Count: ",  # nolint: object_usage_linter
                                      after_stat(count), "</span>")),
-                   fill = "#727af4", bins = 30) +
+                   fill = "#727af4", bins = 30L) +
     labs(x = x_lab, y = "Count") +
     theme_minimal() +
     theme(legend.position = "none")
 
   # Save file if path provided
-  if(!is.null(save_path)){
+  if (!is.null(save_path)) {
     ggsave(save_path, p, width = 7L, height = 4L)
   }
 
   # Display as interactive or static figure
-  if(interactive) {
-    ggplotly(p, tooltip = "text", width = 700, height = 400)
+  if (interactive) {
+    ggplotly(p, tooltip = "text", width = 700L, height = 400L)
   } else {
     p
   }
@@ -273,7 +287,8 @@ inspect_histogram <- function(data, var, x_lab, interactive, save_path) {
 path <- file.path(output_dir, "input_model_hist_iat.png")
 p <- inspect_histogram(
   data = data, var = "iat_mins", x_lab = "Inter-arrival time (min)",
-  interactive = FALSE, save_path = path)
+  interactive = FALSE, save_path = path
+)
 include_graphics(path)
 ```
 
@@ -284,7 +299,8 @@ include_graphics(path)
 path <- file.path(output_dir, "input_model_hist_service.png")
 p <- inspect_histogram(
   data = data, var = "service_mins", x_lab = "Consultation length (min)",
-  interactive = FALSE, save_path = path)
+  interactive = FALSE, save_path = path
+)
 include_graphics(path)
 ```
 
@@ -302,7 +318,7 @@ data_service <- data %>% select(service_mins) %>% pull()
 
 # Plot histograms and CDFs
 path <- file.path(output_dir, "input_model_hist_dist_iat.png")
-png(path, width = 700, height = 400)
+png(path, width = 700L, height = 400L)
 plotdist(data_iat, histo = TRUE, demp = TRUE)
 dev.off()
 ```
@@ -318,7 +334,7 @@ include_graphics(path)
 
 ``` r
 path <- file.path(output_dir, "input_model_hist_dist_service.png")
-png(path, width = 700, height = 400)
+png(path, width = 700L, height = 400L)
 plotdist(data_service, histo = TRUE, demp = TRUE)
 dev.off()
 ```
@@ -357,13 +373,13 @@ error-handling to `fit_distributions` to ensure that.
 
 ``` r
 # Percentage of inter-arrival times that are 0
-paste0(round(sum(data_iat == 0) / length(data_iat) * 100, 2), "%")
+paste0(round(sum(data_iat == 0L) / length(data_iat) * 100L, 2L), "%")
 ```
 
     ## [1] "11.55%"
 
 ``` r
-paste0(round(sum(data_service == 0) / length(data_service) * 100, 2), "%")
+paste0(round(sum(data_service == 0L) / length(data_service) * 100L, 2L), "%")
 ```
 
     ## [1] "4.8%"
@@ -371,23 +387,23 @@ paste0(round(sum(data_service == 0) / length(data_service) * 100, 2), "%")
 ``` r
 fit_distributions <- function(data, dists) {
   #' Compute Kolmogorov-Smirnov Statistics for Fitted Distributions
-  #' 
+  #'
   #' @param data Numeric vector. The data to fit distributions to.
   #' @param dists Character vector. Names of distributions to fit.
-  #' 
+  #'
   #' @return Named numeric vector of Kolmogorov-Smirnov statistics, one per
   #' distribution.
 
   # Define distribution requirements
   positive_only <- c("lnorm", "weibull")
   non_negative <- c("exp", "gamma")
-  zero_to_one <- c("beta")
-  
+  zero_to_one <- "beta"
+
   # Check data characteristics
-  has_negatives <- any(data < 0)
-  has_zeros <- any(data == 0)
-  has_out_of_beta_range <- any(data < 0 | data > 1)
-  
+  has_negatives <- any(data < 0L)
+  has_zeros <- any(data == 0L)
+  has_out_of_beta_range <- any(data < 0L | data > 1L)
+
   # Filter distributions based on data
   valid_dists <- dists
   if (has_negatives || has_zeros) {
@@ -399,26 +415,28 @@ fit_distributions <- function(data, dists) {
   if (has_out_of_beta_range) {
     valid_dists <- setdiff(valid_dists, zero_to_one)
   }
-  
+
   # Warn about skipped distributions
   skipped <- setdiff(dists, valid_dists)
-  if (length(skipped) > 0) {
-    warning("Skipped distributions due to data constraints: ", 
-            paste(skipped, collapse = ", "))
+  if (length(skipped) > 0L) {
+    warning("Skipped distributions due to data constraints: ",
+            toString(skipped), call. = FALSE)
   }
-  
+
   # Exit early if no valid distributions remain
-  if (length(valid_dists) == 0) {
-    warning("No valid distributions to test after filtering")
-    return(numeric(0))
+  if (length(valid_dists) == 0L) {
+    warning("No valid distributions to test after filtering", call. = FALSE)
+    return(numeric(0L))
   }
-  
+
   # Fit remaining distributions
-  fits <- lapply(valid_dists, function(dist) suppressWarnings(fitdist(data, dist)))
+  fits <- lapply(
+    valid_dists, function(dist) suppressWarnings(fitdist(data, dist))
+  )
   gof_results <- gofstat(fits, fitnames = valid_dists)
 
   # Return KS statistics
-  return(gof_results$ks)
+  gof_results$ks
 }
 
 
@@ -426,8 +444,7 @@ distributions <- c("exp", "gamma", "weibull")
 fit_distributions(data_iat, distributions)
 ```
 
-    ## Warning in fit_distributions(data_iat, distributions): Skipped distributions
-    ## due to data constraints: weibull
+    ## Warning: Skipped distributions due to data constraints: weibull
 
     ##       exp     gamma 
     ## 0.1154607 0.2061950
@@ -436,8 +453,7 @@ fit_distributions(data_iat, distributions)
 fit_distributions(data_service, distributions)
 ```
 
-    ## Warning in fit_distributions(data_service, distributions): Skipped
-    ## distributions due to data constraints: weibull
+    ## Warning: Skipped distributions due to data constraints: weibull
 
     ##        exp      gamma 
     ## 0.04796992 0.09755396
@@ -453,7 +469,7 @@ this is to just use the plotting functions from `distfitrplus`.
 # Fit and create plot for IAT
 iat_exp <- suppressWarnings(fitdist(data_iat, "exp"))
 path <- file.path(output_dir, "input_model_hist_exp_iat.png")
-png(path, width = 700, height = 400)
+png(path, width = 700L, height = 400L)
 denscomp(iat_exp, legendtext = "Exponential")
 dev.off()
 ```
@@ -471,7 +487,7 @@ include_graphics(path)
 # Fit and create plot for service
 ser_exp <- suppressWarnings(fitdist(data_service, "exp"))
 path <- file.path(output_dir, "input_model_hist_exp_service.png")
-png(path, width = 700, height = 400)
+png(path, width = 700L, height = 400L)
 denscomp(ser_exp, legendtext = "Exponential")
 dev.off()
 ```
@@ -501,8 +517,7 @@ distributions <- c("norm", "lnorm", "exp", "cauchy", "gamma", "logis", "beta",
 fit_distributions(data_iat, distributions)
 ```
 
-    ## Warning in fit_distributions(data_iat, distributions): Skipped distributions
-    ## due to data constraints: lnorm, beta, weibull
+    ## Warning: Skipped distributions due to data constraints: lnorm, beta, weibull
 
     ##      norm       exp    cauchy     gamma     logis      unif 
     ## 0.1796464 0.1154607 0.1968200 0.2061950 0.1564321 0.7036682
@@ -511,8 +526,7 @@ fit_distributions(data_iat, distributions)
 fit_distributions(data_service, distributions)
 ```
 
-    ## Warning in fit_distributions(data_service, distributions): Skipped
-    ## distributions due to data constraints: lnorm, beta, weibull
+    ## Warning: Skipped distributions due to data constraints: lnorm, beta, weibull
 
     ##       norm        exp     cauchy      gamma      logis       unif 
     ## 0.15810466 0.04796992 0.19728636 0.09755396 0.15566197 0.71336153
@@ -525,7 +539,7 @@ The `distfitrplus` package also has some nice visualisation functions.
 iat_exp <- suppressWarnings(fitdist(data_iat, "exp"))
 
 path <- file.path(output_dir, "input_model_iat_exp.png")
-png(path, width = 800, height = 600)
+png(path, width = 800L, height = 600L)
 plot(iat_exp)
 dev.off()
 ```
