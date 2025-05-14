@@ -29,7 +29,10 @@ Imports:
     ggplot2,
     tibble,
     gridExtra,
-    R6
+    R6,
+    fitdistrplus,
+    lubridate,
+    plotly
 Suggests:
     testthat (>= 3.0.0),
     patrick,
