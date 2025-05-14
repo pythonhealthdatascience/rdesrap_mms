@@ -6,7 +6,6 @@ output:
   github_document:
       toc: true
       html_preview: false
-always_allow_html: true
 ---
 
 # Input modelling
@@ -34,10 +33,16 @@ It's still important to do step 1 even if taking a comprehensive approach, as wh
 library(dplyr)
 library(fitdistrplus) 
 library(ggplot2)
+library(knitr)
 library(lubridate)
 library(plotly)
 library(readr)
 library(tidyr)
+```
+
+```{r}
+# Define path to outputs
+output_dir <- file.path("..", "outputs")
 ```
 
 ```{r}
@@ -97,13 +102,18 @@ We repeat this for arrivals and service time, so have created a function to avoi
 **Time series**. For this data, we observe no trends, seasonality or outliers.
 
 ```{r}
-inspect_time_series <- function(time_series, date_col, value_col, y_lab) {
+inspect_time_series <- function(
+  time_series, date_col, value_col, y_lab, interactive, save_path = NULL
+) {
   #' Plot time-series
   #' 
   #' @param time_series Dataframe with date column and numeric column to plot.
   #' @param date_col String. Name of column with dates.
   #' @param value_col String. Name of column with numeric values.
   #' @param y_lab String. Y axis label.
+  #' @param interactive Boolean. Whether to render interactive or static plot.
+  #' @param save_path String. Path to save static file to (inc. name and
+  #' filetype). If NULL, then will not save.
 
   # Create custom tooltip text
   time_series$tooltip_text <- paste0(
@@ -118,17 +128,31 @@ inspect_time_series <- function(time_series, date_col, value_col, y_lab) {
     labs(x = "Date", y = y_lab) +
     theme_minimal()
 
-  # Display as interactive figure
-  ggplotly(p, tooltip = "text", width = 700, height = 400)
+  # Save file if path provided
+  if(!is.null(save_path)){
+    ggsave(save_path, p, width = 7L, height = 4L)
+  }
+
+  # Display as interactive or static figure
+  if(interactive) {
+    ggplotly(p, tooltip = "text", width = 700, height = 400)
+  } else {
+    p
+  }
 }
 ```
 
 ```{r}
 # Plot daily arrivals
+path <- file.path(output_dir, "input_model_daily_arrivals.png")
 daily_arrivals <- data %>% group_by(ARRIVAL_DATE) %>% count()
-inspect_time_series(time_series = daily_arrivals, date_col = "ARRIVAL_DATE",
-                    value_col = "n", y_lab = "Number of arrivals")
+p <- inspect_time_series(
+  time_series = daily_arrivals, date_col = "ARRIVAL_DATE", value_col = "n",
+  y_lab = "Number of arrivals", interactive = FALSE, save_path = path)
+include_graphics(path)
+```
 
+```{r}
 # Calculate mean service length per day, dropping last day (incomplete)
 daily_service <- data %>%
   group_by(SERVICE_DATE) %>%
@@ -136,19 +160,26 @@ daily_service <- data %>%
   filter(row_number() <= n() - 1)
 
 # Plot mean service length each day
-inspect_time_series(time_series = daily_service, date_col = "SERVICE_DATE",
-                    value_col = "mean_service", y_lab = "Mean consultation length (min)")
+path <- file.path(output_dir, "input_model_mean_service.png")
+p <- inspect_time_series(
+  time_series = daily_service, date_col = "SERVICE_DATE",
+  value_col = "mean_service", y_lab = "Mean consultation length (min)",
+  interactive = FALSE, save_path = path)
+include_graphics(path)
 ```
 
 **Histogram**. For both inter-arrival times and service times, we observe a right skewed distribution. Hence, it would be good to try exponential, gamma and Weibull distributions.
 
 ```{r}
-inspect_histogram <- function(data, var, x_lab) {
+inspect_histogram <- function(data, var, x_lab, interactive, save_path) {
   #' Plot histogram
   #' 
   #' @param data A dataframe or tibble containing the variable to plot.
   #' @param var String. Name of the column to plot as a histogram.
   #' @param x_lab String. X axis label.
+  #' @param interactive Boolean. Whether to render interactive or static plot.
+  #' @param save_path String. Path to save static file to (inc. name and
+  #' filetype). If NULL, then will not save.
 
   # Remove non-finite values
   data <- data[is.finite(data[[var]]), ]
@@ -162,20 +193,35 @@ inspect_histogram <- function(data, var, x_lab) {
     labs(x = x_lab, y = "Count") +
     theme_minimal() +
     theme(legend.position = "none")
-  
-  # Display as interactive figure
-  ggplotly(p, tooltip = "text", width = 700, height = 400)
+
+  # Save file if path provided
+  if(!is.null(save_path)){
+    ggsave(save_path, p, width = 7L, height = 4L)
+  }
+
+  # Display as interactive or static figure
+  if(interactive) {
+    ggplotly(p, tooltip = "text", width = 700, height = 400)
+  } else {
+    p
+  }
 }
 ```
 
 ```{r, warning=FALSE}
 # Plot histogram of inter-arrival times
-inspect_histogram(
-  data = data, var = "iat_mins", x_lab = "Inter-arrival time (min)")
+path <- file.path(output_dir, "input_model_hist_iat.png")
+p <- inspect_histogram(
+  data = data, var = "iat_mins", x_lab = "Inter-arrival time (min)",
+  interactive = FALSE, save_path = path)
+include_graphics(path)
 
 # Plot histogram of service times
-inspect_histogram(
-  data = data, var = "service_mins", x_lab = "Consultation length (min)")
+path <- file.path(output_dir, "input_model_hist_service.png")
+p <- inspect_histogram(
+  data = data, var = "service_mins", x_lab = "Consultation length (min)",
+  interactive = FALSE, save_path = path)
+include_graphics(path)
 ```
 
 **Alternative:** You can use the `fitdistrplus` package to create these histograms - as well as the empirical cumulative distribution function (CDF), which can help you inspect the tails, central tendency, and spot jumps or plateaus in the data.
@@ -186,8 +232,17 @@ data_iat <- data %>% drop_na(iat_mins) %>% select(iat_mins) %>% pull()
 data_service <- data %>% select(service_mins) %>% pull()
 
 # Plot histograms and CDFs
+path <- file.path(output_dir, "input_model_hist_dist_iat.png")
+png(path, width = 700, height = 400)
 plotdist(data_iat, histo = TRUE, demp = TRUE)
+dev.off()
+include_graphics(path)
+
+path <- file.path(output_dir, "input_model_hist_dist_service.png")
+png(path, width = 700, height = 400)
 plotdist(data_service, histo = TRUE, demp = TRUE)
+dev.off()
+include_graphics(path)
 ```
 
 ## Targeted approach
@@ -278,11 +333,19 @@ We can create a version of our histograms from before but with the distributions
 ```{r}
 # Fit and create plot for IAT
 iat_exp <- suppressWarnings(fitdist(data_iat, "exp"))
+path <- file.path(output_dir, "input_model_hist_exp_iat.png")
+png(path, width = 700, height = 400)
 denscomp(iat_exp, legendtext = "Exponential")
+dev.off()
+include_graphics(path)
 
 # Fit and create plot for service
 ser_exp <- suppressWarnings(fitdist(data_service, "exp"))
+path <- file.path(output_dir, "input_model_hist_exp_service.png")
+png(path, width = 700, height = 400)
 denscomp(ser_exp, legendtext = "Exponential")
+dev.off()
+include_graphics(path)
 ```
 
 ## Comprehensive approach
@@ -306,5 +369,10 @@ The `distfitrplus` package also has some nice visualisation functions.
 
 ```{r}
 iat_exp <- suppressWarnings(fitdist(data_iat, "exp"))
+
+path <- file.path(output_dir, "input_model_iat_exp.png")
+png(path, width = 800, height = 600)
 plot(iat_exp)
+dev.off()
+include_graphics(path)
 ```
