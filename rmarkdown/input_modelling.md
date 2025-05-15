@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-05-14
+2025-05-15
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -10,6 +10,7 @@ Amy Heather
   - [Targeted approach](#targeted-approach)
   - [Comprehensive approach](#comprehensive-approach)
   - [Plots](#plots)
+  - [Parameters](#parameters)
 
 # Input modelling
 
@@ -245,7 +246,9 @@ observe a right skewed distribution. Hence, it would be good to try
 exponential, gamma and Weibull distributions.
 
 ``` r
-inspect_histogram <- function(data, var, x_lab, interactive, save_path) {
+inspect_histogram <- function(
+  data, var, x_lab, interactive, save_path = NULL
+) {
   #' Plot histogram
   #'
   #' @param data A dataframe or tibble containing the variable to plot.
@@ -463,7 +466,7 @@ distribution** (lowest test statistic).
 
 We can create a version of our histograms from before but with the
 distributions overlaid, to visually support this. The simplest way to do
-this is to just use the plotting functions from `distfitrplus`.
+this is to just use the plotting functions from `fitdistrplus`.
 
 ``` r
 # Fit and create plot for IAT
@@ -503,7 +506,7 @@ include_graphics(path)
 
 ## Comprehensive approach
 
-The `distfitrplus` package does not have a built-in function to
+The `fitdistrplus` package does not have a built-in function to
 automatically fit a large set of distributions in a single command.
 Instead, we just need to specify a list of candidate distributions.
 
@@ -533,7 +536,7 @@ fit_distributions(data_service, distributions)
 
 ## Plots
 
-The `distfitrplus` package also has some nice visualisation functions.
+The `fitdistrplus` package also has some nice visualisation functions.
 
 ``` r
 iat_exp <- suppressWarnings(fitdist(data_iat, "exp"))
@@ -552,3 +555,32 @@ include_graphics(path)
 ```
 
 ![](../outputs/input_model_iat_exp.png)<!-- -->
+
+## Parameters
+
+The exponential distribution is defined by a single parameter, but this
+parameter can be expressed in two ways - as the:
+
+- **Mean** (also called the **scale**) - this is just your sample mean.
+- **Rate** (also called **lambda** λ) - this is calculated as
+  `1 / mean`.
+
+We will use the `rexp()` function from the `stats` package which
+requires the **rate** parameter, not the mean.
+
+Rate:
+
+- Inter-arrival time: 0.25
+- Service time: 0.1
+
+``` r
+1 / mean(data_iat)
+```
+
+    ## [1] 0.2509813
+
+``` r
+1 /mean(data_service)
+```
+
+    ## [1] 0.1000844
