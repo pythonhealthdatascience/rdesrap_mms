@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-03-18
+2025-05-20
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -28,6 +28,13 @@ can be rendered and displayed within the output `.md` file, even if we
 had not specifically saved them). These are viewed using
 `include_graphics()`, which must be the last command in the cell (or
 last in the plotting function).
+
+Some of these are used in the paper (`mock_paper.md`) - see below:
+
+- **Figure 1:** `outputs/spread_arrivals.png`
+- **Figure 2:** `outputs/scenario_nurse_util.png`
+- **Figure 3:** `outputs/scenario_nurse_wait.png`
+- **Figure 4:** `outputs/sensitivity_consult_time.png`
 
 The run time is provided at the end of the notebook.
 
@@ -391,7 +398,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar 18 11:22:35 2025
+    ## % Tue May 20 11:26:47 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -647,7 +654,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Mar 18 11:23:15 2025
+    ## % Tue May 20 11:27:28 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -767,4 +774,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 2s
+    ## Notebook run time: 2m 6s

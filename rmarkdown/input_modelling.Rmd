@@ -26,6 +26,11 @@ It's still important to do step 1 even if taking a comprehensive approach, as wh
 * May suggest distributions which mathematically fit but **contextually are inappropriate** (e.g. normal distribution for service times, which can't be negative).
 * Overfitting - suggesting complex distributions even when **simpler are sufficient**.
 
+Some of these figures are used in the paper (`mock_paper.md`) - see below:
+
+* **Figure A.1:** `outputs/input_model_hist_dist_iat.png`
+* **Figure A.2:** `outputs/input_model_hist_dist_service.png`
+
 ## Set-up
 
 ```{r, message=FALSE}

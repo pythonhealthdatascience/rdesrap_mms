@@ -222,12 +222,12 @@ repo/
 
 Run times from our analyses (on Intel Core i7-12700H, 32GB RAM, Ubuntu 24.04.1):
 
-* `analysis.Rmd`: 2m 2s
-* `choosing_cores.Rmd`: 2m 14s
-* `choosing_replications.Rmd`: 1m 33s
-* `choosing_warmup.Rmd`: 2s
+* `analysis.Rmd`: 2m 6s
+* `choosing_cores.Rmd`: 2m 10s
+* `choosing_replications.Rmd`: 1m 38s
+* `choosing_warmup.Rmd`: 3s
 * `generate_exp_results.Rmd`: 2s
-* `input_modelling.Rmd`: 14s
+* `input_modelling.Rmd`: 13s
 
 There are also two notebooks illustrating logging functionality (`logs.Rmd`) and about the impact of using `set_attributes()` and `get_attributes` (`using_set_attributes.Rmd`).
 
@@ -255,13 +255,13 @@ If you use this repository, please cite either the GitHub repository or Zenodo:
 
 <br>
 
-## 📜 Licence
+## Licence
 
 MIT Licence. See `LICENSE.md` for details.
 
 <br>
 
-## 👨‍👨‍👧 Acknowledgements
+## Acknowledgements
 
 This repository was developed with thanks to a few others sources. These are acknowledged throughout in the relevant scipts, and also summarised here:
 
@@ -272,6 +272,6 @@ This repository was developed with thanks to a few others sources. These are ack
 
 <br>
 
-## 💰 Funding
+## Funding
 
 This project was developed as part of the project STARS: Sharing Tools and Artefacts for Reproducible Simulations. It is supported by the Medical Research Council [grant number [MR/Z503915/1](https://gtr.ukri.org/projects?ref=MR%2FZ503915%2F1)].

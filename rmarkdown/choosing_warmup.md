@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-03-18
+2025-05-20
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -29,6 +29,11 @@ We should:
 - Use a **long run length** (i.e. 5-10 times actual planned run length).
 
 The run time is provided at the end of the document.
+
+Some of these figures are used in the paper (`mock_paper.md`) - see
+below:
+
+- **Figure B.1:** `outputs/choose_param_time_series.png`
 
 ## Set-up
 
@@ -123,4 +128,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 2s
+    ## Notebook run time: 0m 3s

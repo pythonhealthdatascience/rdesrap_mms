@@ -47,6 +47,12 @@ approach, as when testing lots of distributions using a tool it:
 - Overfitting - suggesting complex distributions even when **simpler are
   sufficient**.
 
+Some of these figures are used in the paper (`mock_paper.md`) - see
+below:
+
+- **Figure A.1:** `outputs/input_model_hist_dist_iat.png`
+- **Figure A.2:** `outputs/input_model_hist_dist_service.png`
+
 ## Set-up
 
 ``` r
@@ -609,4 +615,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 14s
+    ## Notebook run time: 0m 13s

@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-03-21
+2025-05-20
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -25,6 +25,13 @@ can be rendered and displayed within the output `.md` file, even if we
 had not specifically saved them). These are viewed using
 `include_graphics()`, which must be the last command in the cell (or
 last in the plotting function).
+
+Some of these figures are used in the paper (`mock_paper.md`) - see
+below:
+
+- **Figure C.1:** `outputs/reps_algorithm_wait_time.png`
+- **Figure C.2:** `outputs/reps_algorithm_serve_time.png`
+- **Figure C.3:** `outputs/reps_algorithm_utilisation.png`
 
 The run time is provided at the end of the notebook.
 
@@ -574,4 +581,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 33s
+    ## Notebook run time: 1m 38s
