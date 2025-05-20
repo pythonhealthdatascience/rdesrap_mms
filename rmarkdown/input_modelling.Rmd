@@ -42,10 +42,20 @@ library(tidyr)
 # nolint end
 ```
 
+Start timer.
+
+```{r}
+start_time <- Sys.time()
+```
+
+Define path to outputs.
+
 ```{r}
 # Define path to outputs
 output_dir <- file.path("..", "outputs")
 ```
+
+Import data.
 
 ```{r}
 # Import data
@@ -413,5 +423,18 @@ Rate:
 
 ```{r}
 1 / mean(data_iat)
-1 /mean(data_service)
+1 / mean(data_service)
+```
+
+## Calculate run time
+
+```{r end_timer}
+# Get run time in seconds
+end_time <- Sys.time()
+runtime <- as.numeric(end_time - start_time, units = "secs")
+
+# Display converted to minutes and seconds
+minutes <- as.integer(runtime / 60L)
+seconds <- as.integer(runtime %% 60L)
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```

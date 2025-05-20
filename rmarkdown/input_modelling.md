@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-05-15
+2025-05-20
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -11,6 +11,7 @@ Amy Heather
   - [Comprehensive approach](#comprehensive-approach)
   - [Plots](#plots)
   - [Parameters](#parameters)
+  - [Calculate run time](#calculate-run-time)
 
 # Input modelling
 
@@ -62,10 +63,20 @@ library(tidyr)
 # nolint end
 ```
 
+Start timer.
+
+``` r
+start_time <- Sys.time()
+```
+
+Define path to outputs.
+
 ``` r
 # Define path to outputs
 output_dir <- file.path("..", "outputs")
 ```
+
+Import data.
 
 ``` r
 # Import data
@@ -580,7 +591,22 @@ Rate:
     ## [1] 0.2509813
 
 ``` r
-1 /mean(data_service)
+1 / mean(data_service)
 ```
 
     ## [1] 0.1000844
+
+## Calculate run time
+
+``` r
+# Get run time in seconds
+end_time <- Sys.time()
+runtime <- as.numeric(end_time - start_time, units = "secs")
+
+# Display converted to minutes and seconds
+minutes <- as.integer(runtime / 60L)
+seconds <- as.integer(runtime %% 60L)
+cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
+```
+
+    ## Notebook run time: 0m 14s
