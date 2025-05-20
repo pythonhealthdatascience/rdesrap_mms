@@ -66,15 +66,23 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters and save to `.csv`.
 
 ```{r}
+# Print out default parameters
+print(parameters())
+
+# Run model
 run_results <- runner(param = parameters())[["run_results"]]
+
+# Preview results
 head(run_results)
 
+# Save results to csv
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
 Can calculate overall results from across the replications as well...
 
 ```{r}
+# Calculate average results
 run_results %>%
   dplyr::select(!c(replication, arrivals)) %>%
   gather() %>%
@@ -419,8 +427,15 @@ These patients are captured in the `wait_time_unseen` column in `arrivals`, and 
 These patients will be ignored in calculation of metrics like mean time with nurse (as they don't get to see nurse) - but it's important we still have measures for those unseen, as lots of patients waiting at the end of the simulation reveals large backlogs in the system.
 
 ```{r}
-nan_experiment <- runner(parameters(patient_inter = 0.5))
+# Set up parameters with short inter-arrival time
+param <- parameters(patient_inter = 0.5)
+print(param)
 
+# Run replications
+nan_experiment <- runner(param)
+```
+
+```{r}
 nan_experiment[["arrivals"]] %>%
   arrange(replication, start_time) %>%
   tail()

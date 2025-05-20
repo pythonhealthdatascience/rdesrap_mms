@@ -222,9 +222,9 @@ repo/
 
 Run times from our analyses (on Intel Core i7-12700H, 32GB RAM, Ubuntu 24.04.1):
 
-* `analysis.Rmd`: 2m 6s
-* `choosing_cores.Rmd`: 2m 10s
-* `choosing_replications.Rmd`: 1m 38s
+* `analysis.Rmd`: 2m 12s
+* `choosing_cores.Rmd`: 2m 12s
+* `choosing_replications.Rmd`: 1m 35s
 * `choosing_warmup.Rmd`: 3s
 * `generate_exp_results.Rmd`: 2s
 * `input_modelling.Rmd`: 13s

@@ -86,7 +86,43 @@ param <- parameters(
   data_collection_period = data_collection_period,
   number_of_runs = 5L
 )
+print(param)
+```
 
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 50000
+    ## 
+    ## $number_of_runs
+    ## [1] 5
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
 # Run model
 result <- runner(param)
 ```

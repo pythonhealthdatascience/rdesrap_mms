@@ -4,16 +4,21 @@
 #' different values to run in scenarios
 #' @param base_list List of parameters to use as base for scenarios, which can
 #' be partial (as will input to parameters() function).
+#' @param verbose Boolean, whether to print messages about scenarios as run.
 #'
 #' @return Tibble with results from each replication for each scenario.
 #' @export
 
-run_scenarios <- function(scenarios, base_list) {
+run_scenarios <- function(scenarios, base_list, verbose = TRUE) {
   # Generate all permutations of the scenarios
   all_scenarios <- expand.grid(scenarios)
 
   # Preview the number of scenarios
-  message(sprintf("There are %d scenarios. Running:", nrow(all_scenarios)))
+  if (isTRUE(verbose)) {
+    message(sprintf("There are %d scenarios.", nrow(all_scenarios)))
+    message("Base parameters:")
+    print(base_list)
+  }
 
   results <- list()
 
@@ -27,7 +32,11 @@ run_scenarios <- function(scenarios, base_list) {
     formatted_scenario <- toString(
       paste0(names(scenario_to_run), " = ", scenario_to_run)
     )
-    message("Scenario: ", formatted_scenario)
+
+    # Print the scenario currently running
+    if (isTRUE(verbose)) {
+      message("Scenario: ", formatted_scenario)
+    }
 
     # Create parameter list with scenario-specific values
     s_args <- c(scenario_to_run, list(scenario_name = index))

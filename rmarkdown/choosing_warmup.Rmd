@@ -71,6 +71,7 @@ param <- parameters(
   data_collection_period = data_collection_period,
   number_of_runs = 5L
 )
+print(param)
 
 # Run model
 result <- runner(param)

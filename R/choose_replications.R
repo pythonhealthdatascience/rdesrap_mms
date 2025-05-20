@@ -277,6 +277,10 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     # Initially set reps to the number of initial replications
     self$reps <- initial_replications
 
+    # Print the parameters
+    print("Model parameters:")
+    print(self$param)
+
     # Check validity of provided parameters
     self$valid_inputs()
   },
@@ -505,6 +509,7 @@ confidence_interval_method <- function(replications, desired_precision,
                                        metric) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
+  print(param)
   results <- runner(param, use_future_seeding = FALSE)[["run_results"]]
 
   # Initialise list to store the results

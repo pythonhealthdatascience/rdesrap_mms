@@ -83,7 +83,48 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters and save to `.csv`.
 
 ``` r
+# Print out default parameters
+print(parameters())
+```
+
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 100
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
+# Run model
 run_results <- runner(param = parameters())[["run_results"]]
+
+# Preview results
 head(run_results)
 ```
 
@@ -100,12 +141,14 @@ head(run_results)
     ## #   mean_waiting_time_unseen_nurse <dbl>
 
 ``` r
+# Save results to csv
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
 Can calculate overall results from across the replications as well…
 
 ``` r
+# Calculate average results
 run_results %>%
   dplyr::select(!c(replication, arrivals)) %>%
   gather() %>%
@@ -203,7 +246,42 @@ scenarios <- list(
 scenario_results <- run_scenarios(scenarios, base_list = parameters())
 ```
 
-    ## There are 20 scenarios. Running:
+    ## There are 20 scenarios.
+
+    ## Base parameters:
+
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 100
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
 
     ## Scenario: patient_inter = 3, number_of_nurses = 5
 
@@ -398,7 +476,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue May 20 11:26:47 2025
+    ## % Tue May 20 12:48:58 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -448,7 +526,42 @@ scenarios <- list(
 compare_template_results <- run_scenarios(scenarios, new_base)
 ```
 
-    ## There are 20 scenarios. Running:
+    ## There are 20 scenarios.
+
+    ## Base parameters:
+
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 1440
+    ## 
+    ## $number_of_runs
+    ## [1] 10
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
 
     ## Scenario: patient_inter = 3, number_of_nurses = 5
 
@@ -580,7 +693,42 @@ consult <- list(mean_n_consult_time = c(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L))
 sensitivity_consult <- run_scenarios(consult, base_list = parameters())
 ```
 
-    ## There are 8 scenarios. Running:
+    ## There are 8 scenarios.
+
+    ## Base parameters:
+
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 100
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
 
     ## Scenario: mean_n_consult_time = 8
 
@@ -654,7 +802,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue May 20 11:27:28 2025
+    ## % Tue May 20 12:49:41 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -696,8 +844,50 @@ still have measures for those unseen, as lots of patients waiting at the
 end of the simulation reveals large backlogs in the system.
 
 ``` r
-nan_experiment <- runner(parameters(patient_inter = 0.5))
+# Set up parameters with short inter-arrival time
+param <- parameters(patient_inter = 0.5)
+print(param)
+```
 
+    ## $patient_inter
+    ## [1] 0.5
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 100
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
+# Run replications
+nan_experiment <- runner(param)
+```
+
+``` r
 nan_experiment[["arrivals"]] %>%
   arrange(replication, start_time) %>%
   tail()
@@ -774,4 +964,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 6s
+    ## Notebook run time: 2m 12s

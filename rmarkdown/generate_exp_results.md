@@ -69,7 +69,43 @@ param <- parameters(
   number_of_runs = 10L,
   cores = 1L
 )
+print(param)
+```
 
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 10
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
 # Run the replications
 results <- runner(param)
 
@@ -196,7 +232,42 @@ scenarios <- list(
 scenario_results <- run_scenarios(scenarios, base_list = param)
 ```
 
-    ## There are 4 scenarios. Running:
+    ## There are 4 scenarios.
+
+    ## Base parameters:
+
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 3
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
 
     ## Scenario: patient_inter = 3, number_of_nurses = 6
 

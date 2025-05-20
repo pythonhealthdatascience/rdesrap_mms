@@ -55,6 +55,7 @@ param <- parameters(
   number_of_runs = 10L,
   cores = 1L
 )
+print(param)
 
 # Run the replications
 results <- runner(param)
