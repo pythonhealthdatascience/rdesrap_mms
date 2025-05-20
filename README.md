@@ -77,14 +77,14 @@ library(simulation)
 **Run a single simulation:**
 
 ```{.r}
-params <- parameters(arrival_rate = 2, service_rate = 4, servers = 2)
+params <- parameters(patient_inter = 2L, mean_n_consult_time = 4L, number_of_nurses = 2L)
 result <- model(params)
 ```
 
 **Run multiple replications:**
 
 ```{.r}
-params <- parameters(arrival_rate = 2, service_rate = 4, servers = 2, replications = 10)
+params <- parameters(patient_inter = 2L, mean_n_consult_time = 4L, number_of_nurses = 2L, number_of_runs = 10L)
 results <- runner(params)
 ```
 
@@ -93,8 +93,6 @@ results <- runner(params)
 ```{.bash}
 bash run_rmarkdown.sh
 ```
-
-![Model structure diagram](images/model_structure.png)
 
 **Run tests:**
 
@@ -108,6 +106,42 @@ devtools::test()
 lintr::lint_package()
 lintr::lint_dir("rmarkdown")
 ```
+
+<br>
+
+## ❓ How does the model work
+
+The model is built around three main functions, designed for flexibility and easy scenario analysis.
+
+**1. parameters()**. This function creates a list of all inputs needed for the simulation - such as arrival rate, service rate, and number of nurses. You can quickly change parameters for a scenario by calling, for example:
+
+```{.r}
+params <- parameters(patient_inter = 10L)
+```
+
+Any values you don't specify will use the defaults set in `R/parameters.R`. To permanently change a default, edit the values directly in the `parameters()` function inside `R/parameters.R`.
+
+**2. model()**. This function runs a single simulation using the parameters you provide. Example:
+
+```{.r}
+result <- model(params)
+```
+
+**3. runner()**. For robust results, you’ll usually want to run the simulation multiple times (replications). Example:
+
+```{.r}
+results <- runner(params)
+```
+
+You can set the number of replications in your parameters:
+
+```{.r}
+params <- parameters(number_of_runs = 20)
+```
+
+To summarise, we create or modify a parameter set with `parameters()`, run a single simulation with `model()`, or many with `runner()`, and analyse the results (e.g. in the provided RMarkdown files). This diagram provides an overview of the functions:
+
+![Model structure diagram](images/model_structure.png)
 
 <br>
 
