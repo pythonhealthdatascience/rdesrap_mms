@@ -1,5 +1,7 @@
 # Mock paper
 
+This mock paper uses images directly from the latest GitHub, so is not stated as being linked to a specific version of the code, like a typical publication.
+
 ## Introduction
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ornare metus vel arcu tincidunt, ut viverra elit vulputate. Aenean et gravida ex. Cras arcu orci, pharetra vitae pulvinar sed, molestie quis augue. Maecenas mattis nulla a mauris vestibulum, vel auctor erat blandit. Curabitur et purus varius, rhoncus felis mattis, sollicitudin est. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam vitae nunc ac metus cursus pharetra.

@@ -8,7 +8,7 @@ As part of the project STARS (Sharing Tools and Artefacts for Reproducible Simul
 | - | - | - |
 | **Set-up** |
 | Share code with an open licence (⭐) | ✅ | `LICENSE` and `LICENSE.md` |
-| Link publication to a specific version of the code | N/A | No publication. |
+| Link publication to a specific version of the code | N/A | The mock paper images directly from the latest GitHub, so is not stated as being linked to a specific version of the code, like a typical publication. |
 | List dependencies and versions | ✅ | `renv.lock` |
 | **Running the model** |
 | Provide code for all scenarios and sensitivity analyses (⭐) | ✅ | Within `analysis.Rmd` |
