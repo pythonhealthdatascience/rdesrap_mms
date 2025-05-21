@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-05-20
+2025-05-21
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -320,12 +320,45 @@ param <- parameters(
 # Run the confidence_interval_method()
 rep_results <- confidence_interval_method(
   replications = 15L,
-  desired_precision = 0.05,
+  desired_precision = 0.1,
   metric = "mean_serve_time_nurse"
 )
 ```
 
-    ## Warning: Running 15 replications did not reach desired precision (0.05).
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+    ## Warning: Running 15 replications did not reach desired precision (0.1).
 
 ``` r
 # Preview results

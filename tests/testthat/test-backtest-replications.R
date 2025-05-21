@@ -13,7 +13,7 @@ test_that("results from confidence_interval_method are consistent", {
   # Run the confidence_interval_method()
   rep_results <- suppressWarnings(confidence_interval_method(
     replications = 15L,
-    desired_precision = 0.05,
+    desired_precision = 0.1,
     metric = "mean_serve_time_nurse"
   ))
 
@@ -39,7 +39,7 @@ test_that("results from ReplicationsAlgorithm are consistent", {
   alg <- ReplicationsAlgorithm$new(
     param = param,
     metrics = "mean_serve_time_nurse",
-    desired_precision = 0.05,
+    desired_precision = 0.1,
     initial_replications = 15L,
     look_ahead = 0L,
     replication_budget = 15L

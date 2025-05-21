@@ -149,7 +149,7 @@ param <- parameters(
 # Run the confidence_interval_method()
 rep_results <- confidence_interval_method(
   replications = 15L,
-  desired_precision = 0.05,
+  desired_precision = 0.1,
   metric = "mean_serve_time_nurse"
 )
 

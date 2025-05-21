@@ -223,7 +223,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 
   #' @field desired_precision The target half width precision for the algorithm
   #' (i.e. percentage deviation of the confidence interval from the mean,
-  #' expressed as a proportion, e.g. 0.05 = 5\%).
+  #' expressed as a proportion, e.g. 0.1 = 10\%). Choice is fairly arbitrary.
   desired_precision = NA,
 
   #' @field initial_replications Number of initial replications to perform.
@@ -262,7 +262,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     metrics = c("mean_waiting_time_nurse",
                 "mean_serve_time_nurse",
                 "utilisation_nurse"),
-    desired_precision = 0.05,
+    desired_precision = 0.1,
     initial_replications = 3L,
     look_ahead = 5L,
     replication_budget = 1000L

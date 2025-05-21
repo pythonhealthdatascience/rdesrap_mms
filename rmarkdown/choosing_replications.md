@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-05-20
+2025-05-21
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -107,26 +107,39 @@ output_dir <- file.path("..", "outputs")
 
 ## Choosing the number of replications
 
-The **confidence interval method** can be used to select the number of
-replications to run. The more replications you run, the narrower your
-confidence interval becomes, leading to a more precise estimate of the
-model’s mean performance.
+The **confidence interval method** can help you decide how many
+replications (runs) your simulation needs. The more replications you
+run, the narrower your confidence interval becomes, leading to a more
+precise estimate of the model’s mean performance.
 
-First, you select a desired confidence interval - for example, 95%.
-Then, run the model with an increasing number of replications, and
-identify the number required to achieve that precision in the estimate
-of a given metric - and also, to maintain that precision (as the
-intervals may converge or expand again later on).
+There are two main calculations:
+
+- **Confidence interval**. This is the range where the true mean is
+  likely to be, based on your simulation results. For example, a 95%
+  confidence interval means that, if you repeated the experiment many
+  times, about 95 out of 100 intervals would contain the true mean.
+- **Precision**. This tells you how close that range is to your mean.
+  For example, if your mean is 50 and your 95% confidence interval is 45
+  to 55, your precision is ±10% (because 5 is 10% of 50).
+
+To run this method you:
+
+- Run the model with more and more replications.
+- Check after each how wide your confidence interval is.
+- Stop when the interval is narrow enough to meet your desired
+  precision.
+- Make sure the interval stays this narrow if you keep running more
+  replications.
 
 This method is less useful for values very close to zero - so, for
 example, when using utilisation (which ranges from 0 to 1) it is
 recommended to multiple values by 100.
 
-When selecting the number of replications you should repeat the analysis
-for all performance measures and select the highest value as your number
-of replications.
+When deciding how many replications you need, repeat this process for
+each performance measure you care about, and use the largest number you
+find.
 
-It’s important to check ahead, to check that the 5% precision is
+It’s important to check ahead, to check that the 10% precision is
 maintained - which is fine in this case - it doesn’t go back up to
 future deviation.
 
@@ -134,7 +147,7 @@ future deviation.
 # Run calculations and produce plot
 ci_df <- confidence_interval_method(
   replications = 150L,
-  desired_precision = 0.05,
+  desired_precision = 0.1,
   metric = "mean_serve_time_nurse"
 )
 ```
@@ -172,7 +185,7 @@ ci_df <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Reached desired precision (0.05) in 83 replications.
+    ## Reached desired precision (0.1) in 31 replications.
 
 ``` r
 # Preview dataframe
@@ -245,7 +258,7 @@ It is also important to check across multiple metrics.
 # Run calculations
 ci_df <- confidence_interval_method(
   replications = 1000L,
-  desired_precision = 0.05,
+  desired_precision = 0.1,
   metric = "mean_waiting_time_nurse"
 )
 ```
@@ -283,7 +296,7 @@ ci_df <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Warning: Running 1000 replications did not reach desired precision (0.05).
+    ## Warning: Running 1000 replications did not reach desired precision (0.1).
 
 ``` r
 # Preview dataframe
@@ -323,7 +336,7 @@ include_graphics(path)
 # Run calculations
 ci_df <- confidence_interval_method(
   replications = 200L,
-  desired_precision = 0.05,
+  desired_precision = 0.1,
   metric = "utilisation_nurse"
 )
 ```
@@ -361,7 +374,7 @@ ci_df <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Reached desired precision (0.05) in 128 replications.
+    ## Reached desired precision (0.1) in 45 replications.
 
 ``` r
 # Preview dataframe
@@ -488,10 +501,10 @@ alg$nreps
     ## [1] NA
     ## 
     ## $mean_serve_time_nurse
-    ## [1] 83
+    ## [1] 31
     ## 
     ## $utilisation_nurse
-    ## [1] 128
+    ## [1] 45
 
 ``` r
 head(alg$summary_table)

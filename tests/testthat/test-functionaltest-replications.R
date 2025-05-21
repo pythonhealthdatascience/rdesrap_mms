@@ -7,7 +7,7 @@ test_that("output from confidence_interval_method is as expected", {
   # Run the confidence interval method (ignoring unsolved warnings)
   ci_df <- suppressWarnings(confidence_interval_method(
     replications = reps,
-    desired_precision = 0.05,
+    desired_precision = 0.1,
     metric = "mean_waiting_time_nurse"
   ))
 
@@ -26,7 +26,7 @@ test_that(
   {
     # Choose the number of replications to run for
     reps <- 20L
-    desired_precision <- 0.05
+    desired_precision <- 0.1
     metric <- "mean_serve_time_nurse"
 
     # Run the manual confidence interval method (ignoring unsolved warnings)
@@ -60,7 +60,7 @@ test_that("ReplicationsAlgorithm initial_replications consistent to without", {
     alg <- ReplicationsAlgorithm$new(
       param = parameters(),
       metrics = "mean_serve_time_nurse",
-      desired_precision = 0.05,
+      desired_precision = 0.1,
       initial_replications = initial_replications,
       look_ahead = 10L,
       replication_budget = 10L
