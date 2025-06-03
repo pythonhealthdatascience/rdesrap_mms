@@ -278,7 +278,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     self$reps <- initial_replications
 
     # Print the parameters
-    print("Model parameters:")
+    print("Model parameters:")  # nolint: print_linter
     print(self$param)
 
     # Check validity of provided parameters

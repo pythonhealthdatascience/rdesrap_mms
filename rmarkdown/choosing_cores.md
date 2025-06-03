@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-05-20
+2025-06-03
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -31,10 +31,20 @@ parallel, you must use `devtools::install()`.
 devtools::install()
 ```
 
-    ## 
+    ## openssl    (2.3.2  -> 2.3.3 ) [CRAN]
+    ## curl       (6.2.2  -> 6.2.3 ) [CRAN]
+    ## parallelly (1.44.0 -> 1.45.0) [CRAN]
+    ## promises   (1.3.2  -> 1.3.3 ) [CRAN]
+    ## data.table (1.17.2 -> 1.17.4) [CRAN]
+
+    ## Installing 5 packages: openssl, curl, parallelly, promises, data.table
+
+    ## Installing packages into '/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu'
+    ## (as 'lib' is unspecified)
+
     ## ── R CMD build ─────────────────────────────────────────────────────────────────
     ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
-    ##   ─  preparing ‘simulation’:
+    ##   ─  preparing ‘simulation’: (410ms)
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
@@ -42,11 +52,12 @@ devtools::install()
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpbRM8Em/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpaJo3Dh/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
     ## ** R
+    ## ** inst
     ## ** tests
     ## ** byte-compile and prepare package for lazy loading
     ## ** help
@@ -130,9 +141,9 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     param[["cores"]] <- i
 
     # Print model parameter on first run through (1 core)
-    if (i == 1) {
-      print("Parameters from run with 1 core:")
-      print("(will be same for others, just more cores)")
+    if (i == 1L) {
+      print("Parameters from run with 1 core:")  # nolint: print_linter
+      print("(will be same for others, just more cores)")  # nolint: print_linter
       print(param)
     }
 
@@ -296,4 +307,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 12s
+    ## Notebook run time: 2m 7s

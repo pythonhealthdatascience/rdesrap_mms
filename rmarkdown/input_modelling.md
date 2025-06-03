@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-05-20
+2025-06-03
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -591,13 +591,13 @@ Rate:
 - Service time: 0.1
 
 ``` r
-1 / mean(data_iat)
+1L / mean(data_iat)
 ```
 
     ## [1] 0.2509813
 
 ``` r
-1 / mean(data_service)
+1L / mean(data_service)
 ```
 
     ## [1] 0.1000844
@@ -615,4 +615,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 13s
+    ## Notebook run time: 0m 12s

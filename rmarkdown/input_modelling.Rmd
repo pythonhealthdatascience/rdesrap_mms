@@ -427,8 +427,8 @@ Rate:
 * Service time: 0.1
 
 ```{r}
-1 / mean(data_iat)
-1 / mean(data_service)
+1L / mean(data_iat)
+1L / mean(data_service)
 ```
 
 ## Calculate run time

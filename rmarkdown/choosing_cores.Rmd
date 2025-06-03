@@ -77,9 +77,9 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     param[["cores"]] <- i
 
     # Print model parameter on first run through (1 core)
-    if (i == 1) {
-      print("Parameters from run with 1 core:")
-      print("(will be same for others, just more cores)")
+    if (i == 1L) {
+      print("Parameters from run with 1 core:")  # nolint: print_linter
+      print("(will be same for others, just more cores)")  # nolint: print_linter
       print(param)
     }
 
