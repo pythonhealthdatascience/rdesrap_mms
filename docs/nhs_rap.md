@@ -15,8 +15,8 @@ RAP fundamentals offering resilience against future change.
 | Data produced by code in an open-source language (e.g., Python, R, SQL). | ✅ | R |
 | Code is version controlled (see [Git basics](https://nhsdigital.github.io/rap-community-of-practice/training_resources/git/introduction-to-git/) and [using Git collaboratively](https://nhsdigital.github.io/rap-community-of-practice/training_resources/git/using-git-collaboratively/) guides). | ✅ | [GitHub](https://github.com/pythonhealthdatascience/rap_template_r_des) |
 | Repository includes a README.md file (or equivalent) that clearly details steps a user must follow to reproduce the code (use [NHS Open Source Policy section on Readmes](https://github.com/nhsx/open-source-policy/blob/main/open-source-policy.md#b-readmes) as a guide). | ✅ | - |
-| Code has been [peer reviewed](https://nhsdigital.github.io/rap-community-of-practice/implementing_RAP/workflow/code-review/). | ❌ | TODO |
-| Code is [published in the open](https://nhsdigital.github.io/rap-community-of-practice/implementing_RAP/publishing_code/how-to-publish-your-code-in-the-open/) and linked to & from accompanying publication (if relevant). | ✅ & N/A | Shared openly. No publication. |
+| Code has been [peer reviewed](https://nhsdigital.github.io/rap-community-of-practice/implementing_RAP/workflow/code-review/). | ✅ | Peer reviewed by Tom Monks |
+| Code is [published in the open](https://nhsdigital.github.io/rap-community-of-practice/implementing_RAP/publishing_code/how-to-publish-your-code-in-the-open/) and linked to & from accompanying publication (if relevant). | ✅ & N/A | Shared openly. No publication, but mock publication included in repository. |
 
 ## 🥈 Silver
 

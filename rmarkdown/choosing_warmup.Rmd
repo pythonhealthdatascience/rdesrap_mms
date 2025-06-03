@@ -21,6 +21,10 @@ We should:
 
 The run time is provided at the end of the document.
 
+Some of these figures are used in the paper (`mock_paper.md`) - see below:
+
+* **Figure B.1:** `outputs/choose_param_time_series.png`
+
 ## Set-up
 
 Install the latest version of the local simulation package. If running sequentially, `devtools::load_all()` is sufficient. If running in parallel, you must use `devtools::install()`.
@@ -67,6 +71,7 @@ param <- parameters(
   data_collection_period = data_collection_period,
   number_of_runs = 5L
 )
+print(param)
 
 # Run model
 result <- runner(param)

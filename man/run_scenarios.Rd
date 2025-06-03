@@ -4,7 +4,7 @@
 \alias{run_scenarios}
 \title{Run a set of scenarios}
 \usage{
-run_scenarios(scenarios, base_list)
+run_scenarios(scenarios, base_list, verbose = TRUE)
 }
 \arguments{
 \item{scenarios}{List where key is name of parameter and value is a list of
@@ -12,6 +12,8 @@ different values to run in scenarios}
 
 \item{base_list}{List of parameters to use as base for scenarios, which can
 be partial (as will input to parameters() function).}
+
+\item{verbose}{Boolean, whether to print messages about scenarios as run.}
 }
 \value{
 Tibble with results from each replication for each scenario.

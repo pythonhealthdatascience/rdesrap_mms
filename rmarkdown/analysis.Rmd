@@ -16,6 +16,13 @@ This notebook presents execution and results from:
 
 The generated images are saved and then loaded, so that we view the image as saved (i.e. with the dimensions set in `ggsave()`). This also avoids the creation of a `_files/` directory when knitting the document (which would save all previewed images into that folder also, so they can be rendered and displayed within the output `.md` file, even if we had not specifically saved them). These are viewed using `include_graphics()`, which must be the last command in the cell (or last in the plotting function).
 
+Some of these are used in the paper (`mock_paper.md`) - see below:
+
+* **Figure 1:** `outputs/spread_arrivals.png`
+* **Figure 2:** `outputs/scenario_nurse_util.png`
+* **Figure 3:** `outputs/scenario_nurse_wait.png`
+* **Figure 4:** `outputs/sensitivity_consult_time.png`
+
 The run time is provided at the end of the notebook.
 
 ## Set up
@@ -59,15 +66,23 @@ output_dir <- file.path("..", "outputs")
 Run with default parameters and save to `.csv`.
 
 ```{r}
+# Print out default parameters
+print(parameters())
+
+# Run model
 run_results <- runner(param = parameters())[["run_results"]]
+
+# Preview results
 head(run_results)
 
+# Save results to csv
 write.csv(run_results, file.path(output_dir, "base_run_results.csv"))
 ```
 
 Can calculate overall results from across the replications as well...
 
 ```{r}
+# Calculate average results
 run_results %>%
   dplyr::select(!c(replication, arrivals)) %>%
   gather() %>%
@@ -412,8 +427,15 @@ These patients are captured in the `wait_time_unseen` column in `arrivals`, and 
 These patients will be ignored in calculation of metrics like mean time with nurse (as they don't get to see nurse) - but it's important we still have measures for those unseen, as lots of patients waiting at the end of the simulation reveals large backlogs in the system.
 
 ```{r}
-nan_experiment <- runner(parameters(patient_inter = 0.5))
+# Set up parameters with short inter-arrival time
+param <- parameters(patient_inter = 0.5)
+print(param)
 
+# Run replications
+nan_experiment <- runner(param)
+```
+
+```{r}
 nan_experiment[["arrivals"]] %>%
   arrange(replication, start_time) %>%
   tail()

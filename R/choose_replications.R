@@ -223,7 +223,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 
   #' @field desired_precision The target half width precision for the algorithm
   #' (i.e. percentage deviation of the confidence interval from the mean,
-  #' expressed as a proportion, e.g. 0.05 = 5\%).
+  #' expressed as a proportion, e.g. 0.1 = 10\%). Choice is fairly arbitrary.
   desired_precision = NA,
 
   #' @field initial_replications Number of initial replications to perform.
@@ -257,15 +257,17 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   #' @param initial_replications Number of initial replications to perform.
   #' @param look_ahead Minimum additional replications to look ahead.
   #' @param replication_budget Maximum allowed replications.
+  #' @param verbose Boolean, whether to print messages about parameters.
   initialize = function(
     param,
     metrics = c("mean_waiting_time_nurse",
                 "mean_serve_time_nurse",
                 "utilisation_nurse"),
-    desired_precision = 0.05,
+    desired_precision = 0.1,
     initial_replications = 3L,
     look_ahead = 5L,
-    replication_budget = 1000L
+    replication_budget = 1000L,
+    verbose = TRUE
   ) {
     self$param <- param
     self$metrics <- metrics
@@ -276,6 +278,12 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 
     # Initially set reps to the number of initial replications
     self$reps <- initial_replications
+
+    # Print the parameters
+    if (isTRUE(verbose)) {
+      print("Model parameters:")  # nolint: print_linter
+      print(self$param)
+    }
 
     # Check validity of provided parameters
     self$valid_inputs()
@@ -495,6 +503,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @param replications Number of times to run the model.
 #' @param desired_precision Desired mean deviation from confidence interval.
 #' @param metric Name of performance metric to assess.
+#' @param verbose Boolean, whether to print messages about parameters.
 #'
 #' @importFrom utils tail
 #'
@@ -502,9 +511,12 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @export
 
 confidence_interval_method <- function(replications, desired_precision,
-                                       metric) {
+                                       metric, verbose = TRUE) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
+  if (isTRUE(verbose)) {
+    print(param)
+  }
   results <- runner(param, use_future_seeding = FALSE)[["run_results"]]
 
   # Initialise list to store the results

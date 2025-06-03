@@ -72,8 +72,18 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     } else {
       param <- parameters()
     }
+
+    # Set number of cores
     param[["cores"]] <- i
 
+    # Print model parameter on first run through (1 core)
+    if (i == 1L) {
+      print("Parameters from run with 1 core:")  # nolint: print_linter
+      print("(will be same for others, just more cores)")  # nolint: print_linter
+      print(param)
+    }
+
+    # Run model
     invisible(runner(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2

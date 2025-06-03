@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-03-18
+2025-05-20
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -29,6 +29,11 @@ We should:
 - Use a **long run length** (i.e. 5-10 times actual planned run length).
 
 The run time is provided at the end of the document.
+
+Some of these figures are used in the paper (`mock_paper.md`) - see
+below:
+
+- **Figure B.1:** `outputs/choose_param_time_series.png`
 
 ## Set-up
 
@@ -81,7 +86,43 @@ param <- parameters(
   data_collection_period = data_collection_period,
   number_of_runs = 5L
 )
+print(param)
+```
 
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 50000
+    ## 
+    ## $number_of_runs
+    ## [1] 5
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
 # Run model
 result <- runner(param)
 ```
@@ -123,4 +164,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 2s
+    ## Notebook run time: 0m 3s

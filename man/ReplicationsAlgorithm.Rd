@@ -38,14 +38,9 @@ column names from the run results dataframe).}
 
 \item{\code{desired_precision}}{The target half width precision for the algorithm
 (i.e. percentage deviation of the confidence interval from the mean,
-expressed as a proportion, e.g. 0.05 = 5\%).}
+expressed as a proportion, e.g. 0.1 = 10\%). Choice is fairly arbitrary.}
 
-\item{\code{initial_replications}}{Number of initial replications to perform.
-Note that the minimum solution will be the value of initial_replications
-(i.e. if require 20 initial replications but was resolved in 5, solution
-output will still be 20). Although, if initial_replications < 3, solution
-will still be at least 3, as that is the minimum required to calculate the
-confidence intervals.}
+\item{\code{initial_replications}}{Number of initial replications to perform.}
 
 \item{\code{look_ahead}}{Minimum additional replications to look ahead to assess
 stability of precision. When the number of replications is <= 100, the
@@ -71,6 +66,7 @@ replication for each metric}
 \item \href{#method-ReplicationsAlgorithm-new}{\code{ReplicationsAlgorithm$new()}}
 \item \href{#method-ReplicationsAlgorithm-valid_inputs}{\code{ReplicationsAlgorithm$valid_inputs()}}
 \item \href{#method-ReplicationsAlgorithm-klimit}{\code{ReplicationsAlgorithm$klimit()}}
+\item \href{#method-ReplicationsAlgorithm-find_position}{\code{ReplicationsAlgorithm$find_position()}}
 \item \href{#method-ReplicationsAlgorithm-select}{\code{ReplicationsAlgorithm$select()}}
 \item \href{#method-ReplicationsAlgorithm-clone}{\code{ReplicationsAlgorithm$clone()}}
 }
@@ -84,7 +80,7 @@ Initialise the ReplicationsAlgorithm object.
 \if{html}{\out{<div class="r">}}\preformatted{ReplicationsAlgorithm$new(
   param,
   metrics = c("mean_waiting_time_nurse", "mean_serve_time_nurse", "utilisation_nurse"),
-  desired_precision = 0.05,
+  desired_precision = 0.1,
   initial_replications = 3L,
   look_ahead = 5L,
   replication_budget = 1000L
@@ -132,6 +128,30 @@ are greater than 100. Rounded down to nearest integer.
 
 \subsection{Returns}{
 Number of additional replications to verify stability (integer).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ReplicationsAlgorithm-find_position"></a>}}
+\if{latex}{\out{\hypertarget{method-ReplicationsAlgorithm-find_position}{}}}
+\subsection{Method \code{find_position()}}{
+Find the first position where element is below deviation, and this is
+maintained through the lookahead period.
+This is used to correct the ReplicationsAlgorithm, which cannot return
+a solution below the initial_replications.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ReplicationsAlgorithm$find_position(lst)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lst}}{List of numbers to compare against desired deviation.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Integer, minimum replications required to meet and maintain
+precision.
 }
 }
 \if{html}{\out{<hr>}}

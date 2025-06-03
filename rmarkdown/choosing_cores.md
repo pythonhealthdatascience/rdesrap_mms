@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-03-18
+2025-06-03
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -31,10 +31,20 @@ parallel, you must use `devtools::install()`.
 devtools::install()
 ```
 
-    ## 
-    ## ── R CMD build ─────────────────────────────────────────────────
+    ## openssl    (2.3.2  -> 2.3.3 ) [CRAN]
+    ## curl       (6.2.2  -> 6.2.3 ) [CRAN]
+    ## parallelly (1.44.0 -> 1.45.0) [CRAN]
+    ## promises   (1.3.2  -> 1.3.3 ) [CRAN]
+    ## data.table (1.17.2 -> 1.17.4) [CRAN]
+
+    ## Installing 5 packages: openssl, curl, parallelly, promises, data.table
+
+    ## Installing packages into '/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu'
+    ## (as 'lib' is unspecified)
+
+    ## ── R CMD build ─────────────────────────────────────────────────────────────────
     ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
-    ##   ─  preparing ‘simulation’:
+    ##   ─  preparing ‘simulation’: (410ms)
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
@@ -42,11 +52,12 @@ devtools::install()
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/Rtmp2ijted/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpaJo3Dh/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
     ## ** R
+    ## ** inst
     ## ** tests
     ## ** byte-compile and prepare package for lazy loading
     ## ** help
@@ -125,8 +136,18 @@ run_cores <- function(n_cores, file, model_param = NULL) {
     } else {
       param <- parameters()
     }
+
+    # Set number of cores
     param[["cores"]] <- i
 
+    # Print model parameter on first run through (1 core)
+    if (i == 1L) {
+      print("Parameters from run with 1 core:")  # nolint: print_linter
+      print("(will be same for others, just more cores)")  # nolint: print_linter
+      print(param)
+    }
+
+    # Run model
     invisible(runner(param))
 
     # Record time taken, rounded to nearest .5 dp by running round(x*2)/2
@@ -165,6 +186,41 @@ run_cores(5L, "cores1.png")
 
     ## Running with cores:1
 
+    ## [1] "Parameters from run with 1 core:"
+    ## [1] "(will be same for others, just more cores)"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 80
+    ## 
+    ## $number_of_runs
+    ## [1] 100
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
     ## Running with cores:2
 
     ## Running with cores:3
@@ -193,6 +249,41 @@ run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
 
     ## Running with cores:1
 
+    ## [1] "Parameters from run with 1 core:"
+    ## [1] "(will be same for others, just more cores)"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 0
+    ## 
+    ## $data_collection_period
+    ## [1] 100000
+    ## 
+    ## $number_of_runs
+    ## [1] 100
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
     ## Running with cores:2
 
     ## Running with cores:3
@@ -216,4 +307,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 14s
+    ## Notebook run time: 2m 7s

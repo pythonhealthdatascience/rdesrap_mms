@@ -6,7 +6,8 @@ patrick::with_parameters_test_that(
     # Calculate klimit
     calc <- ReplicationsAlgorithm$new(param = parameters(),
                                       look_ahead =  look_ahead,
-                                      initial_replications = n)$klimit()
+                                      initial_replications = n,
+                                      verbose = FALSE)$klimit()
     # Check that it meets our expected value
     expect_identical(calc, exp)
   },
@@ -21,7 +22,8 @@ patrick::with_parameters_test_that(
 patrick::with_parameters_test_that(
   "ReplicationsAlgorithm responds appropriately to invalid parameters",
   {
-    inputs <- c(list(param = parameters()), setNames(list(value), arg))
+    inputs <- c(list(param = parameters()), setNames(list(value), arg),
+                verbose = FALSE)
     expect_error(do.call(ReplicationsAlgorithm$new, inputs), msg)
   },
   patrick::cases(
@@ -47,7 +49,8 @@ test_that(
     expect_error(
       ReplicationsAlgorithm$new(param = parameters(),
                                 initial_replications = 10L,
-                                replication_budget = 9L),
+                                replication_budget = 9L,
+                                verbose = FALSE),
       "replication_budget must be less than initial_replications."
     )
   }
@@ -138,7 +141,8 @@ patrick::with_parameters_test_that(
     # Set threshold to 0.5, with provided look_ahead
     alg <- ReplicationsAlgorithm$new(param = parameters(),
                                      desired_precision = 0.5,
-                                     look_ahead = look_ahead)
+                                     look_ahead = look_ahead,
+                                     verbose = FALSE)
     # Get result from algorithm and compare to expected
     result <- alg$find_position(lst)
     expect_identical(result, exp)
@@ -170,6 +174,6 @@ patrick::with_parameters_test_that(
 
 
 test_that("find_position() fails if not supplied a list", {
-  alg <- ReplicationsAlgorithm$new(param = parameters())
+  alg <- ReplicationsAlgorithm$new(param = parameters(), verbose = FALSE)
   expect_error(alg$find_position(c(1L, 2L, 3L)))
 })
