@@ -8,7 +8,8 @@ test_that("output from confidence_interval_method is as expected", {
   ci_df <- suppressWarnings(confidence_interval_method(
     replications = reps,
     desired_precision = 0.1,
-    metric = "mean_waiting_time_nurse"
+    metric = "mean_waiting_time_nurse",
+    verbose = FALSE
   ))
 
   # Check that the results dataframe has the right number of rows
@@ -33,7 +34,8 @@ test_that(
     man_df <- suppressWarnings(confidence_interval_method(
       replications = reps,
       desired_precision = desired_precision,
-      metric = metric
+      metric = metric,
+      verbose = FALSE
     ))
 
     # Run the algorithm (ignoring unsolved warnings)
@@ -43,7 +45,8 @@ test_that(
       desired_precision = desired_precision,
       initial_replications = reps,
       look_ahead = 0L,
-      replication_budget = reps
+      replication_budget = reps,
+      verbose = FALSE
     )
     suppressWarnings(alg$select())
 
@@ -63,7 +66,8 @@ test_that("ReplicationsAlgorithm initial_replications consistent to without", {
       desired_precision = 0.1,
       initial_replications = initial_replications,
       look_ahead = 10L,
-      replication_budget = 10L
+      replication_budget = 10L,
+      verbose = FALSE
     )
     suppressWarnings(alg$select())
     head(alg$summary_table, 10L)
@@ -83,7 +87,8 @@ test_that("running algorithm with < 3 replications has no solution", {
   alg <- ReplicationsAlgorithm$new(param = parameters(),
                                    initial_replications = 0L,
                                    replication_budget = 2L,
-                                   look_ahead = 0L)
+                                   look_ahead = 0L,
+                                   verbose = FALSE)
   # Check that it runs with a warning
   expect_warning(alg$select())
   # Check that there is no solution

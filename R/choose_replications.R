@@ -257,6 +257,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   #' @param initial_replications Number of initial replications to perform.
   #' @param look_ahead Minimum additional replications to look ahead.
   #' @param replication_budget Maximum allowed replications.
+  #' @param verbose Boolean, whether to print messages about parameters.
   initialize = function(
     param,
     metrics = c("mean_waiting_time_nurse",
@@ -265,7 +266,8 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     desired_precision = 0.1,
     initial_replications = 3L,
     look_ahead = 5L,
-    replication_budget = 1000L
+    replication_budget = 1000L,
+    verbose = TRUE
   ) {
     self$param <- param
     self$metrics <- metrics
@@ -278,8 +280,10 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     self$reps <- initial_replications
 
     # Print the parameters
-    print("Model parameters:")  # nolint: print_linter
-    print(self$param)
+    if (isTRUE(verbose)) {
+      print("Model parameters:")  # nolint: print_linter
+      print(self$param)
+    }
 
     # Check validity of provided parameters
     self$valid_inputs()
@@ -499,6 +503,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @param replications Number of times to run the model.
 #' @param desired_precision Desired mean deviation from confidence interval.
 #' @param metric Name of performance metric to assess.
+#' @param verbose Boolean, whether to print messages about parameters.
 #'
 #' @importFrom utils tail
 #'
@@ -506,10 +511,12 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @export
 
 confidence_interval_method <- function(replications, desired_precision,
-                                       metric) {
+                                       metric, verbose = TRUE) {
   # Run model for specified number of replications
   param <- parameters(number_of_runs = replications)
-  print(param)
+  if (isTRUE(verbose)) {
+    print(param)
+  }
   results <- runner(param, use_future_seeding = FALSE)[["run_results"]]
 
   # Initialise list to store the results

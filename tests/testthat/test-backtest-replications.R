@@ -14,7 +14,8 @@ test_that("results from confidence_interval_method are consistent", {
   rep_results <- suppressWarnings(confidence_interval_method(
     replications = 15L,
     desired_precision = 0.1,
-    metric = "mean_serve_time_nurse"
+    metric = "mean_serve_time_nurse",
+    verbose = FALSE
   ))
 
   # Import the expected results
@@ -42,7 +43,8 @@ test_that("results from ReplicationsAlgorithm are consistent", {
     desired_precision = 0.1,
     initial_replications = 15L,
     look_ahead = 0L,
-    replication_budget = 15L
+    replication_budget = 15L,
+    verbose = FALSE
   )
   suppressWarnings(alg$select())
   rep_results <- alg$summary_table

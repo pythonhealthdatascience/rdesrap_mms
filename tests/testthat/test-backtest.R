@@ -81,7 +81,7 @@ test_that("results from scenario analysis match those previously generated", {
   )
 
   scenario_results <- as.data.frame(
-    run_scenarios(scenarios, base_list = param)
+    run_scenarios(scenarios, base_list = param, verbose = FALSE)
   )
 
   # Import the expected results
