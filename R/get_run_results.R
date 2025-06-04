@@ -81,7 +81,7 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
   # Calculate the time-weighted number of patients in the service
   patient_count %>%
     # Sort by time
-    arrange(time) %>%
+    arrange(.data[["time"]]) %>%
     # Calculate time between this row and the next
     mutate(interval_duration = (lead(.data[["time"]]) - .data[["time"]])) %>%
     # Multiply each patient count by its own unique duration. The total of
