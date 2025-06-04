@@ -31,6 +31,7 @@ get_run_results <- function(results, run_number) {
     # Calculate metrics of interest
     metrics <- list(
       calc_arrivals(results[["arrivals"]]),
+      calc_mean_patients_in_service(results[["patients_in_service"]]),
       calc_mean_queue(results[["arrivals"]]),
       calc_mean_wait(results[["arrivals"]], results[["resources"]]),
       calc_mean_serve_length(results[["arrivals"]], results[["resources"]]),
@@ -60,6 +61,38 @@ calc_arrivals <- function(arrivals, groups = NULL) {
   # Calculate number of arrivals
   arrivals %>%
     summarise(arrivals = n_distinct(.data[["name"]])) %>%
+    ungroup()
+}
+
+
+#' Calculate the time-weighted mean number of patients in the service.
+#'
+#' @param patient_count Dataframe with patient counts over time.
+#' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @return Tibble with column containing mean number of patients in the service.
+#' @export
+
+calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
+  # If provided, group the dataset
+  if (!is.null(groups)) {
+    patient_count <- group_by(patient_count, across(all_of(groups)))
+  }
+  # Calculate the time-weighted number of patients in the service
+  patient_count %>%
+    # Sort by time
+    arrange(time) %>%
+    # Calculate time between this row and the next
+    mutate(interval_duration = (lead(.data[["time"]]) - .data[["time"]])) %>%
+    # Multiply each patient count by its own unique duration. The total of
+    # those is then divided by the total duration of all intervals.
+    # Hence, we are calculated a time-weighted average patient count.
+    summarise(
+      mean_patients_in_service = (
+        sum(.data[["count"]] * .data[["interval_duration"]], na.rm = TRUE) /
+          sum(.data[["interval_duration"]], na.rm = TRUE)
+      )
+    ) %>%
     ungroup()
 }
 

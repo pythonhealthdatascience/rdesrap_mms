@@ -113,7 +113,7 @@ model <- function(run_number, param, set_seed = TRUE) {
       result[["arrivals"]], time = .data[["start_time"]], change = 1L
     )
     arrivals_end <- result[["arrivals"]] %>%
-      drop_na(.data[["end_time"]]) %>%
+      drop_na(all_of("end_time")) %>%
       transmute(time = .data[["end_time"]], change = -1L)
     events <- bind_rows(arrivals_start, arrivals_end)
 
@@ -123,7 +123,7 @@ model <- function(run_number, param, set_seed = TRUE) {
       arrange(.data[["time"]], desc(.data[["change"]])) %>%
       # Use cumulative sum to find number of patients in system at each time
       mutate(count = cumsum(.data[["change"]])) %>%
-      dplyr::select(.data[["time"]], .data[["count"]])
+      dplyr::select(c("time", "count"))
 
     # Replace replication with appropriate run number (as these functions
     # assume, if not supplied with list of envs, that there was one replication)
