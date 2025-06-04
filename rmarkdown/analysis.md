@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-05-20
+2025-06-04
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -476,7 +476,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue May 20 12:48:58 2025
+    ## % Wed Jun  4 14:18:03 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -802,7 +802,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue May 20 12:49:41 2025
+    ## % Wed Jun  4 14:18:43 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -964,4 +964,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 12s
+    ## Notebook run time: 2m 3s
