@@ -71,11 +71,15 @@ runner <- function(param, use_future_seeding = TRUE) {
     )
     # Bind rows will fill NA - e.g. if some runs have no results columns
     # as had no arrivals, will set those to NA for that row
+    all_patients_in_service <- dplyr::bind_rows(
+      lapply(results, function(x) x[["patients_in_service"]])
+    )
     all_run_results <- dplyr::bind_rows(
       lapply(results, function(x) x[["run_results"]])
     )
     results <- list(arrivals = all_arrivals,
                     resources = all_resources,
+                    patients_in_service = all_patients_in_service,
                     run_results = all_run_results)
   }
 

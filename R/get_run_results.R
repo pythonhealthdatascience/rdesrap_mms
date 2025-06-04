@@ -80,17 +80,20 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
   arrivals %>%
     group_by(across(all_of(group_vars))) %>%
     # Sort by arrival time
-    arrange(start_time) %>%
+    arrange(.data[["start_time"]]) %>%
     # Calculate time between this row and the next
-    mutate(interval_duration = (
-      lead(.data[["start_time"]]) - .data[["start_time"]])) %>%
+    mutate(
+      interval_duration = (lead(.data[["start_time"]]) - .data[["start_time"]])
+    ) %>%
     # Multiply each queue length by its own unique duration. The total of
     # those is then divided by the total duration of all intervals.
     # Hence, we are calculated a time-weighted average queue length.
     summarise(mean_queue_length = (
       sum(.data[["queue_on_arrival"]] *
             .data[["interval_duration"]], na.rm = TRUE) /
-        sum(.data[["interval_duration"]], na.rm = TRUE))) %>%
+        sum(.data[["interval_duration"]], na.rm = TRUE)
+    )
+    ) %>%
     # Reshape dataframe
     pivot_wider(names_from = "resource",
                 values_from = "mean_queue_length",

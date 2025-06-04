@@ -12,7 +12,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
-#' @importFrom dplyr select left_join
+#' @importFrom dplyr select left_join transmute desc
 #' @importFrom tidyselect all_of
 #'
 #' @return Named list with three tables: monitored arrivals,
@@ -106,12 +106,33 @@ model <- function(run_number, param, set_seed = TRUE) {
       result <- filter_warmup(result, param[["warm_up_period"]])
     }
 
+    # Gather all start and end times, with a row for each, marked with +1 or -1
+    # Drop NA for end time, as those are patients who haven't left system
+    # at the end of the simulation
+    arrivals_start <- transmute(
+      result[["arrivals"]], time = .data[["start_time"]], change = 1L
+    )
+    arrivals_end <- result[["arrivals"]] %>%
+      drop_na(.data[["end_time"]]) %>%
+      transmute(time = .data[["end_time"]], change = -1L)
+    events <- bind_rows(arrivals_start, arrivals_end)
+
+    # Determine the count of patients in the service with each entry/exit
+    result[["patients_in_service"]] <- events %>%
+      # Sort events by time
+      arrange(.data[["time"]], desc(.data[["change"]])) %>%
+      # Use cumulative sum to find number of patients in system at each time
+      mutate(count = cumsum(.data[["change"]])) %>%
+      dplyr::select(.data[["time"]], .data[["count"]])
+
     # Replace replication with appropriate run number (as these functions
     # assume, if not supplied with list of envs, that there was one replication)
     result[["arrivals"]] <- mutate(result[["arrivals"]],
                                    replication = run_number)
     result[["resources"]] <- mutate(result[["resources"]],
                                     replication = run_number)
+    result[["patients_in_service"]] <- mutate(result[["patients_in_service"]],
+                                              replication = run_number)
 
     # Calculate the wait time of patients who were seen, and also for those
     # who remained unseen at the end of the simulation
@@ -123,6 +144,9 @@ model <- function(run_number, param, set_seed = TRUE) {
           now(env) - .data[["start_time"]], NA
         )
       )
+
+  } else {
+    result[["patients_in_service"]] <- NULL
   }
 
   # Calculate the average results for that run and add to result list
