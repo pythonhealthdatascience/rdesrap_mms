@@ -8,7 +8,7 @@
 #'
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
 #' @importFrom simmer add_generator run wrap get_mon_arrivals set_attribute
-#' @importFrom simmer get_attribute get_mon_attributes
+#' @importFrom simmer get_attribute get_mon_attributes get_queue_count
 #' @importFrom magrittr %>%
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
@@ -37,6 +37,9 @@ model <- function(run_number, param, set_seed = TRUE) {
 
   # Define the patient trajectory
   patient <- trajectory("appointment") %>%
+    # Record queue length on arrival
+    set_attribute("nurse_queue_on_arrival",
+                  function() get_queue_count(env, "nurse")) %>%
     seize("nurse", 1L) %>%
     # Manually record the time when the patient is served (i.e. resource
     # becomes available) and the sampled length of the activity.

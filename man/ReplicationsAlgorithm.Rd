@@ -83,7 +83,8 @@ Initialise the ReplicationsAlgorithm object.
   desired_precision = 0.1,
   initial_replications = 3L,
   look_ahead = 5L,
-  replication_budget = 1000L
+  replication_budget = 1000L,
+  verbose = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -101,6 +102,8 @@ Initialise the ReplicationsAlgorithm object.
 \item{\code{look_ahead}}{Minimum additional replications to look ahead.}
 
 \item{\code{replication_budget}}{Maximum allowed replications.}
+
+\item{\code{verbose}}{Boolean, whether to print messages about parameters.}
 }
 \if{html}{\out{</div>}}
 }

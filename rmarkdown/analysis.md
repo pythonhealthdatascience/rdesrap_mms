@@ -476,7 +476,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Jun  4 14:18:03 2025
+    ## % Wed Jun  4 14:26:51 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -802,7 +802,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Jun  4 14:18:43 2025
+    ## % Wed Jun  4 14:27:31 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -900,13 +900,13 @@ nan_experiment[["arrivals"]] %>%
     ## 16139 patient156   77.55231       NA            NA    nurse         100
     ## 16140 patient157   78.98730       NA            NA    nurse         100
     ## 16141 patient158   79.84263       NA            NA    nurse         100
-    ##       serve_start serve_length wait_time wait_time_unseen
-    ## 16136          NA           NA        NA        4.9649970
-    ## 16137          NA           NA        NA        4.5771491
-    ## 16138          NA           NA        NA        2.8387887
-    ## 16139          NA           NA        NA        2.4476942
-    ## 16140          NA           NA        NA        1.0126951
-    ## 16141          NA           NA        NA        0.1573668
+    ##       queue_on_arrival serve_start serve_length wait_time wait_time_unseen
+    ## 16136              104          NA           NA        NA        4.9649970
+    ## 16137              105          NA           NA        NA        4.5771491
+    ## 16138              106          NA           NA        NA        2.8387887
+    ## 16139              107          NA           NA        NA        2.4476942
+    ## 16140              108          NA           NA        NA        1.0126951
+    ## 16141              108          NA           NA        NA        0.1573668
 
 ``` r
 nan_experiment[["run_results"]][c(
@@ -964,4 +964,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 3s
+    ## Notebook run time: 2m 4s

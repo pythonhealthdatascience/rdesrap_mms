@@ -113,20 +113,20 @@ results <- runner(param)
 head(results[["arrivals"]])
 ```
 
-    ##       name start_time  end_time activity_time resource replication serve_start
-    ## 1 patient0   7.958939  9.339626      1.380687    nurse           1    7.958939
-    ## 2 patient1  14.376952 17.082901      2.705948    nurse           1   14.376952
-    ## 3 patient3  22.423647 24.279227      1.855580    nurse           1   22.423647
-    ## 4 patient2  19.966026 32.789001     12.822975    nurse           1   19.966026
-    ## 5 patient5  28.808098 32.923921      4.115823    nurse           1   28.808098
-    ## 6 patient6  30.048144 37.857589      7.809445    nurse           1   30.048144
-    ##   serve_length wait_time wait_time_unseen
-    ## 1     1.380687         0               NA
-    ## 2     2.705948         0               NA
-    ## 3     1.855580         0               NA
-    ## 4    12.822975         0               NA
-    ## 5     4.115823         0               NA
-    ## 6     7.809445         0               NA
+    ##       name start_time  end_time activity_time resource replication
+    ## 1 patient0   7.958939  9.339626      1.380687    nurse           1
+    ## 2 patient1  14.376952 17.082901      2.705948    nurse           1
+    ## 3 patient3  22.423647 24.279227      1.855580    nurse           1
+    ## 4 patient2  19.966026 32.789001     12.822975    nurse           1
+    ## 5 patient5  28.808098 32.923921      4.115823    nurse           1
+    ## 6 patient6  30.048144 37.857589      7.809445    nurse           1
+    ##   queue_on_arrival serve_start serve_length wait_time wait_time_unseen
+    ## 1                0    7.958939     1.380687         0               NA
+    ## 2                0   14.376952     2.705948         0               NA
+    ## 3                0   22.423647     1.855580         0               NA
+    ## 4                0   19.966026    12.822975         0               NA
+    ## 5                0   28.808098     4.115823         0               NA
+    ## 6                0   30.048144     7.809445         0               NA
 
 ``` r
 write.csv(arrange(results[["arrivals"]], replication, start_time),
