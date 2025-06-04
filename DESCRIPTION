@@ -29,10 +29,7 @@ Imports:
     ggplot2,
     tibble,
     gridExtra,
-    R6,
-    fitdistrplus,
-    lubridate,
-    plotly
+    R6
 Suggests:
     testthat (>= 3.0.0),
     patrick,
@@ -40,5 +37,8 @@ Suggests:
     devtools,
     xtable,
     data.table,
-    mockery
+    mockery,
+    fitdistrplus,
+    lubridate,
+    plotly
 Config/testthat/edition: 3
