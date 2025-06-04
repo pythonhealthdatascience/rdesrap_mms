@@ -31,6 +31,7 @@ get_run_results <- function(results, run_number) {
     # Calculate metrics of interest
     metrics <- list(
       calc_arrivals(results[["arrivals"]]),
+      calc_mean_queue(results[["arrivals"]]),
       calc_mean_wait(results[["arrivals"]], results[["resources"]]),
       calc_mean_serve_length(results[["arrivals"]], results[["resources"]]),
       calc_utilisation(results[["resources"]]),
@@ -59,6 +60,41 @@ calc_arrivals <- function(arrivals, groups = NULL) {
   # Calculate number of arrivals
   arrivals %>%
     summarise(arrivals = n_distinct(.data[["name"]])) %>%
+    ungroup()
+}
+
+
+#' Calculate the time-weighted mean queue length.
+#'
+#' @param arrivals Dataframe with times for each patient with each resource.
+#' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @return Tibble with column containing mean queue length.
+#' @export
+
+calc_mean_queue <- function(arrivals, groups = NULL) {
+  # Create list of grouping variables (always "resource", but can add others)
+  group_vars <- c("resource", groups)
+
+  # Calculate mean queue length for each resource
+  arrivals %>%
+    group_by(across(all_of(group_vars))) %>%
+    # Sort by arrival time
+    arrange(start_time) %>%
+    # Calculate time between this row and the next
+    mutate(interval_duration = (
+      lead(.data[["start_time"]]) - .data[["start_time"]])) %>%
+    # Multiply each queue length by its own unique duration. The total of
+    # those is then divided by the total duration of all intervals.
+    # Hence, we are calculated a time-weighted average queue length.
+    summarise(mean_queue_length = (
+      sum(.data[["queue_on_arrival"]] *
+            .data[["interval_duration"]], na.rm = TRUE) /
+        sum(.data[["interval_duration"]], na.rm = TRUE))) %>%
+    # Reshape dataframe
+    pivot_wider(names_from = "resource",
+                values_from = "mean_queue_length",
+                names_glue = "mean_queue_length_{resource}") %>%
     ungroup()
 }
 
