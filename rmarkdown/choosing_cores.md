@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-06-03
+2025-06-04
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -28,23 +28,12 @@ sequentially, `devtools::load_all()` is sufficient. If running in
 parallel, you must use `devtools::install()`.
 
 ``` r
-devtools::install()
+devtools::install(upgrade = "never")
 ```
 
-    ## openssl    (2.3.2  -> 2.3.3 ) [CRAN]
-    ## curl       (6.2.2  -> 6.2.3 ) [CRAN]
-    ## parallelly (1.44.0 -> 1.45.0) [CRAN]
-    ## promises   (1.3.2  -> 1.3.3 ) [CRAN]
-    ## data.table (1.17.2 -> 1.17.4) [CRAN]
-
-    ## Installing 5 packages: openssl, curl, parallelly, promises, data.table
-
-    ## Installing packages into '/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu'
-    ## (as 'lib' is unspecified)
-
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
+    ## ── R CMD build ──────────────────────────────────────────────────────────
     ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
-    ##   ─  preparing ‘simulation’: (410ms)
+    ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
@@ -52,7 +41,7 @@ devtools::install()
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpaJo3Dh/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmphBXRjL/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -244,7 +233,7 @@ The optimal number of cores will vary depending on your model parameters
 and machine.
 
 ``` r
-run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
+run_cores(5L, "cores2.png", list(data_collection_period = 10000L))
 ```
 
     ## Running with cores:1
@@ -264,7 +253,7 @@ run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
     ## [1] 0
     ## 
     ## $data_collection_period
-    ## [1] 100000
+    ## [1] 10000
     ## 
     ## $number_of_runs
     ## [1] 100
@@ -307,4 +296,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 7s
+    ## Notebook run time: 1m 2s

@@ -12,3 +12,5 @@
 ^rmarkdown$
 ^CITATION\.cff$
 ^run_rmarkdown\.sh$
+^inputs$
+^mock_paper\.md$

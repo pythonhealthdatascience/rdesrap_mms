@@ -19,7 +19,7 @@ The run time is provided at the end of the notebook.
 Install the latest version of the local simulation package. If running sequentially, `devtools::load_all()` is sufficient. If running in parallel, you must use `devtools::install()`.
 
 ```{r}
-devtools::install()
+devtools::install(upgrade = "never")
 ```
 
 Load required packages.
@@ -125,7 +125,7 @@ However, when you use more cores, the data needs to be divided and sent to more 
 The optimal number of cores will vary depending on your model parameters and machine.
 
 ```{r}
-run_cores(5L, "cores2.png", list(data_collection_period = 100000L))
+run_cores(5L, "cores2.png", list(data_collection_period = 10000L))
 ```
 
 ## Run time

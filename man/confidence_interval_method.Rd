@@ -4,7 +4,12 @@
 \alias{confidence_interval_method}
 \title{Use the confidence interval method to select the number of replications.}
 \usage{
-confidence_interval_method(replications, desired_precision, metric)
+confidence_interval_method(
+  replications,
+  desired_precision,
+  metric,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{replications}{Number of times to run the model.}
@@ -12,6 +17,8 @@ confidence_interval_method(replications, desired_precision, metric)
 \item{desired_precision}{Desired mean deviation from confidence interval.}
 
 \item{metric}{Name of performance metric to assess.}
+
+\item{verbose}{Boolean, whether to print messages about parameters.}
 }
 \value{
 Dataframe with results from each replication.

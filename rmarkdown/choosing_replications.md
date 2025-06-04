@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-05-21
+2025-06-04
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -730,4 +730,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 35s
+    ## Notebook run time: 2m 20s

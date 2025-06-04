@@ -94,12 +94,14 @@ test_that("runner outputs a named list with length 2 and correct names", {
 
   # Check the structure
   expect_type(results, "list")
-  expect_length(results, 3L)
-  expect_named(results, c("arrivals", "resources", "run_results"))
+  expect_length(results, 4L)
+  expect_named(results, c("arrivals", "resources",
+                          "patients_in_service", "run_results"))
 
   # Check that arrivals and resources are dataframes
   expect_s3_class(results[["arrivals"]], "data.frame")
   expect_s3_class(results[["resources"]], "data.frame")
+  expect_s3_class(results[["patients_in_service"]], "data.frame")
   expect_s3_class(results[["run_results"]], "data.frame")
 })
 

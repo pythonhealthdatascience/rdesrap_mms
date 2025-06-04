@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-06-03
+2025-06-04
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -615,4 +615,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 12s
+    ## Notebook run time: 0m 13s
