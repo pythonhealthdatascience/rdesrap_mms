@@ -1,3 +1,30 @@
+# R DES RAP Template 0.4.0
+
+Major changes include: addition of two new metrics (queue length and patients in service); input modelling; and synthetic data. Also, enabled solutions below the defined initial replications for the replications algorithm.
+
+## New features
+
+* Add synthetic data and explanation in `README`.
+* Add `input_modelling.Rmd`.
+* Add unit tests for `find_position()`.
+* Add mock paper with figures mentioned in `.Rmd`/`README`.
+* Add `CITATION`.
+* Add printing of parameters when running model.
+* Add two new metrics: queue length and patients in service.
+
+## Bug fixes
+
+* Add `find_position()` which allows us to find a solution below the initial replications set when using `ReplicationsAlgorithm`.
+
+## Other changes
+
+* Changed desired precision when choosing replications to 0.1.
+* Made `README` simpler/clearer, so it focuses on describing the repository, rather than on being a template.
+* Add `fitdistrplus`, `lubridate` and `plotly`, and updated some packages.
+* Set `renv` snapshot type to implicit (was previously all).
+* In `choosing_cores.Rmd`, set `devtools::install(upgrade = "never")` (else would try to update packages).
+* GitHub action runs tests on latest mac, windows and ubuntu (but not on development or old ubuntu anymore).
+
 # R DES RAP Template 0.3.0
 
 Major changes include addition of functions/classes for choosing the warm-up length and number of replications. Other changes include tests, possibility to override seeds in runner, a bug fix for the mean wait time and serve length, code refactoring, and others.

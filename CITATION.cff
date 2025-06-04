@@ -19,5 +19,5 @@ repository-code: >-
 abstract: >-
   A template for creating discrete-event simulation (DES) models in R
   within a reproducible analytical pipeline (RAP).
-version: 0.3.0
-date-released: '2025-03-18'
+version: 0.4.0
+date-released: '2025-06-04'
