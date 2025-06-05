@@ -1,4 +1,4 @@
-# Workflow adapted from https://github.com/r-lib/actions/tree/v2/examples
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 
 on:
@@ -6,61 +6,69 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      os:
+      os_choice:
         description: 'Operating system to run on'
         required: true
         default: 'all'
         type: choice
         options:
-          - all
-          - ubuntu-latest
-          - windows-latest
-          - macos-13
+        - all
+        - ubuntu
+        - macos
+        - windows
 
 name: R-CMD-check.yaml
 
 permissions: read-all
 
 jobs:
-  set-matrix:
+  setup-matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.setup-matrix.outputs.matrix }}
     steps:
-      - id: set-matrix
+      - id: setup-matrix
         run: |
-          configs='[
-            {"os": "ubuntu-latest", "r": "release"},
-            {"os": "windows-latest", "r": "release"},
-            {"os": "macos-13", "r": "release"}
-          ]'
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.os }}" != "all" ]; then
-            # Filter configs for the selected OS
-            configs=$(echo "$configs" | jq --arg os "${{ inputs.os }}" '[.[] | select(.os == $os)]')
+          if [[ "${{ github.event_name }}" == "push" || "${{ github.event.inputs.os_choice }}" == "all" ]]; then
+            echo 'matrix={"config":[{"os":"macos-latest","r":"release"},{"os":"windows-latest","r":"release"},{"os":"ubuntu-latest","r":"release"}]}' >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.os_choice }}" == "ubuntu" ]]; then
+            echo 'matrix={"config":[{"os":"ubuntu-latest","r":"release"}]}' >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.os_choice }}" == "macos" ]]; then
+            echo 'matrix={"config":[{"os":"macos-latest","r":"release"}]}' >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.os_choice }}" == "windows" ]]; then
+            echo 'matrix={"config":[{"os":"windows-latest","r":"release"}]}' >> $GITHUB_OUTPUT
           fi
-          echo "matrix=$configs" >> $GITHUB_OUTPUT
 
   R-CMD-check:
-    needs: set-matrix
+    needs: setup-matrix
     runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
     strategy:
       fail-fast: false
-      matrix:
-        config: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
+
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: r-lib/actions/setup-pandoc@v2
+
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
