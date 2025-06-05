@@ -14,7 +14,7 @@ on:
             - all
             - ubuntu-latest
             - windows-latest
-            - macos-14
+            - macos-13
 
 name: R-CMD-check.yaml
 
@@ -31,7 +31,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.os }}" != "all" ]; then
             echo "os=[\"${{ inputs.os }}\"]" >> $GITHUB_OUTPUT
           else
-            echo 'os=["ubuntu-latest","windows-latest","macos-14"]' >> $GITHUB_OUTPUT
+            echo 'os=["ubuntu-latest","windows-latest","macos-13"]' >> $GITHUB_OUTPUT
           fi
 
   R-CMD-check:
