@@ -4,6 +4,17 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+        os:
+          description: 'Operating system to run on'
+          required: true
+          default: 'all'
+          type: choice
+          options:
+            - all
+            - ubuntu-latest
+            - windows-latest
+            - macos-latest
 
 name: R-CMD-check.yaml
 
@@ -11,17 +22,13 @@ permissions: read-all
 
 jobs:
   R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
-
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-
+    if: ${{ github.event_name == 'push' || inputs.os != '' }}
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - {os: macos-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
+        os: ${{ github.event_name == 'workflow_dispatch' && inputs.os != 'all' && fromJson('["' + inputs.os + '"]') || fromJson('["ubuntu-latest","windows-latest","macos-latest"]') }}
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
