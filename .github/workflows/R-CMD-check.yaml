@@ -21,14 +21,27 @@ name: R-CMD-check.yaml
 permissions: read-all
 
 jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      os: ${{ steps.set-matrix.outputs.os }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.os }}" != "all" ]; then
+            echo "os=[\"${{ inputs.os }}\"]" >> $GITHUB_OUTPUT
+          else
+            echo 'os=["ubuntu-latest","windows-latest","macos-latest"]' >> $GITHUB_OUTPUT
+          fi
+
   R-CMD-check:
-    if: ${{ github.event_name == 'push' || inputs.os != '' }}
+    needs: set-matrix
+    runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ github.event_name == 'workflow_dispatch' && inputs.os != 'all' && fromJson('["' + inputs.os + '"]') || fromJson('["ubuntu-latest","windows-latest","macos-latest"]') }}
-    runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }}
+        os: ${{ fromJson(needs.set-matrix.outputs.os) }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
