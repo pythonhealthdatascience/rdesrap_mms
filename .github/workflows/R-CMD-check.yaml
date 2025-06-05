@@ -1,4 +1,4 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Workflow adapted from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
@@ -14,7 +14,7 @@ on:
             - all
             - ubuntu-latest
             - windows-latest
-            - macos-latest
+            - macos-14
 
 name: R-CMD-check.yaml
 
@@ -31,7 +31,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.os }}" != "all" ]; then
             echo "os=[\"${{ inputs.os }}\"]" >> $GITHUB_OUTPUT
           else
-            echo 'os=["ubuntu-latest","windows-latest","macos-latest"]' >> $GITHUB_OUTPUT
+            echo 'os=["ubuntu-latest","windows-latest","macos-14"]' >> $GITHUB_OUTPUT
           fi
 
   R-CMD-check:
