@@ -116,7 +116,26 @@ test_that("parallel processing runs successfully", {
   }
   mockery::stub(runner, "simulation::model", test_model)
   param <- list(cores = 2L, number_of_runs = 5L)
-  result <- runner(param, use_future_seeding = TRUE)
+
+  # Attempt parallel processing
+  result <- tryCatch({
+    runner(param, use_future_seeding = TRUE)
+  }, error = function(e) {
+    # Check if this is a parallel processing error
+    if (grepl("Failed to find a functional cluster workers|FutureError",
+              e$message)) {
+      # Skip test on macOS if parallel processing fails
+      if (Sys.info()[["sysname"]] == "Darwin") {
+        skip(paste("Parallel processing not available on this macOS system",
+                   "- this is expected in CI environments"))
+      }
+      # Else throw an error
+      stop(e, call. = FALSE)
+    } else {
+      # Re-throw if it's a different error
+      stop(e, call. = FALSE)
+    }
+  })
 
   # Check if results contain expected structure
   expect_true("arrivals" %in% names(result))
