@@ -6,8 +6,8 @@
 ![R 4.4.1](https://img.shields.io/badge/-R_4.4.1-276DC2?&logo=r&logoColor=white)
 ![MIT Licence](https://img.shields.io/badge/Licence-MIT-green.svg?&labelColor=gray)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14980863.svg)](https://doi.org/10.5281/zenodo.14980863)
-[![R-CMD-check](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/R-CMD-check.yaml)
-[![Lint](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rap_template_r_des/actions/workflows/lint.yaml)
+[![R-CMD-check](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/R-CMD-check.yaml)
+[![Lint](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/lint.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/lint.yaml)
 [![ORCID](https://img.shields.io/badge/ORCID_Amy_Heather-0000--0002--6596--3479-A6CE39?&logo=orcid&logoColor=white)](https://orcid.org/0000-0002-6596-3479)
 <!-- badges: end -->
 </div>
@@ -33,8 +33,8 @@ This type of model is widely used for studying waiting lines in healthcare, call
 Clone the repository:
 
 ```{.r}
-git clone https://github.com/pythonhealthdatascience/rap_template_r_des.git
-cd rap_template_r_des
+git clone https://github.com/pythonhealthdatascience/rdesrap_mms.git
+cd rdesrap_mms
 ```
 
 Set up the R environment using `renv` (recommended):
@@ -162,14 +162,14 @@ To generate the figures and tables from the paper (`mock_paper.md`), execute:
 
 **Data dictionary** (explaining each field) is available in: `inputs/NHS_synthetic_dictionary.csv`.
 
-This dataset is **synthetic** and was generated in the [rap_template_python_des](https://github.com/pythonhealthdatascience/rap_template_python_des) repository based on the the structure of some fields from the [Emergency Care Data Set (ECDS)](https://digital.nhs.uk/data-and-information/data-collections-and-data-sets/data-sets/emergency-care-data-set-ecds). The data generation process involved:
+This dataset is **synthetic** and was generated in the [pydesrap_mms](https://github.com/pythonhealthdatascience/pydesrap_mms) repository based on the the structure of some fields from the [Emergency Care Data Set (ECDS)](https://digital.nhs.uk/data-and-information/data-collections-and-data-sets/data-sets/emergency-care-data-set-ecds). The data generation process involved:
 
 * **Arrivals:** Sampled from a Poisson distribution (average 15 patients per hour).
 * **Wait times:** Sampled from an exponential distribution (average wait time: 5 minutes).
 * **Service times:** Sampled from an exponential distribution (average service time: 10 minutes).
 * **Time period:** Data covers one full year (1st January - 31st December 2025).
 
-This dataset is released under the MIT licence. If you use this data, please cite the original repository: [rap_template_python_des](https://github.com/pythonhealthdatascience/rap_template_python_des).
+This dataset is released under the MIT licence. If you use this data, please cite the original repository: [pydesrap_mms](https://github.com/pythonhealthdatascience/pydesrap_mms).
 
 The code for input modelling is in: `rmarkdown/input_modelling.Rmd`. Model parameters are determined in this file and then stored in: `R/parameters.R`. Description for each parameter can be found in the class docstring within this file.
 
@@ -211,7 +211,7 @@ repo/
 ├── mock_paper.md               # Mock paper using some of the figures
 ├── NAMESPACE                   # Defines the exported functions and objects for the R package
 ├── NEWS.md                     # Describes changes between releases (equivalent to a changelog for R packages)
-├── rap_template_r_des.Rproject # Project settings
+├── rdesrap_mms.Rproject # Project settings
 ├── README.md                   # This file! Describes the repository
 ├── renv.lock                   # Lists R version and all packages in the R environment
 └── run_rmarkdown.sh            # Bash script to run knit all .Rmd from the command line
@@ -238,7 +238,7 @@ There are also two notebooks illustrating logging functionality (`logs.Rmd`) and
 
 If you use this repository, please cite either the GitHub repository or Zenodo:
 
-> Heather, A. (2025). R DES Rap Template. GitHub. https://github.com/pythonhealthdatascience/rap_template_r_des.
+> Heather, A. (2025). R DES Rap Template. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
 >
 > Heather, A. (2025). R DES Rap Template. Zenodo. https://doi.org/10.5281/zenodo.14980863.
 

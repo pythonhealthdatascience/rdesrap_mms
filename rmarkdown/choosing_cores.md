@@ -32,7 +32,7 @@ devtools::install(upgrade = "never")
 ```
 
     ## ── R CMD build ──────────────────────────────────────────────────────────
-    ##      checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rap_template_r_des/DESCRIPTION’
+    ##      checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
@@ -42,7 +42,7 @@ devtools::install(upgrade = "never")
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
     ##   /tmp/RtmphBXRjL/simulation_0.1.0.tar.gz --install-tests 
-    ## * installing to library ‘/home/amy/.cache/R/renv/library/rap_template_r_des-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
+    ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
     ## ** R

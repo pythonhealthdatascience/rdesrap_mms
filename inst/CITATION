@@ -5,5 +5,5 @@ bibentry(
   organization = "University of Exeter",
   year       = 2025,
   note       = "Version 0.4.0. A template for creating discrete-event simulation (DES) models in R within a reproducible analytical pipeline (RAP).",
-  url        = "https://github.com/pythonhealthdatascience/rap_template_r_des"
+  url        = "https://github.com/pythonhealthdatascience/rdesrap_mms"
 )

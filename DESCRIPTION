@@ -9,7 +9,7 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-URL: https://github.com/pythonhealthdatascience/rap_template_r_des
+URL: https://github.com/pythonhealthdatascience/rdesrap_mms
 Description: Template reproducible analytical pipeline (RAP) for simple R
     discrete-event simulation (DES) model.
 License: MIT + file LICENSE
