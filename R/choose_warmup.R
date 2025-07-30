@@ -27,15 +27,15 @@ time_series_inspection <- function(result, file_path, warm_up = NULL) {
   metrics <- list()
 
   # Wait time of each patient at each time point
-  metrics[[1L]] <- result[["arrivals"]] %>%
-    rename(time = .data[["serve_start"]]) %>%
+  metrics[[1L]] <- result[["arrivals"]] |>
+    rename(time = .data[["serve_start"]]) |>
     select(.data[["replication"]],
            .data[["time"]],
            .data[["wait_time"]])
 
   # Service length of each patient at each time point
-  metrics[[2L]] <- result[["arrivals"]] %>%
-    rename(time = .data[["serve_start"]]) %>%
+  metrics[[2L]] <- result[["arrivals"]] |>
+    rename(time = .data[["serve_start"]]) |>
     select(.data[["replication"]],
            .data[["time"]],
            .data[["serve_length"]])
@@ -43,7 +43,7 @@ time_series_inspection <- function(result, file_path, warm_up = NULL) {
   # Utilisation at each time point
   metrics[[3L]] <- calc_utilisation(result[["resources"]],
                                     groups = c("resource", "replication"),
-                                    summarise = FALSE) %>%
+                                    summarise = FALSE) |>
     select(.data[["replication"]],
            .data[["time"]],
            .data[["utilisation"]])
@@ -55,18 +55,18 @@ time_series_inspection <- function(result, file_path, warm_up = NULL) {
     metric <- setdiff(names(metrics[[i]]), c("time", "replication"))
 
     # Calculate cumulative mean for the current metric
-    cumulative <- metrics[[i]] %>%
-      arrange(.data[["replication"]], .data[["time"]]) %>%
-      group_by(.data[["replication"]]) %>%
+    cumulative <- metrics[[i]] |>
+      arrange(.data[["replication"]], .data[["time"]]) |>
+      group_by(.data[["replication"]]) |>
       mutate(cumulative_mean = cumsum(.data[[metric]]) /
-               seq_along(.data[[metric]])) %>%
+               seq_along(.data[[metric]])) |>
       ungroup()
 
     # Repeat calculation, but including all replications in one
-    overall_cumulative <- metrics[[i]] %>%
-      arrange(.data[["time"]]) %>%
+    overall_cumulative <- metrics[[i]] |>
+      arrange(.data[["time"]]) |>
       mutate(cumulative_mean = cumsum(.data[[metric]]) /
-               seq_along(.data[[metric]])) %>%
+               seq_along(.data[[metric]])) |>
       ungroup()
 
     # Create plot

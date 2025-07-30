@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -108,11 +108,11 @@ head(data)
 Calculate inter-arrival times.
 
 ``` r
-data <- data %>%
+data <- data |>
   # Combine date/time and convert to datetime
-  mutate(arrival_datetime = ymd_hm(paste(ARRIVAL_DATE, ARRIVAL_TIME))) %>%
+  mutate(arrival_datetime = ymd_hm(paste(ARRIVAL_DATE, ARRIVAL_TIME))) |>
   # Sort by arrival time
-  arrange(arrival_datetime) %>%
+  arrange(arrival_datetime) |>
   # Calculate inter-arrival times
   mutate(
     iat_mins = as.numeric(
@@ -123,8 +123,8 @@ data <- data %>%
   )
 
 # Preview
-data %>%
-  select(ARRIVAL_DATE, ARRIVAL_TIME, arrival_datetime, iat_mins) %>%
+data |>
+  select(ARRIVAL_DATE, ARRIVAL_TIME, arrival_datetime, iat_mins) |>
   head()
 ```
 
@@ -141,7 +141,7 @@ data %>%
 Calculate service times.
 
 ``` r
-data <- data %>%
+data <- data |>
   mutate(
     service_datetime   = ymd_hm(paste(SERVICE_DATE, SERVICE_TIME)),
     departure_datetime = ymd_hm(paste(DEPARTURE_DATE, DEPARTURE_TIME)),
@@ -151,7 +151,7 @@ data <- data %>%
   )
 
 # Preview
-data %>% select(service_datetime, departure_datetime, service_mins) %>% head()
+data |> select(service_datetime, departure_datetime, service_mins) |> head()
 ```
 
     ## # A tibble: 6 × 3
@@ -172,10 +172,10 @@ model, which are often modelled using exponential distributions.
 
 Then, we **inspect the data** in two different ways:
 
-| Plot type | What does it show? | Why do we create this plot? |
-|----|----|----|
+| Plot type       | What does it show?                                                  | Why do we create this plot?                                                                                                                                                                                                                                                                        |
+|-----------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Time series** | Trends, seasonality, and outliers (e.g., spikes or dips over time). | To check for **stationarity** (i.e. no trends or sudden changes). Stationary is an assumption of many distributions, and if trends or anomalies do exist, we may need to exclude certain periods or model them separately. The time series can also be useful for spotting outliers and data gaps. |
-| **Histogram** | The shape of the data’s distribution. | Helps **identify which distributions might fit** the data. |
+| **Histogram**   | The shape of the data’s distribution.                               | Helps **identify which distributions might fit** the data.                                                                                                                                                                                                                                         |
 
 We repeat this for arrivals and service time, so have created a function
 to avoid duplicate code between each.
@@ -229,7 +229,7 @@ inspect_time_series <- function(
 ``` r
 # Plot daily arrivals
 path <- file.path(output_dir, "input_model_daily_arrivals.png")
-daily_arrivals <- data %>% group_by(ARRIVAL_DATE) %>% count()
+daily_arrivals <- data |> group_by(ARRIVAL_DATE) |> count()
 p <- inspect_time_series(
   time_series = daily_arrivals, date_col = "ARRIVAL_DATE", value_col = "n",
   y_lab = "Number of arrivals", interactive = FALSE, save_path = path
@@ -241,9 +241,9 @@ include_graphics(path)
 
 ``` r
 # Calculate mean service length per day, dropping last day (incomplete)
-daily_service <- data %>%
-  group_by(SERVICE_DATE) %>%
-  summarise(mean_service = mean(service_mins)) %>%
+daily_service <- data |>
+  group_by(SERVICE_DATE) |>
+  summarise(mean_service = mean(service_mins)) |>
   filter(row_number() <= n() - 1L)
 
 # Plot mean service length each day
@@ -333,8 +333,8 @@ jumps or plateaus in the data.
 
 ``` r
 # Get IAT and service time columns as numeric vectors (with NA dropped)
-data_iat <- data %>% drop_na(iat_mins) %>% select(iat_mins) %>% pull()
-data_service <- data %>% select(service_mins) %>% pull()
+data_iat <- data |> drop_na(iat_mins) |> select(iat_mins) |> pull()
+data_service <- data |> select(service_mins) |> pull()
 
 # Plot histograms and CDFs
 path <- file.path(output_dir, "input_model_hist_dist_iat.png")
@@ -615,4 +615,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 13s
+    ## Notebook run time: 0m 12s

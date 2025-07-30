@@ -1,3 +1,7 @@
+# Simple M/M/s queuing model: R DES RAP (unreleased)
+
+TBC.
+
 # R DES RAP Template 0.4.0
 
 Major changes include: addition of two new metrics (queue length and patients in service); input modelling; and synthetic data. Also, enabled solutions below the defined initial replications for the replications algorithm.

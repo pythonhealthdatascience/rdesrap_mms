@@ -9,6 +9,7 @@
 [![R-CMD-check](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/R-CMD-check.yaml)
 [![Lint](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/lint.yaml/badge.svg)](https://github.com/pythonhealthdatascience/rdesrap_mms/actions/workflows/lint.yaml)
 [![ORCID](https://img.shields.io/badge/ORCID_Amy_Heather-0000--0002--6596--3479-A6CE39?&logo=orcid&logoColor=white)](https://orcid.org/0000-0002-6596-3479)
+[![Codecov test coverage](https://codecov.io/gh/pythonhealthdatascience/rdesrap_mms/graph/badge.svg)](https://app.codecov.io/gh/pythonhealthdatascience/rdesrap_mms)
 <!-- badges: end -->
 </div>
 
@@ -78,14 +79,14 @@ library(simulation)
 
 ```{.r}
 params <- parameters(patient_inter = 2L, mean_n_consult_time = 4L, number_of_nurses = 2L)
-result <- model(params)
+result <- model(run_number = 1L, param = params)
 ```
 
 **Run multiple replications:**
 
 ```{.r}
 params <- parameters(patient_inter = 2L, mean_n_consult_time = 4L, number_of_nurses = 2L, number_of_runs = 10L)
-results <- runner(params)
+results <- runner(param = params)
 ```
 
 **Run all example analyses (from command line):**
@@ -98,6 +99,12 @@ bash run_rmarkdown.sh
 
 ```{.r}
 devtools::test()
+```
+
+**Compute test coverage:**
+
+```{.r}
+devtools::test_coverage()
 ```
 
 **Lint code:**
@@ -238,9 +245,9 @@ There are also two notebooks illustrating logging functionality (`logs.Rmd`) and
 
 If you use this repository, please cite either the GitHub repository or Zenodo:
 
-> Heather, A. (2025). R DES Rap Template. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
+> Heather, A. (2025). Simple M/M/s queuing model: R DES RAP. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
 >
-> Heather, A. (2025). R DES Rap Template. Zenodo. https://doi.org/10.5281/zenodo.14980863.
+> Heather, A. (2025). Simple M/M/s queuing model: R DES RAP. Zenodo. https://doi.org/10.5281/zenodo.14980863.
 
 **Contributors:**
 

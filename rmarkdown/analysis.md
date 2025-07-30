@@ -1,15 +1,15 @@
 Analysis
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Set up](#set-up)
 - [Default run](#default-run)
 - [View spread of results across
   replication](#view-spread-of-results-across-replication)
 - [Scenario analysis](#scenario-analysis)
-  - [Running a basic example (which can compare to Python
-    template)](#running-a-basic-example-which-can-compare-to-python-template)
+  - [Running a basic example (which can compare to Python m/m/s
+    model)](#running-a-basic-example-which-can-compare-to-python-mms-model)
 - [Sensitivity analysis](#sensitivity-analysis)
 - [NaN results](#nan-results)
 - [Calculate run time](#calculate-run-time)
@@ -42,7 +42,8 @@ The run time is provided at the end of the notebook.
 
 Install the latest version of the local simulation package. If running
 sequentially, `devtools::load_all()` is sufficient. If running in
-parallel, you must use `devtools::install()`.
+parallel, you must use `devtools::install()` and then
+`library(simulation)`.
 
 ``` r
 devtools::load_all()
@@ -58,7 +59,6 @@ library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(knitr)
 library(simmer, warn.conflicts = FALSE)
-library(simulation)
 library(tidyr, warn.conflicts = FALSE)
 library(xtable)
 
@@ -150,10 +150,10 @@ Can calculate overall results from across the replications as well…
 
 ``` r
 # Calculate average results
-run_results %>%
-  dplyr::select(!c(replication, arrivals)) %>%
-  gather() %>%
-  group_by(key) %>%
+run_results |>
+  dplyr::select(!c(replication, arrivals)) |>
+  gather() |>
+  group_by(key) |>
   reframe(mean = mean(value, na.rm = TRUE),
           std_dev = stats::sd(value, na.rm = TRUE),
           ci_lower = stats::t.test(value)[["conf.int"]][[1L]],
@@ -378,8 +378,8 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   }
 
   # Calculate average results from each scenario
-  avg_results <- results %>%
-    group_by_at(group_vars) %>%
+  avg_results <- results |>
+    group_by_at(group_vars) |>
     summarise(mean = mean(.data[[result_var]]),
               std_dev = sd(.data[[result_var]]),
               ci_lower = t.test(.data[[result_var]])[["conf.int"]][[1L]],
@@ -465,13 +465,13 @@ Example table.
 
 ``` r
 # Process table
-table <- result %>%
+table <- result |>
   # Combine mean and CI into single column, and round
   mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper),
-         nurses = sprintf("% s nurses", number_of_nurses)) %>%
-  dplyr::select(patient_inter, nurses, mean_ci) %>%
+         nurses = sprintf("% s nurses", number_of_nurses)) |>
+  dplyr::select(patient_inter, nurses, mean_ci) |>
   # Convert from long to wide format
-  pivot_wider(names_from = nurses, values_from = mean_ci) %>%
+  pivot_wider(names_from = nurses, values_from = mean_ci) |>
   rename(`Patient inter-arrival time` = patient_inter)
 
 # Convert to latex, display and save
@@ -480,7 +480,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Jun  4 16:22:52 2025
+    ## % Wed Jul 30 11:45:10 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -502,11 +502,11 @@ print(table_latex,
       file = file.path(output_dir, "scenario_nurse_util.tex"))
 ```
 
-### Running a basic example (which can compare to Python template)
+### Running a basic example (which can compare to Python m/m/s model)
 
-To enable comparison between the templates, this section runs the model
-with a simple set of base case parameters (matched to Python), and then
-running some scenarios on top of that base case.
+To enable comparison between the python and R m/m/s models, this section
+runs the model with a simple set of base case parameters (matched to
+Python), and then running some scenarios on top of that base case.
 
 ``` r
 # Define the base param for this altered run
@@ -527,7 +527,7 @@ scenarios <- list(
 )
 
 # Run scenarios
-compare_template_results <- run_scenarios(scenarios, new_base)
+compare_results <- run_scenarios(scenarios, new_base)
 ```
 
     ## There are 20 scenarios.
@@ -609,13 +609,13 @@ compare_template_results <- run_scenarios(scenarios, new_base)
 
 ``` r
 # Preview scenario results dataframe
-print(dim(compare_template_results))
+print(dim(compare_results))
 ```
 
     ## [1] 200  12
 
 ``` r
-head(compare_template_results)
+head(compare_results)
 ```
 
     ## # A tibble: 6 × 12
@@ -634,11 +634,11 @@ head(compare_template_results)
 
 ``` r
 # Define path
-path <- file.path(output_dir, "scenario_nurse_wait_compare_templates.png")
+path <- file.path(output_dir, "scenario_nurse_wait_compare_python_r.png")
 
 # Calculate results and generate plot
 result <- plot_scenario(
-  results = compare_template_results,
+  results = compare_results,
   x_var = "patient_inter",
   result_var = "mean_waiting_time_nurse",
   colour_var = "number_of_nurses",
@@ -652,15 +652,15 @@ result <- plot_scenario(
 include_graphics(path)
 ```
 
-![](../outputs/scenario_nurse_wait_compare_templates.png)<!-- -->
+![](../outputs/scenario_nurse_wait_compare_python_r.png)<!-- -->
 
 ``` r
 # Define path
-path <- file.path(output_dir, "scenario_nurse_util_compare_templates.png")
+path <- file.path(output_dir, "scenario_nurse_util_compare_python_r.png")
 
 # Calculate results and generate plot
 result <- plot_scenario(
-  results = compare_template_results,
+  results = compare_results,
   x_var = "patient_inter",
   result_var = "utilisation_nurse",
   colour_var = "number_of_nurses",
@@ -674,7 +674,7 @@ result <- plot_scenario(
 include_graphics(path)
 ```
 
-![](../outputs/scenario_nurse_util_compare_templates.png)<!-- -->
+![](../outputs/scenario_nurse_util_compare_python_r.png)<!-- -->
 
 ## Sensitivity analysis
 
@@ -794,11 +794,11 @@ include_graphics(path)
 
 ``` r
 # Process table
-sensitivity_table <- sensitivity_result  %>%
+sensitivity_table <- sensitivity_result  |>
   # Combine mean and CI into single column, and round
-  mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper)) %>%
+  mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper)) |>
   # Select and rename columns
-  dplyr::select(mean_n_consult_time, mean_ci) %>%
+  dplyr::select(mean_n_consult_time, mean_ci) |>
   rename(`Mean nurse consultation time` = mean_n_consult_time,
          `Mean wait time for nurse (95 percent confidence interval)` = mean_ci)
 
@@ -808,7 +808,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Jun  4 16:23:52 2025
+    ## % Wed Jul 30 11:46:04 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -894,8 +894,8 @@ nan_experiment <- runner(param)
 ```
 
 ``` r
-nan_experiment[["arrivals"]] %>%
-  arrange(replication, start_time) %>%
+nan_experiment[["arrivals"]] |>
+  arrange(replication, start_time) |>
   tail()
 ```
 
@@ -970,4 +970,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 3m 1s
+    ## Notebook run time: 2m 48s

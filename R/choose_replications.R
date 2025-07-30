@@ -574,9 +574,9 @@ confidence_interval_method <- function(replications, desired_precision,
   )
   if (nrow(compare) > 0L) {
     # Get minimum number
-    n_reps <- compare %>%
-      dplyr::slice_head() %>%
-      dplyr::select(replications) %>%
+    n_reps <- compare |>
+      dplyr::slice_head() |>
+      dplyr::select(replications) |>
       dplyr::pull()
     message("Reached desired precision (", desired_precision, ") in ",
             n_reps, " replications.")
