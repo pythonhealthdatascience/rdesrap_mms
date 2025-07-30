@@ -25,7 +25,8 @@ The run time is provided at the end of the notebook.
 
 Install the latest version of the local simulation package. If running
 sequentially, `devtools::load_all()` is sufficient. If running in
-parallel, you must use `devtools::install()`.
+parallel, you must use `devtools::install()` and then
+`library(simulation)`.
 
 ``` r
 devtools::install(upgrade = "never")
@@ -41,7 +42,7 @@ devtools::install(upgrade = "never")
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/Rtmp3LZeuC/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpFqqzKP/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -296,4 +297,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 56s
+    ## Notebook run time: 0m 57s

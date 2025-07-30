@@ -39,7 +39,8 @@ The run time is provided at the end of the notebook.
 
 Install the latest version of the local simulation package. If running
 sequentially, `devtools::load_all()` is sufficient. If running in
-parallel, you must use `devtools::install()`.
+parallel, you must use `devtools::install()` and then
+`library(simulation)`.
 
 ``` r
 devtools::load_all()
@@ -76,7 +77,6 @@ library(dplyr)
 
 ``` r
 library(knitr)
-library(simulation)
 library(tidyr)
 ```
 
@@ -730,4 +730,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 3s
+    ## Notebook run time: 2m 5s

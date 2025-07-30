@@ -28,21 +28,14 @@ The run time is provided at the end of this notebook.
 
 Install the latest version of the local simulation package. If running
 sequentially, `devtools::load_all()` is sufficient. If running in
-parallel, you must use `devtools::install()`.
+parallel, you must use `devtools::install()` and then
+`library(simulation)`.
 
 ``` r
 devtools::load_all()
 ```
 
     ## ℹ Loading simulation
-
-Load required packages.
-
-``` r
-# nolint start: undesirable_function_linter.
-library(simulation)
-# nolint end
-```
 
 Start timer.
 

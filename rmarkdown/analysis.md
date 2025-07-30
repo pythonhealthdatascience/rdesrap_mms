@@ -42,7 +42,8 @@ The run time is provided at the end of the notebook.
 
 Install the latest version of the local simulation package. If running
 sequentially, `devtools::load_all()` is sufficient. If running in
-parallel, you must use `devtools::install()`.
+parallel, you must use `devtools::install()` and then
+`library(simulation)`.
 
 ``` r
 devtools::load_all()
@@ -58,7 +59,6 @@ library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(knitr)
 library(simmer, warn.conflicts = FALSE)
-library(simulation)
 library(tidyr, warn.conflicts = FALSE)
 library(xtable)
 
@@ -480,7 +480,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Jul 30 11:32:54 2025
+    ## % Wed Jul 30 11:45:10 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -808,7 +808,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Wed Jul 30 11:33:52 2025
+    ## % Wed Jul 30 11:46:04 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -970,4 +970,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 3m 1s
+    ## Notebook run time: 2m 48s

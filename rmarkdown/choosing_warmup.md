@@ -39,7 +39,8 @@ below:
 
 Install the latest version of the local simulation package. If running
 sequentially, `devtools::load_all()` is sufficient. If running in
-parallel, you must use `devtools::install()`.
+parallel, you must use `devtools::install()` and then
+`library(simulation)`.
 
 ``` r
 devtools::load_all()
@@ -52,7 +53,6 @@ Load required packages.
 ``` r
 # nolint start: undesirable_function_linter.
 library(knitr)
-library(simulation)
 
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
@@ -164,4 +164,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 2s
+    ## Notebook run time: 0m 3s
