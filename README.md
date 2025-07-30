@@ -238,9 +238,9 @@ There are also two notebooks illustrating logging functionality (`logs.Rmd`) and
 
 If you use this repository, please cite either the GitHub repository or Zenodo:
 
-> Heather, A. (2025). R DES Rap Template. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
+> Heather, A. (2025). Simple M/M/s queuing model: R DES RAP. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
 >
-> Heather, A. (2025). R DES Rap Template. Zenodo. https://doi.org/10.5281/zenodo.14980863.
+> Heather, A. (2025). Simple M/M/s queuing model: R DES RAP. Zenodo. https://doi.org/10.5281/zenodo.14980863.
 
 **Contributors:**
 
