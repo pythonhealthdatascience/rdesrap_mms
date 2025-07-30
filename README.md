@@ -78,14 +78,14 @@ library(simulation)
 
 ```{.r}
 params <- parameters(patient_inter = 2L, mean_n_consult_time = 4L, number_of_nurses = 2L)
-result <- model(params)
+result <- model(run_number = 1L, param = params)
 ```
 
 **Run multiple replications:**
 
 ```{.r}
 params <- parameters(patient_inter = 2L, mean_n_consult_time = 4L, number_of_nurses = 2L, number_of_runs = 10L)
-results <- runner(params)
+results <- runner(param = params)
 ```
 
 **Run all example analyses (from command line):**
