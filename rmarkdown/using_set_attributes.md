@@ -1,7 +1,7 @@
 Using `set_attributes()`
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Original model](#original-model)
 - [Model with record of allocation to a nurse
@@ -55,18 +55,18 @@ set.seed(run_number)
 
 env <- simmer("simulation", verbose = verbose)
 
-patient <- trajectory("appointment") %>%
-  seize("nurse", 1L) %>%
+patient <- trajectory("appointment") |>
+  seize("nurse", 1L) |>
   timeout(function() {
     rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
-  }) %>%
+  }) |>
   release("nurse", 1L)
 
-env <- env %>%
-  add_resource("nurse", param[["number_of_nurses"]]) %>%
+env <- env |>
+  add_resource("nurse", param[["number_of_nurses"]]) |>
   add_generator("patient", patient, function() {
     rexp(n = 1L, rate = 1L / param[["patient_inter"]])
-  }) %>%
+  }) |>
   simmer::run(param[["warm_up_period"]] + param[["data_collection_period"]])
 ```
 
@@ -102,22 +102,22 @@ set.seed(run_number)
 
 env <- simmer("simulation", verbose = verbose)
 
-patient <- trajectory("appointment") %>%
-  seize("nurse", 1L) %>%
+patient <- trajectory("appointment") |>
+  seize("nurse", 1L) |>
   # NEW LINE:
   # --------------------------------------------------------------
-  set_attribute("nurse_serve_start", function() now(env)) %>%
+  set_attribute("nurse_serve_start", function() now(env)) |>
   # --------------------------------------------------------------
   timeout(function() {
     rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
-  }) %>%
+  }) |>
   release("nurse", 1L)
 
-env <- env %>%
-  add_resource("nurse", param[["number_of_nurses"]]) %>%
+env <- env |>
+  add_resource("nurse", param[["number_of_nurses"]]) |>
   add_generator("patient", patient, function() {
     rexp(n = 1L, rate = 1L / param[["patient_inter"]])
-  }) %>%
+  }) |>
   simmer::run(param[["warm_up_period"]] + param[["data_collection_period"]])
 ```
 
@@ -156,22 +156,22 @@ set.seed(run_number)
 
 env <- simmer("simulation", verbose = verbose)
 
-patient <- trajectory("appointment") %>%
-  seize("nurse", 1L) %>%
+patient <- trajectory("appointment") |>
+  seize("nurse", 1L) |>
   # NEW LINES:
   # --------------------------------------------------------------
   set_attribute("nurse_serve_length", function() {
     rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
-  }) %>%
-  timeout(function() get_attribute(env, "nurse_serve_length")) %>%
+  }) |>
+  timeout(function() get_attribute(env, "nurse_serve_length")) |>
   # --------------------------------------------------------------
   release("nurse", 1L)
 
-env <- env %>%
-  add_resource("nurse", param[["number_of_nurses"]]) %>%
+env <- env |>
+  add_resource("nurse", param[["number_of_nurses"]]) |>
   add_generator("patient", patient, function() {
     rexp(n = 1L, rate = 1L / param[["patient_inter"]])
-  }) %>%
+  }) |>
   simmer::run(param[["warm_up_period"]] + param[["data_collection_period"]])
 ```
 

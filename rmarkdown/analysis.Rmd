@@ -83,10 +83,10 @@ Can calculate overall results from across the replications as well...
 
 ```{r}
 # Calculate average results
-run_results %>%
-  dplyr::select(!c(replication, arrivals)) %>%
-  gather() %>%
-  group_by(key) %>%
+run_results |>
+  dplyr::select(!c(replication, arrivals)) |>
+  gather() |>
+  group_by(key) |>
   reframe(mean = mean(value, na.rm = TRUE),
           std_dev = stats::sd(value, na.rm = TRUE),
           ci_lower = stats::t.test(value)[["conf.int"]][[1L]],
@@ -190,8 +190,8 @@ plot_scenario <- function(results, x_var, result_var, colour_var, xaxis_title,
   }
 
   # Calculate average results from each scenario
-  avg_results <- results %>%
-    group_by_at(group_vars) %>%
+  avg_results <- results |>
+    group_by_at(group_vars) |>
     summarise(mean = mean(.data[[result_var]]),
               std_dev = sd(.data[[result_var]]),
               ci_lower = t.test(.data[[result_var]])[["conf.int"]][[1L]],
@@ -273,13 +273,13 @@ Example table.
 
 ```{r}
 # Process table
-table <- result %>%
+table <- result |>
   # Combine mean and CI into single column, and round
   mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper),
-         nurses = sprintf("% s nurses", number_of_nurses)) %>%
-  dplyr::select(patient_inter, nurses, mean_ci) %>%
+         nurses = sprintf("% s nurses", number_of_nurses)) |>
+  dplyr::select(patient_inter, nurses, mean_ci) |>
   # Convert from long to wide format
-  pivot_wider(names_from = nurses, values_from = mean_ci) %>%
+  pivot_wider(names_from = nurses, values_from = mean_ci) |>
   rename(`Patient inter-arrival time` = patient_inter)
 
 # Convert to latex, display and save
@@ -402,11 +402,11 @@ include_graphics(path)
 
 ```{r}
 # Process table
-sensitivity_table <- sensitivity_result  %>%
+sensitivity_table <- sensitivity_result  |>
   # Combine mean and CI into single column, and round
-  mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper)) %>%
+  mutate(mean_ci = sprintf("%.2f (%.2f, %.2f)", mean, ci_lower, ci_upper)) |>
   # Select and rename columns
-  dplyr::select(mean_n_consult_time, mean_ci) %>%
+  dplyr::select(mean_n_consult_time, mean_ci) |>
   rename(`Mean nurse consultation time` = mean_n_consult_time,
          `Mean wait time for nurse (95 percent confidence interval)` = mean_ci)
 
@@ -436,8 +436,8 @@ nan_experiment <- runner(param)
 ```
 
 ```{r}
-nan_experiment[["arrivals"]] %>%
-  arrange(replication, start_time) %>%
+nan_experiment[["arrivals"]] |>
+  arrange(replication, start_time) |>
   tail()
 ```
 

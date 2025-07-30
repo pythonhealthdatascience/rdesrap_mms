@@ -1,7 +1,7 @@
 Logs
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Set up](#set-up)
 - [Simulation run with logs printed to the
@@ -257,26 +257,26 @@ set.seed(0L)
 env <- simmer("simulation", verbose = FALSE)
 
 # Define the patient trajectory
-patient <- trajectory("appointment") %>%
-  simmer::log_("🚶 Arrives.") %>%
-  seize("nurse", 1L) %>%
-  set_attribute("nurse_serve_start", function() now(env)) %>%
+patient <- trajectory("appointment") |>
+  simmer::log_("🚶 Arrives.") |>
+  seize("nurse", 1L) |>
+  set_attribute("nurse_serve_start", function() now(env)) |>
   set_attribute("nurse_serve_length", function() {
     rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
-  }) %>%
+  }) |>
   simmer::log_(function() {
     paste0("🩺 Nurse consultation begins (length: ",
            round(get_attribute(env, "nurse_serve_length"), 5L), ")")
-  }) %>%
-  timeout(function() get_attribute(env, "nurse_serve_length")) %>%
-  release("nurse", 1L) %>%
+  }) |>
+  timeout(function() get_attribute(env, "nurse_serve_length")) |>
+  release("nurse", 1L) |>
   simmer::log_("🚪 Leaves.")
 
-env <- env %>%
-  add_resource("nurse", param[["number_of_nurses"]]) %>%
+env <- env |>
+  add_resource("nurse", param[["number_of_nurses"]]) |>
   add_generator("patient", patient, function() {
     rexp(n = 1L, rate = 1L / param[["patient_inter"]])
-  }) %>%
+  }) |>
   simmer::run(param[["data_collection_period"]])
 ```
 

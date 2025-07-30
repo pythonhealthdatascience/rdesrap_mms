@@ -63,8 +63,8 @@ test_that("under high demand + warm-up period, metrics are correct", {
 
   # Check that the first entry for each resource is at start of the data
   # collection period
-  first_resources <- result[["resources"]] %>%
-    group_by(resource) %>%
+  first_resources <- result[["resources"]] |>
+    group_by(resource) |>
     slice(1L)
   expect_true(all(first_resources[["time"]] == param[["warm_up_period"]]))
 
@@ -309,9 +309,9 @@ test_that("running with warm-up leads to different results than without", {
   # > Start time in data collection period
   # > Queue time greater than 0 (as we have run scenario with backlog where
   # expect resources to still be in use by warm-up patients)
-  first_patient <- results_warmup[["arrivals"]] %>%
-    arrange(start_time) %>%
-    mutate(wait_time = end_time - activity_time) %>%
+  first_patient <- results_warmup[["arrivals"]] |>
+    arrange(start_time) |>
+    mutate(wait_time = end_time - activity_time) |>
     slice(1L)
   expect_gt(first_patient[["start_time"]], 50L)
   expect_gt(first_patient[["wait_time"]], 0L)
@@ -319,9 +319,9 @@ test_that("running with warm-up leads to different results than without", {
   # Without warm-up, check that first arrival has:
   # > Start time after 0
   # > Queue time equal to 0
-  first_patient <- results_none[["arrivals"]] %>%
-    arrange(start_time) %>%
-    mutate(wait_time = round(end_time - activity_time - start_time, 10L)) %>%
+  first_patient <- results_none[["arrivals"]] |>
+    arrange(start_time) |>
+    mutate(wait_time = round(end_time - activity_time - start_time, 10L)) |>
     slice(1L)
   expect_gt(first_patient[["start_time"]], 0L)
   expect_identical(first_patient[["wait_time"]], 0.0)
@@ -382,8 +382,8 @@ test_that("check that calculated times are consistent with one another", {
 
   # Filter to patients who started service with a nurse but did not complete
   # before the end of the simulation
-  incomplete <- result[["arrivals"]] %>%
-    filter(is.na(end_time)) %>%
+  incomplete <- result[["arrivals"]] |>
+    filter(is.na(end_time)) |>
     filter(!is.na(serve_start))
 
   # Check that they are excluded from wait time unseen
@@ -401,7 +401,7 @@ test_that("check that calculated times are consistent with one another", {
 
 
   # Filter to patients who completed a the nurse service before the end
-  complete <- result[["arrivals"]] %>%
+  complete <- result[["arrivals"]] |>
     filter(!is.na(end_time))
 
   # Check that they are excluded from wait time unseen
@@ -424,7 +424,7 @@ test_that("check that calculated times are consistent with one another", {
                     complete_wait[["serve_start"]]))
 
   # Filter to patients who are never seen
-  unseen <- result[["arrivals"]] %>%
+  unseen <- result[["arrivals"]] |>
     filter(is.na(serve_start))
 
   # Check that all have a result for wait_time_unseen

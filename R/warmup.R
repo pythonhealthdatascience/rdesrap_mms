@@ -3,7 +3,6 @@
 #' @param result Named list with two tables: monitored arrivals & resources.
 #' @param warm_up_period Length of warm-up period.
 #'
-#' @importFrom magrittr %>%
 #' @importFrom dplyr ungroup arrange slice n filter
 #'
 #' @return The name list `result`, but with the tables (`arrivals` and
@@ -15,9 +14,9 @@ filter_warmup <- function(result, warm_up_period) {
   if (warm_up_period == 0L) return(result)
 
   # For arrivals, just remove all entries for warm-up patients
-  result[["arrivals"]] <- result[["arrivals"]] %>%
-    group_by(.data[["name"]]) %>%
-    filter(all(.data[["start_time"]] >= warm_up_period)) %>%
+  result[["arrivals"]] <- result[["arrivals"]] |>
+    group_by(.data[["name"]]) |>
+    filter(all(.data[["start_time"]] >= warm_up_period)) |>
     ungroup()
 
   # For resources, filter to resource events in the data collection period
@@ -28,14 +27,14 @@ filter_warmup <- function(result, warm_up_period) {
   if (nrow(dc_resources) > 0L) {
 
     # Get the last event for each resource prior to the warm-up
-    last_usage <- result[["resources"]] %>%
-      filter(.data[["time"]] < warm_up_period) %>%
-      arrange(.data[["time"]]) %>%
-      group_by(.data[["resource"]]) %>%
-      slice(n()) %>%
+    last_usage <- result[["resources"]] |>
+      filter(.data[["time"]] < warm_up_period) |>
+      arrange(.data[["time"]]) |>
+      group_by(.data[["resource"]]) |>
+      slice(n()) |>
       # Replace time with start of data collection period (which will be the
       # length of the warm-up period)
-      mutate(time = warm_up_period) %>%
+      mutate(time = warm_up_period) |>
       ungroup()
 
     # Set the last event as the first row in the filtered resources dataframe

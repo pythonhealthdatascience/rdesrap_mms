@@ -89,8 +89,8 @@ ci_df <- confidence_interval_method(
 head(ci_df)
 
 # View first ten rows where percentage deviation is below 5
-ci_df %>%
-  filter(deviation < 0.05) %>%
+ci_df |>
+  filter(deviation < 0.05) |>
   head(10L)
 ```
 
@@ -143,8 +143,8 @@ ci_df <- confidence_interval_method(
 head(ci_df)
 
 # View first ten rows where percentage deviation is below 5
-ci_df %>%
-  filter(deviation < 0.05) %>%
+ci_df |>
+  filter(deviation < 0.05) |>
   head(10L)
 
 # Create plot

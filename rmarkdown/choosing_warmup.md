@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -164,4 +164,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 3s
+    ## Notebook run time: 0m 2s

@@ -59,8 +59,8 @@ calc_arrivals <- function(arrivals, groups = NULL) {
     arrivals <- group_by(arrivals, across(all_of(groups)))
   }
   # Calculate number of arrivals
-  arrivals %>%
-    summarise(arrivals = n_distinct(.data[["name"]])) %>%
+  arrivals |>
+    summarise(arrivals = n_distinct(.data[["name"]])) |>
     ungroup()
 }
 
@@ -79,11 +79,11 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
     patient_count <- group_by(patient_count, across(all_of(groups)))
   }
   # Calculate the time-weighted number of patients in the service
-  patient_count %>%
+  patient_count |>
     # Sort by time
-    arrange(.data[["time"]]) %>%
+    arrange(.data[["time"]]) |>
     # Calculate time between this row and the next
-    mutate(interval_duration = (lead(.data[["time"]]) - .data[["time"]])) %>%
+    mutate(interval_duration = (lead(.data[["time"]]) - .data[["time"]])) |>
     # Multiply each patient count by its own unique duration. The total of
     # those is then divided by the total duration of all intervals.
     # Hence, we are calculated a time-weighted average patient count.
@@ -92,7 +92,7 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
         sum(.data[["count"]] * .data[["interval_duration"]], na.rm = TRUE) /
           sum(.data[["interval_duration"]], na.rm = TRUE)
       )
-    ) %>%
+    ) |>
     ungroup()
 }
 
@@ -110,14 +110,14 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
   group_vars <- c("resource", groups)
 
   # Calculate mean queue length for each resource
-  arrivals %>%
-    group_by(across(all_of(group_vars))) %>%
+  arrivals |>
+    group_by(across(all_of(group_vars))) |>
     # Sort by arrival time
-    arrange(.data[["start_time"]]) %>%
+    arrange(.data[["start_time"]]) |>
     # Calculate time between this row and the next
     mutate(
       interval_duration = (lead(.data[["start_time"]]) - .data[["start_time"]])
-    ) %>%
+    ) |>
     # Multiply each queue length by its own unique duration. The total of
     # those is then divided by the total duration of all intervals.
     # Hence, we are calculated a time-weighted average queue length.
@@ -126,11 +126,11 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
             .data[["interval_duration"]], na.rm = TRUE) /
         sum(.data[["interval_duration"]], na.rm = TRUE)
     )
-    ) %>%
+    ) |>
     # Reshape dataframe
     pivot_wider(names_from = "resource",
                 values_from = "mean_queue_length",
-                names_glue = "mean_queue_length_{resource}") %>%
+                names_glue = "mean_queue_length_{resource}") |>
     ungroup()
 }
 
@@ -156,12 +156,12 @@ calc_mean_wait <- function(arrivals, resources, groups = NULL) {
     group_vars <- c("resource", groups)
 
     # Calculate mean wait time for each resource
-    complete_arrivals %>%
-      group_by(across(all_of(group_vars))) %>%
-      summarise(mean_waiting_time = mean(.data[["wait_time"]])) %>%
+    complete_arrivals |>
+      group_by(across(all_of(group_vars))) |>
+      summarise(mean_waiting_time = mean(.data[["wait_time"]])) |>
       pivot_wider(names_from = "resource",
                   values_from = "mean_waiting_time",
-                  names_glue = "mean_waiting_time_{resource}") %>%
+                  names_glue = "mean_waiting_time_{resource}") |>
       ungroup()
   } else {
     # But if no patients are seen, create same tibble with values set to NA
@@ -195,12 +195,12 @@ calc_mean_serve_length <- function(arrivals, resources, groups = NULL) {
     group_vars <- c("resource", groups)
 
     # Calculate mean serve time for each resource
-    complete_arrivals %>%
-      group_by(across(all_of(group_vars))) %>%
-      summarise(mean_serve_time = mean(.data[["serve_length"]])) %>%
+    complete_arrivals |>
+      group_by(across(all_of(group_vars))) |>
+      summarise(mean_serve_time = mean(.data[["serve_length"]])) |>
       pivot_wider(names_from = "resource",
                   values_from = "mean_serve_time",
-                  names_glue = "mean_serve_time_{resource}") %>%
+                  names_glue = "mean_serve_time_{resource}") |>
       ungroup()
   } else {
     # But if no patients are seen, create same tibble with values set to NA
@@ -239,8 +239,8 @@ calc_utilisation <- function(resources, groups = NULL, summarise = TRUE) {
   group_vars <- c("resource", groups)
 
   # Calculate utilisation
-  util_df <- resources %>%
-    group_by(across(all_of(group_vars))) %>%
+  util_df <- resources |>
+    group_by(across(all_of(group_vars))) |>
     mutate(
       # Time between this row and the next
       interval_duration = lead(.data[["time"]]) - .data[["time"]],
@@ -256,7 +256,7 @@ calc_utilisation <- function(resources, groups = NULL, summarise = TRUE) {
 
   # If summarise = TRUE, find total utilisation
   if (summarise) {
-    util_df %>%
+    util_df |>
       summarise(
         # Multiply each utilisation by its own unique duration. The total of
         # those is then divided by the total duration of all intervals.
@@ -264,10 +264,10 @@ calc_utilisation <- function(resources, groups = NULL, summarise = TRUE) {
         utilisation = (sum(.data[["utilisation"]] *
                              .data[["interval_duration"]], na.rm = TRUE) /
                          sum(.data[["interval_duration"]], na.rm = TRUE))
-      ) %>%
+      ) |>
       pivot_wider(names_from = "resource",
                   values_from = "utilisation",
-                  names_glue = "utilisation_{resource}") %>%
+                  names_glue = "utilisation_{resource}") |>
       ungroup()
   } else {
     # If summarise = FALSE, just return the util_df with no further processing
@@ -288,12 +288,12 @@ calc_unseen_n <- function(arrivals, groups = NULL) {
   # Create list of grouping variables (always "resource", but can add others)
   group_vars <- c("resource", groups)
   # Calculate number of patients waiting
-  arrivals %>%
-    group_by(across(all_of(group_vars))) %>%
-    summarise(value = sum(!is.na(.data[["wait_time_unseen"]]))) %>%
+  arrivals |>
+    group_by(across(all_of(group_vars))) |>
+    summarise(value = sum(!is.na(.data[["wait_time_unseen"]]))) |>
     pivot_wider(names_from = "resource",
                 values_from = "value",
-                names_glue = "count_unseen_{resource}") %>%
+                names_glue = "count_unseen_{resource}") |>
     ungroup()
 }
 
@@ -311,11 +311,11 @@ calc_unseen_mean <- function(arrivals, groups = NULL) {
   # Create list of grouping variables (always "resource", but can add others)
   group_vars <- c("resource", groups)
   # Calculate wait time of unseen patients
-  arrivals %>%
-    group_by(across(all_of(group_vars))) %>%
-    summarise(value = mean(.data[["wait_time_unseen"]], na.rm = TRUE)) %>%
+  arrivals |>
+    group_by(across(all_of(group_vars))) |>
+    summarise(value = mean(.data[["wait_time_unseen"]], na.rm = TRUE)) |>
     pivot_wider(names_from = "resource",
                 values_from = "value",
-                names_glue = "mean_waiting_time_unseen_{resource}") %>%
+                names_glue = "mean_waiting_time_unseen_{resource}") |>
     ungroup()
 }

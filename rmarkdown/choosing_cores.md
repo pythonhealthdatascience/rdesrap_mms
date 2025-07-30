@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -31,7 +31,7 @@ parallel, you must use `devtools::install()`.
 devtools::install(upgrade = "never")
 ```
 
-    ## ── R CMD build ──────────────────────────────────────────────────────────
+    ## ── R CMD build ─────────────────────────────────────────────────────────────────
     ##      checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
@@ -41,8 +41,8 @@ devtools::install(upgrade = "never")
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmphBXRjL/simulation_0.1.0.tar.gz --install-tests 
-    ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-cd7d6844/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
+    ##   /tmp/Rtmp3LZeuC/simulation_0.1.0.tar.gz --install-tests 
+    ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
     ## ** R
@@ -296,4 +296,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 2s
+    ## Notebook run time: 0m 56s

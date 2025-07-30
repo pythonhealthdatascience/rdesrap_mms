@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-06-04
+2025-07-30
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -209,8 +209,8 @@ head(ci_df)
 
 ``` r
 # View first ten rows where percentage deviation is below 5
-ci_df %>%
-  filter(deviation < 0.05) %>%
+ci_df |>
+  filter(deviation < 0.05) |>
   head(10L)
 ```
 
@@ -398,8 +398,8 @@ head(ci_df)
 
 ``` r
 # View first ten rows where percentage deviation is below 5
-ci_df %>%
-  filter(deviation < 0.05) %>%
+ci_df |>
+  filter(deviation < 0.05) |>
   head(10L)
 ```
 
@@ -730,4 +730,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 20s
+    ## Notebook run time: 2m 3s

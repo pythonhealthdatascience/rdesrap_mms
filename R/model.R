@@ -9,7 +9,6 @@
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
 #' @importFrom simmer add_generator run wrap get_mon_arrivals set_attribute
 #' @importFrom simmer get_attribute get_mon_attributes get_queue_count
-#' @importFrom magrittr %>%
 #' @importFrom stats rexp
 #' @importFrom utils capture.output
 #' @importFrom dplyr select left_join transmute desc
@@ -36,31 +35,31 @@ model <- function(run_number, param, set_seed = TRUE) {
   env <- simmer("simulation", verbose = verbose)
 
   # Define the patient trajectory
-  patient <- trajectory("appointment") %>%
+  patient <- trajectory("appointment") |>
     # Record queue length on arrival
     set_attribute("nurse_queue_on_arrival",
-                  function() get_queue_count(env, "nurse")) %>%
-    seize("nurse", 1L) %>%
+                  function() get_queue_count(env, "nurse")) |>
+    seize("nurse", 1L) |>
     # Manually record the time when the patient is served (i.e. resource
     # becomes available) and the sampled length of the activity.
-    set_attribute("nurse_serve_start", function() now(env)) %>%
+    set_attribute("nurse_serve_start", function() now(env)) |>
     set_attribute("nurse_serve_length", function() {
       rexp(n = 1L, rate = 1L / param[["mean_n_consult_time"]])
-    }) %>%
-    timeout(function() get_attribute(env, "nurse_serve_length")) %>%
+    }) |>
+    timeout(function() get_attribute(env, "nurse_serve_length")) |>
     release("nurse", 1L)
 
   # Add nurse resource and patient generator to the simmer environment and
   # run the simulation. Capture output, which will save a log if verbose=TRUE
   sim_log <- capture.output(
-    env <- env %>% # nolint
-      add_resource("nurse", param[["number_of_nurses"]]) %>%
+    env <- env |> # nolint
+      add_resource("nurse", param[["number_of_nurses"]]) |>
       # Set mon=2 to get our manual attributes
       add_generator("patient", patient, function() {
         rexp(n = 1L, rate = 1L / param[["patient_inter"]])
-      }, mon = 2L) %>%
+      }, mon = 2L) |>
       simmer::run(param[["warm_up_period"]] +
-                    param[["data_collection_period"]]) %>%
+                    param[["data_collection_period"]]) |>
       wrap()
   )
 
@@ -89,11 +88,11 @@ model <- function(run_number, param, set_seed = TRUE) {
   if (nrow(result[["arrivals"]]) > 0L) {
 
     # Get the extra arrivals attributes
-    extra_attributes <- get_mon_attributes(env) %>%
-      select("name", "key", "value") %>%
+    extra_attributes <- get_mon_attributes(env) |>
+      select("name", "key", "value") |>
       # Add column with resource name, and remove that from key
       mutate(resource = gsub("_.+", "", .data[["key"]]),
-             key = gsub("^[^_]+_", "", .data[["key"]])) %>%
+             key = gsub("^[^_]+_", "", .data[["key"]])) |>
       pivot_wider(names_from = "key", values_from = "value")
 
     # Merge extra attributes with the arrival data
@@ -112,17 +111,17 @@ model <- function(run_number, param, set_seed = TRUE) {
     arrivals_start <- transmute(
       result[["arrivals"]], time = .data[["start_time"]], change = 1L
     )
-    arrivals_end <- result[["arrivals"]] %>%
-      drop_na(all_of("end_time")) %>%
+    arrivals_end <- result[["arrivals"]] |>
+      drop_na(all_of("end_time")) |>
       transmute(time = .data[["end_time"]], change = -1L)
     events <- bind_rows(arrivals_start, arrivals_end)
 
     # Determine the count of patients in the service with each entry/exit
-    result[["patients_in_service"]] <- events %>%
+    result[["patients_in_service"]] <- events |>
       # Sort events by time
-      arrange(.data[["time"]], desc(.data[["change"]])) %>%
+      arrange(.data[["time"]], desc(.data[["change"]])) |>
       # Use cumulative sum to find number of patients in system at each time
-      mutate(count = cumsum(.data[["change"]])) %>%
+      mutate(count = cumsum(.data[["change"]])) |>
       dplyr::select(c("time", "count"))
 
     # Replace replication with appropriate run number (as these functions
@@ -136,7 +135,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
     # Calculate the wait time of patients who were seen, and also for those
     # who remained unseen at the end of the simulation
-    result[["arrivals"]] <- result[["arrivals"]] %>%
+    result[["arrivals"]] <- result[["arrivals"]] |>
       mutate(
         wait_time = .data[["serve_start"]] - .data[["start_time"]],
         wait_time_unseen = ifelse(
