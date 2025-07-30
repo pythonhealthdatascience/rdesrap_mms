@@ -10,8 +10,8 @@ Authors@R: c(
     )
   )
 URL: https://github.com/pythonhealthdatascience/rdesrap_mms
-Description: Template reproducible analytical pipeline (RAP) for simple R
-    discrete-event simulation (DES) model.
+Description: Reproducible analytical pipeline (RAP) for R discrete-event
+  simulation (DES) implementing a simple M/M/s queueing model.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

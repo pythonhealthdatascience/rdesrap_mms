@@ -290,9 +290,9 @@ print(table_latex,
       file = file.path(output_dir, "scenario_nurse_util.tex"))
 ```
 
-### Running a basic example (which can compare to Python template)
+### Running a basic example (which can compare to Python m/m/s model)
 
-To enable comparison between the templates, this section runs the model with a simple set of base case parameters (matched to Python), and then running some scenarios on top of that base case.
+To enable comparison between the python and R m/m/s models, this section runs the model with a simple set of base case parameters (matched to Python), and then running some scenarios on top of that base case.
 
 ```{r}
 # Define the base param for this altered run
@@ -313,22 +313,22 @@ scenarios <- list(
 )
 
 # Run scenarios
-compare_template_results <- run_scenarios(scenarios, new_base)
+compare_results <- run_scenarios(scenarios, new_base)
 ```
 
 ```{r}
 # Preview scenario results dataframe
-print(dim(compare_template_results))
-head(compare_template_results)
+print(dim(compare_results))
+head(compare_results)
 ```
 
 ```{r}
 # Define path
-path <- file.path(output_dir, "scenario_nurse_wait_compare_templates.png")
+path <- file.path(output_dir, "scenario_nurse_wait_compare_python_r.png")
 
 # Calculate results and generate plot
 result <- plot_scenario(
-  results = compare_template_results,
+  results = compare_results,
   x_var = "patient_inter",
   result_var = "mean_waiting_time_nurse",
   colour_var = "number_of_nurses",
@@ -342,11 +342,11 @@ result <- plot_scenario(
 include_graphics(path)
 
 # Define path
-path <- file.path(output_dir, "scenario_nurse_util_compare_templates.png")
+path <- file.path(output_dir, "scenario_nurse_util_compare_python_r.png")
 
 # Calculate results and generate plot
 result <- plot_scenario(
-  results = compare_template_results,
+  results = compare_results,
   x_var = "patient_inter",
   result_var = "utilisation_nurse",
   colour_var = "number_of_nurses",
