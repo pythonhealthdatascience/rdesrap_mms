@@ -86,10 +86,17 @@ run_results |>
   dplyr::select(!c(replication, arrivals)) |>
   gather() |>
   group_by(key) |>
-  reframe(mean = mean(value, na.rm = TRUE),
-          std_dev = stats::sd(value, na.rm = TRUE),
-          ci_lower = stats::t.test(value)[["conf.int"]][[1L]],
-          ci_upper = stats::t.test(value)[["conf.int"]][[2L]])
+  reframe(
+    n_complete = sum(!is.na(value)),
+    mean = mean(value, na.rm = TRUE),
+    std_dev = stats::sd(value, na.rm = TRUE),
+    ci_lower = (
+      if (n_complete >= 2) stats::t.test(value)$conf.int[1] else NA_real_
+    ),
+    ci_upper = (
+      if (n_complete >= 2) stats::t.test(value)$conf.int[2] else NA_real_
+    )
+  )
 ```
 
 ## View spread of results across replication

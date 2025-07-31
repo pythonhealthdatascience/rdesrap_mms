@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-07-30
+2025-07-31
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -241,7 +241,7 @@ scenario_results <- run_scenarios(scenarios, base_list = param)
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
     ## [1] 80
@@ -280,12 +280,12 @@ head(scenario_results)
     ## # A tibble: 6 × 12
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
-    ## 1           1       27                     2.74                  0     
-    ## 2           2       29                     4.58                  0.0613
-    ## 3           3       39                     4.62                  0.0946
-    ## 4           1       17                     1.58                  0     
-    ## 5           2       21                     2.91                  0.0793
-    ## 6           3       28                     3.26                  0     
+    ## 1           1       29                     3.49                  0.0755
+    ## 2           2       21                     2.73                  0     
+    ## 3           3       32                     2.60                  0     
+    ## 4           1       22                     4.00                  0.409 
+    ## 5           2       15                     1.23                  0     
+    ## 6           3       12                     1.31                  0     
     ## # ℹ 8 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
     ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
@@ -331,10 +331,10 @@ rep_results <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
-    ## [1] 80
+    ## [1] 43200
     ## 
     ## $number_of_runs
     ## [1] 15
@@ -354,27 +354,27 @@ rep_results <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Warning: Running 15 replications did not reach desired precision (0.1).
+    ## Reached desired precision (0.1) in 3 replications.
 
 ``` r
 # Preview results
 head(rep_results)
 ```
 
-    ##   replications      data cumulative_mean    stdev lower_ci upper_ci deviation
-    ## 1            1 10.808606       10.808606       NA       NA       NA        NA
-    ## 2            2  9.319953       10.064280       NA       NA       NA        NA
-    ## 3            3 12.141014       10.756525 1.411251 7.250782 14.26227 0.3259178
-    ## 4            4  8.889448       10.289755 1.482986 7.929994 12.64952 0.2293312
-    ## 5            5  7.603423        9.752489 1.758611 7.568885 11.93609 0.2239022
-    ## 6            6  5.009584        8.962005 2.494667 6.344013 11.58000 0.2921212
-    ##                  metric
-    ## 1 mean_serve_time_nurse
-    ## 2 mean_serve_time_nurse
-    ## 3 mean_serve_time_nurse
-    ## 4 mean_serve_time_nurse
-    ## 5 mean_serve_time_nurse
-    ## 6 mean_serve_time_nurse
+    ##   replications      data cumulative_mean      stdev lower_ci upper_ci
+    ## 1            1  9.943731        9.943731         NA       NA       NA
+    ## 2            2 10.030844        9.987287         NA       NA       NA
+    ## 3            3  9.837930        9.937501 0.09660777 9.697514 10.17749
+    ## 4            4 10.035143        9.961912 0.09276587 9.814301 10.10952
+    ## 5            5 10.151207        9.999771 0.11670760 9.854859 10.14468
+    ## 6            6 10.013713       10.002095 0.10454153 9.892385 10.11180
+    ##    deviation                metric
+    ## 1         NA mean_serve_time_nurse
+    ## 2         NA mean_serve_time_nurse
+    ## 3 0.02414963 mean_serve_time_nurse
+    ## 4 0.01481756 mean_serve_time_nurse
+    ## 5 0.01449149 mean_serve_time_nurse
+    ## 6 0.01096866 mean_serve_time_nurse
 
 ``` r
 # Save to csv
@@ -395,4 +395,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 2s
+    ## Notebook run time: 0m 13s
