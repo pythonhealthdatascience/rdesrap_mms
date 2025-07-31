@@ -43,6 +43,7 @@ param <- parameters(
   patient_inter = 6L,
   mean_n_consult_time = 8L,
   number_of_nurses = 1L,
+  warm_up_period = 10L,
   data_collection_period = 30L,
   number_of_runs = 1L,
   cores = 1L,
