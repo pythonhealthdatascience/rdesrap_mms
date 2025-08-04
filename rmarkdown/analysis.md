@@ -56,7 +56,6 @@ Import required packages.
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(knitr)
-library(simmer, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
 library(xtable)
 
@@ -129,7 +128,7 @@ run_results <- runner(param = parameters())[["run_results"]]
 head(run_results)
 ```
 
-    ## # A tibble: 6 × 9
+    ## # A tibble: 6 × 10
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
     ## 1           1    10733                     2.57                  0.105 
@@ -138,9 +137,10 @@ head(run_results)
     ## 4           4    10707                     2.53                  0.0800
     ## 5           5    10957                     2.72                  0.163 
     ## 6           6    10703                     2.58                  0.119 
-    ## # ℹ 5 more variables: mean_waiting_time_nurse <dbl>,
+    ## # ℹ 6 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
-    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>
+    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
+    ## #   mean_time_in_system <dbl>
 
 ``` r
 # Save results to csv
@@ -160,24 +160,25 @@ run_results |>
     mean = mean(value, na.rm = TRUE),
     std_dev = stats::sd(value, na.rm = TRUE),
     ci_lower = (
-      if (n_complete >= 2) stats::t.test(value)$conf.int[1] else NA_real_
+      if (n_complete >= 2L) stats::t.test(value)$conf.int[1L] else NA_real_
     ),
     ci_upper = (
-      if (n_complete >= 2) stats::t.test(value)$conf.int[2] else NA_real_
+      if (n_complete >= 2L) stats::t.test(value)$conf.int[2L] else NA_real_
     )
   )
 ```
 
-    ## # A tibble: 7 × 6
-    ##   key                            n_complete   mean  std_dev ci_lower ci_upper
-    ##   <chr>                               <int>  <dbl>    <dbl>    <dbl>    <dbl>
-    ## 1 count_unseen_nurse                     15 0.0667  0.258    -0.0763    0.210
-    ## 2 mean_patients_in_service               15 2.62    0.0515    2.59      2.65 
-    ## 3 mean_queue_length_nurse                15 0.128   0.0219    0.116     0.140
-    ## 4 mean_serve_time_nurse                  15 9.97    0.103     9.91     10.0  
-    ## 5 mean_waiting_time_nurse                15 0.516   0.0863    0.468     0.564
-    ## 6 mean_waiting_time_unseen_nurse          1 1.19   NA        NA        NA    
-    ## 7 utilisation_nurse                      15 0.498   0.00671   0.494     0.502
+    ## # A tibble: 8 × 6
+    ##   key                            n_complete    mean  std_dev ci_lower ci_upper
+    ##   <chr>                               <int>   <dbl>    <dbl>    <dbl>    <dbl>
+    ## 1 count_unseen_nurse                     15  0.0667  0.258    -0.0763    0.210
+    ## 2 mean_patients_in_service               15  2.62    0.0515    2.59      2.65 
+    ## 3 mean_queue_length_nurse                15  0.128   0.0219    0.116     0.140
+    ## 4 mean_serve_time_nurse                  15  9.97    0.103     9.91     10.0  
+    ## 5 mean_time_in_system                    15 10.5     0.160    10.4      10.6  
+    ## 6 mean_waiting_time_nurse                15  0.516   0.0863    0.468     0.564
+    ## 7 mean_waiting_time_unseen_nurse          1  1.19   NA        NA        NA    
+    ## 8 utilisation_nurse                      15  0.498   0.00671   0.494     0.502
 
 ## View spread of results across replication
 
@@ -342,13 +343,13 @@ scenario_results <- run_scenarios(scenarios, base_list = parameters())
 print(dim(scenario_results))
 ```
 
-    ## [1] 300  12
+    ## [1] 300  13
 
 ``` r
 head(scenario_results)
 ```
 
-    ## # A tibble: 6 × 12
+    ## # A tibble: 6 × 13
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
     ## 1           1    14212                     3.85                   0.580
@@ -357,10 +358,11 @@ head(scenario_results)
     ## 4           4    14375                     4.01                   0.666
     ## 5           5    14502                     4.02                   0.656
     ## 6           6    14229                     3.76                   0.506
-    ## # ℹ 8 more variables: mean_waiting_time_nurse <dbl>,
+    ## # ℹ 9 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
     ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
-    ## #   scenario <int>, patient_inter <int>, number_of_nurses <int>
+    ## #   mean_time_in_system <dbl>, scenario <int>, patient_inter <int>,
+    ## #   number_of_nurses <int>
 
 Example plot
 
@@ -491,7 +493,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Aug  4 12:09:51 2025
+    ## % Mon Aug  4 15:49:45 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -596,7 +598,7 @@ sensitivity_consult <- run_scenarios(consult, base_list = parameters())
 head(sensitivity_consult)
 ```
 
-    ## # A tibble: 6 × 11
+    ## # A tibble: 6 × 12
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
     ## 1           1    10759                     2.03                  0.0500
@@ -605,10 +607,10 @@ head(sensitivity_consult)
     ## 4           4    10765                     2.02                  0.0354
     ## 5           5    10976                     2.09                  0.0426
     ## 6           6    10744                     2.03                  0.0390
-    ## # ℹ 7 more variables: mean_waiting_time_nurse <dbl>,
+    ## # ℹ 8 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
     ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
-    ## #   scenario <int>, mean_n_consult_time <int>
+    ## #   mean_time_in_system <dbl>, scenario <int>, mean_n_consult_time <int>
 
 ``` r
 # Define path
@@ -648,7 +650,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Aug  4 12:10:59 2025
+    ## % Mon Aug  4 15:50:50 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -742,7 +744,7 @@ nan_experiment[["arrivals"]] |>
   tail()
 ```
 
-    ## # A tibble: 6 × 11
+    ## # A tibble: 6 × 12
     ##   name   start_time end_time activity_time resource replication queue_on_arrival
     ##   <chr>       <dbl>    <dbl>         <dbl> <chr>          <int>            <dbl>
     ## 1 patie…     82077.       NA            NA nurse             15           122790
@@ -751,8 +753,8 @@ nan_experiment[["arrivals"]] |>
     ## 4 patie…     82079.       NA            NA nurse             15           122793
     ## 5 patie…     82079.       NA            NA nurse             15           122794
     ## 6 patie…     82080.       NA            NA nurse             15           122794
-    ## # ℹ 4 more variables: serve_start <dbl>, serve_length <dbl>, wait_time <dbl>,
-    ## #   wait_time_unseen <dbl>
+    ## # ℹ 5 more variables: serve_start <dbl>, serve_length <dbl>,
+    ## #   time_in_system <dbl>, wait_time <dbl>, wait_time_unseen <dbl>
 
 ``` r
 nan_experiment[["run_results"]][c(
@@ -817,4 +819,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 4m 44s
+    ## Notebook run time: 4m 31s

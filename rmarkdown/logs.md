@@ -252,7 +252,7 @@ The logs will align with the recorded results of each patient.
 arrange(verbose_run[["arrivals"]], start_time)
 ```
 
-    ## # A tibble: 6 × 11
+    ## # A tibble: 6 × 12
     ##   name   start_time end_time activity_time resource replication queue_on_arrival
     ##   <chr>       <dbl>    <dbl>         <dbl> <chr>          <int>            <dbl>
     ## 1 patie…       11.9       NA            NA nurse              0                1
@@ -261,8 +261,8 @@ arrange(verbose_run[["arrivals"]], start_time)
     ## 4 patie…       21.8       NA            NA nurse              0                4
     ## 5 patie…       30.1       NA            NA nurse              0                4
     ## 6 patie…       37.6       NA            NA nurse              0                4
-    ## # ℹ 4 more variables: serve_start <dbl>, serve_length <dbl>, wait_time <dbl>,
-    ## #   wait_time_unseen <dbl>
+    ## # ℹ 5 more variables: serve_start <dbl>, serve_length <dbl>,
+    ## #   time_in_system <dbl>, wait_time <dbl>, wait_time_unseen <dbl>
 
 ## Customising the log messages
 

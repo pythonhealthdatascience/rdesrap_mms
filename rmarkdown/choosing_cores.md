@@ -38,11 +38,12 @@ devtools::install(upgrade = "never")
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
+    ##    Removed empty directory ‘simulation/tests/testthat/_snaps’
     ##    Omitted ‘LazyData’ from DESCRIPTION
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpOZh1r0/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpdnquJp/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation

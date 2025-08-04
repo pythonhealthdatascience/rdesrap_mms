@@ -80,17 +80,7 @@ library(dplyr)
 
 ``` r
 library(knitr)
-library(tidyr)
-```
 
-    ## 
-    ## Attaching package: 'tidyr'
-
-    ## The following object is masked from 'package:testthat':
-    ## 
-    ##     matches
-
-``` r
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
 # nolint end
@@ -604,7 +594,7 @@ again with a new set of seeds using `seed_offset`.
 
 ``` r
 # Set up and run algorithm
-alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=1000L))
+alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = 1000L))
 ```
 
     ## [1] "Model parameters:"
@@ -765,10 +755,10 @@ include_graphics(path)
 Further variations, just reporting number of replications:
 
 ``` r
-seed_offsets <- seq(2000L, 10000L, by=1000L)
+seed_offsets <- seq(2000L, 10000L, by = 1000L)
 sensitivity_nreps <- list()
 for (offset in seed_offsets) {
-  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=offset))
+  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = offset))
   alg$select()
   sensitivity_nreps <- c(sensitivity_nreps, alg$nreps)
 }
@@ -1362,4 +1352,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 2s
+    ## Notebook run time: 2m 1s
