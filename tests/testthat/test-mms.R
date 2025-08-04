@@ -39,7 +39,7 @@ run_simulation_model <- function(
     summarise(
       RO = mean(utilisation_nurse),
       Lq = mean(mean_queue_length_nurse),
-      # W = mean(mean_time_in_system),
+      W = mean(mean_time_in_system),
       Wq = mean(mean_waiting_time_nurse)
     )
   return(results)
@@ -68,7 +68,7 @@ patrick::with_parameters_test_that(
     metrics <- list(
       c("RO", "Utilisation"),
       c("Lq", "Queue length"),
-      # c("W", "System time"),
+      c("W", "System time"),
       c("Wq", "Wait time")
     )
     for (metric in metrics) {

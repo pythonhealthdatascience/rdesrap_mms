@@ -37,7 +37,8 @@ get_run_results <- function(results, run_number) {
       calc_mean_serve_length(results[["arrivals"]], results[["resources"]]),
       calc_utilisation(results[["resources"]]),
       calc_unseen_n(results[["arrivals"]]),
-      calc_unseen_mean(results[["arrivals"]])
+      calc_unseen_mean(results[["arrivals"]]),
+      calc_mean_time_in_system(results[["arrivals"]])
     )
     # Combine metrics + replication number in a single dataframe
     dplyr::bind_cols(tibble(replication = run_number), metrics)
@@ -317,5 +318,25 @@ calc_unseen_mean <- function(arrivals, groups = NULL) {
     pivot_wider(names_from = "resource",
                 values_from = "value",
                 names_glue = "mean_waiting_time_unseen_{resource}") |>
+    ungroup()
+}
+
+
+#' Calculate the mean time in the system for finished patients.
+#'
+#' @param arrivals Dataframe with times for each patient with each resource.
+#'
+#' @return Tibble with column containing the mean time in the system.
+
+calc_mean_time_in_system <- function(arrivals, groups = NULL) {
+  # If provided, group the dataset
+  if (!is.null(groups)) {
+    arrivals <- group_by(arrivals, across(all_of(groups)))
+  }
+  # Calculate number of arrivals
+  arrivals |>
+    summarise(
+      mean_time_in_system = mean(.data[["time_in_system"]], na.rm = TRUE)
+    ) |>
     ungroup()
 }

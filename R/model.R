@@ -100,6 +100,11 @@ model <- function(run_number, param, set_seed = TRUE) {
       result[["arrivals"]], extra_attributes, by = c("name", "resource")
     )
 
+    # Add time in system (unfinished patients will set to NaN)
+    result[["arrivals"]][["time_in_system"]] <- (
+      result[["arrivals"]][["end_time"]] - result[["arrivals"]][["start_time"]]
+    )
+
     # Filter the output results if a warm-up period was specified...
     if (param[["warm_up_period"]] > 0L) {
       result <- filter_warmup(result, param[["warm_up_period"]])
