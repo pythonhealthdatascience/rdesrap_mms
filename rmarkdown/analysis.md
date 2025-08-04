@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-07-31
+2025-08-04
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -103,13 +103,16 @@ print(parameters())
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -168,15 +171,15 @@ run_results |>
 ```
 
     ## # A tibble: 7 × 6
-    ##   key                            n_complete    mean  std_dev ci_lower ci_upper
-    ##   <chr>                               <int>   <dbl>    <dbl>    <dbl>    <dbl>
-    ## 1 count_unseen_nurse                     31  0.0323  0.180    -0.0336   0.0981
-    ## 2 mean_patients_in_service               31  2.64    0.0556    2.62     2.66  
-    ## 3 mean_queue_length_nurse                31  0.132   0.0210    0.124    0.140 
-    ## 4 mean_serve_time_nurse                  31 10.0     0.0994    9.97    10.0   
-    ## 5 mean_waiting_time_nurse                31  0.532   0.0788    0.503    0.561 
-    ## 6 mean_waiting_time_unseen_nurse          1  1.19   NA        NA       NA     
-    ## 7 utilisation_nurse                      31  0.501   0.00783   0.498    0.503
+    ##   key                            n_complete   mean  std_dev ci_lower ci_upper
+    ##   <chr>                               <int>  <dbl>    <dbl>    <dbl>    <dbl>
+    ## 1 count_unseen_nurse                     15 0.0667  0.258    -0.0763    0.210
+    ## 2 mean_patients_in_service               15 2.62    0.0515    2.59      2.65 
+    ## 3 mean_queue_length_nurse                15 0.128   0.0219    0.116     0.140
+    ## 4 mean_serve_time_nurse                  15 9.97    0.103     9.91     10.0  
+    ## 5 mean_waiting_time_nurse                15 0.516   0.0863    0.468     0.564
+    ## 6 mean_waiting_time_unseen_nurse          1 1.19   NA        NA        NA    
+    ## 7 utilisation_nurse                      15 0.498   0.00671   0.494     0.502
 
 ## View spread of results across replication
 
@@ -276,13 +279,16 @@ scenario_results <- run_scenarios(scenarios, base_list = parameters())
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -338,7 +344,7 @@ scenario_results <- run_scenarios(scenarios, base_list = parameters())
 print(dim(scenario_results))
 ```
 
-    ## [1] 620  12
+    ## [1] 300  12
 
 ``` r
 head(scenario_results)
@@ -487,16 +493,16 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Thu Jul 31 11:21:11 2025
+    ## % Mon Aug  4 11:23:23 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
     ##   \hline
     ##  & Patient inter-arrival time & 5 nurses & 6 nurses & 7 nurses & 8 nurses \\ 
     ##   \hline
-    ## 1 &   3 & 0.67 (0.67, 0.67) & 0.56 (0.55, 0.56) & 0.48 (0.48, 0.48) & 0.42 (0.42, 0.42) \\ 
-    ##   2 &   4 & 0.50 (0.50, 0.50) & 0.42 (0.42, 0.42) & 0.36 (0.36, 0.36) & 0.31 (0.31, 0.32) \\ 
-    ##   3 &   5 & 0.40 (0.40, 0.40) & 0.33 (0.33, 0.34) & 0.29 (0.28, 0.29) & 0.25 (0.25, 0.25) \\ 
+    ## 1 &   3 & 0.67 (0.66, 0.67) & 0.55 (0.55, 0.56) & 0.48 (0.47, 0.48) & 0.42 (0.41, 0.42) \\ 
+    ##   2 &   4 & 0.50 (0.49, 0.50) & 0.42 (0.41, 0.42) & 0.36 (0.35, 0.36) & 0.31 (0.31, 0.31) \\ 
+    ##   3 &   5 & 0.40 (0.40, 0.41) & 0.33 (0.33, 0.34) & 0.29 (0.28, 0.29) & 0.25 (0.25, 0.25) \\ 
     ##   4 &   6 & 0.33 (0.33, 0.34) & 0.28 (0.28, 0.28) & 0.24 (0.24, 0.24) & 0.21 (0.21, 0.21) \\ 
     ##   5 &   7 & 0.29 (0.28, 0.29) & 0.24 (0.24, 0.24) & 0.20 (0.20, 0.21) & 0.18 (0.18, 0.18) \\ 
     ##    \hline
@@ -564,6 +570,9 @@ compare_results <- run_scenarios(scenarios, new_base)
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -725,13 +734,16 @@ sensitivity_consult <- run_scenarios(consult, base_list = parameters())
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -815,21 +827,21 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Thu Jul 31 11:24:18 2025
+    ## % Mon Aug  4 11:25:22 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
     ##   \hline
     ##  & Mean nurse consultation time & Mean wait time for nurse (95 percent confidence interval) \\ 
     ##   \hline
-    ## 1 &   8 & 0.16 (0.16, 0.17) \\ 
-    ##   2 &   9 & 0.30 (0.29, 0.31) \\ 
-    ##   3 &  10 & 0.53 (0.50, 0.56) \\ 
-    ##   4 &  11 & 0.88 (0.84, 0.91) \\ 
-    ##   5 &  12 & 1.43 (1.38, 1.48) \\ 
-    ##   6 &  13 & 2.23 (2.13, 2.32) \\ 
-    ##   7 &  14 & 3.45 (3.30, 3.61) \\ 
-    ##   8 &  15 & 5.44 (5.21, 5.66) \\ 
+    ## 1 &   8 & 0.16 (0.15, 0.17) \\ 
+    ##   2 &   9 & 0.29 (0.27, 0.31) \\ 
+    ##   3 &  10 & 0.52 (0.47, 0.56) \\ 
+    ##   4 &  11 & 0.88 (0.83, 0.94) \\ 
+    ##   5 &  12 & 1.44 (1.35, 1.52) \\ 
+    ##   6 &  13 & 2.16 (2.04, 2.28) \\ 
+    ##   7 &  14 & 3.44 (3.25, 3.64) \\ 
+    ##   8 &  15 & 5.33 (4.98, 5.67) \\ 
     ##    \hline
     ## \end{tabular}
     ## \end{table}
@@ -878,13 +890,16 @@ print(param)
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -909,12 +924,12 @@ nan_experiment[["arrivals"]] |>
     ## # A tibble: 6 × 11
     ##   name   start_time end_time activity_time resource replication queue_on_arrival
     ##   <chr>       <dbl>    <dbl>         <dbl> <chr>          <int>            <dbl>
-    ## 1 patie…     82078.       NA            NA nurse             31           123103
-    ## 2 patie…     82078.       NA            NA nurse             31           123104
-    ## 3 patie…     82079.       NA            NA nurse             31           123105
-    ## 4 patie…     82079.       NA            NA nurse             31           123106
-    ## 5 patie…     82079.       NA            NA nurse             31           123107
-    ## 6 patie…     82080.       NA            NA nurse             31           123108
+    ## 1 patie…     82077.       NA            NA nurse             15           122790
+    ## 2 patie…     82078.       NA            NA nurse             15           122791
+    ## 3 patie…     82079.       NA            NA nurse             15           122792
+    ## 4 patie…     82079.       NA            NA nurse             15           122793
+    ## 5 patie…     82079.       NA            NA nurse             15           122794
+    ## 6 patie…     82080.       NA            NA nurse             15           122794
     ## # ℹ 4 more variables: serve_start <dbl>, serve_length <dbl>, wait_time <dbl>,
     ## #   wait_time_unseen <dbl>
 
@@ -924,7 +939,7 @@ nan_experiment[["run_results"]][c(
 )]
 ```
 
-    ## # A tibble: 31 × 3
+    ## # A tibble: 15 × 3
     ##    replication count_unseen_nurse mean_waiting_time_nurse
     ##          <int>              <int>                   <dbl>
     ##  1           1              86978                      NA
@@ -937,7 +952,11 @@ nan_experiment[["run_results"]][c(
     ##  8           8              86222                      NA
     ##  9           9              86557                      NA
     ## 10          10              86558                      NA
-    ## # ℹ 21 more rows
+    ## 11          11              86403                      NA
+    ## 12          12              86629                      NA
+    ## 13          13              86127                      NA
+    ## 14          14              86001                      NA
+    ## 15          15              86568                      NA
 
 ``` r
 plot_results_spread(
@@ -959,7 +978,7 @@ plot_results_spread(
 )
 ```
 
-    ## Warning: Removed 31 rows containing non-finite outside the scale range
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
 ![](../outputs/spread_nan_wait_unseen.png)<!-- -->
@@ -977,4 +996,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 10m 4s
+    ## Notebook run time: 5m 21s

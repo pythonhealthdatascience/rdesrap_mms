@@ -451,7 +451,7 @@ alg <- ReplicationsAlgorithm$new(param = parameters())
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -624,7 +624,7 @@ alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=1000L))
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -791,7 +791,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -828,7 +828,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -865,7 +865,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -902,7 +902,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -939,7 +939,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -976,7 +976,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -1013,7 +1013,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -1050,7 +1050,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -1087,7 +1087,7 @@ for (offset in seed_offsets) {
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
@@ -1362,4 +1362,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 59s
+    ## Notebook run time: 2m 2s

@@ -1,5 +1,5 @@
 Parameters:
-patient_inter=6; mean_n_consult_time=8; number_of_nurses=1; warm_up_period=10; data_collection_period=30; number_of_runs=1; scenario_name=NULL; cores=1; log_to_console=TRUE; log_to_file=TRUE; file_path=../outputs/logs/log_example.log
+patient_inter=6; mean_n_consult_time=8; number_of_nurses=1; warm_up_period=10; data_collection_period=30; number_of_runs=1; scenario_name=NULL; cores=1; seed_offset=0; log_to_console=TRUE; log_to_file=TRUE; file_path=../outputs/logs/log_example.log
 Log:
          0 |    source: patient          |       new: patient0         | 1.10422
    1.10422 |   arrival: patient0         |  activity: SetAttribute     | [nurse_queue_on_arrival], function(), 0, N, 0

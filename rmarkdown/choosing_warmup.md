@@ -136,6 +136,10 @@ it, for three metrics:
 - Mean service length
 - Utilisation
 
+We’ve add a line to the point where it appears to reach a steady state -
+this is a subjective choice but here, for example, we could select **27
+days** (1440\*27=38880 minutes).
+
 ``` r
 path <- file.path(output_dir, "choose_param_time_series.png")
 
@@ -165,4 +169,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 15s
+    ## Notebook run time: 0m 16s

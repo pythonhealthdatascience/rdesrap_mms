@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-07-31
+2025-08-04
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -42,7 +42,7 @@ devtools::install(upgrade = "never")
     ##   ─  building ‘simulation_0.1.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpPAhjcY/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/RtmpOZh1r0/simulation_0.1.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -194,13 +194,16 @@ run_cores(5L, "cores1.png")
     ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -257,13 +260,16 @@ run_cores(5L, "cores2.png", list(data_collection_period = 10000L))
     ## [1] 10000
     ## 
     ## $number_of_runs
-    ## [1] 31
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -297,4 +303,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 25s
+    ## Notebook run time: 0m 51s

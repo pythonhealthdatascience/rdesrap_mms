@@ -80,6 +80,8 @@ Use the `time_series_inspection` function, which will find the cumulative mean o
 * Mean service length
 * Utilisation
 
+We've add a line to the point where it appears to reach a steady state - this is a subjective choice but here, for example, we could select **27 days** (1440*27=38880 minutes).
+
 ```{r, fig.show='hide'}
 path <- file.path(output_dir, "choose_param_time_series.png")
 

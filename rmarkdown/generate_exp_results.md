@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-07-31
+2025-08-04
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -88,6 +88,9 @@ print(param)
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -255,6 +258,9 @@ scenario_results <- run_scenarios(scenarios, base_list = param)
     ## $cores
     ## [1] 1
     ## 
+    ## $seed_offset
+    ## [1] 0
+    ## 
     ## $log_to_console
     ## [1] FALSE
     ## 
@@ -344,6 +350,9 @@ rep_results <- confidence_interval_method(
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
