@@ -5,9 +5,6 @@
 #' @param set_seed Whether to set seed within the model function (which we
 #' may not wish to do if being set elsewhere - such as done in runner()).
 #' Default is TRUE.
-#' @param seed_offset seed_offset Integer. Optional value to add to each run
-#' number when generating seeds for simulation replications (used for
-#' sensitivity analyses).
 #'
 #' @importFrom simmer trajectory seize timeout release simmer add_resource
 #' @importFrom simmer add_generator run wrap get_mon_arrivals set_attribute
@@ -21,14 +18,14 @@
 #' monitored resources, and the processed results from the run.
 #' @export
 
-model <- function(run_number, param, set_seed = TRUE, seed_offset) {
+model <- function(run_number, param, set_seed = TRUE) {
 
   # Check all inputs are valid
   valid_inputs(run_number, param)
 
   # Set random seed based on run number
   if (set_seed) {
-    set.seed(run_number + seed_offset)
+    set.seed(run_number + param[["seed_offset"]])
   }
 
   # Determine whether to get verbose activity logs

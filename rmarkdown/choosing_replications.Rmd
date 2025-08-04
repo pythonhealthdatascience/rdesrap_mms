@@ -215,7 +215,7 @@ To check the stability of the suggested number of replications, run again with a
 
 ```{r}
 # Set up and run algorithm
-alg <- ReplicationsAlgorithm$new(param = parameters(), seed_offset=1000L)
+alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=1000L))
 alg$select()
 
 # View results

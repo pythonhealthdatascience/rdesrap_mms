@@ -10,8 +10,6 @@
 #' aware that this approach is not recommended according to `future_lapply`
 #' documentation, which states: "Note that as.list(seq_along(x)) is not a valid
 #' set of such .Random.seed values."
-#' @param seed_offset When use_future_seeding = FALSE, can adjust the seeds so
-#' not just based on run number (for example, +100).
 #'
 #' @importFrom future plan multisession sequential
 #' @importFrom future.apply future_lapply
@@ -21,9 +19,9 @@
 #' resources, and the processed results from each run.
 #' @export
 
-runner <- function(param, use_future_seeding = TRUE, seed_offset = 0L) {
+runner <- function(param, use_future_seeding = TRUE) {
   # Validation step
-  if (isTRUE(use_future_seeding) && seed_offset != 0L) {
+  if (isTRUE(use_future_seeding) && param[["seed_offset"]] != 0L) {
     stop(
       "seed_offset can only be used when use_future_seeding = FALSE. You ",
       "should not attempt to offset the seed with use_future_seeding = TRUE. ",
@@ -56,7 +54,7 @@ runner <- function(param, use_future_seeding = TRUE, seed_offset = 0L) {
       .Random.seed
     }
     custom_seed <- lapply(
-      1L:param[["number_of_runs"]] + seed_offset,
+      1L:param[["number_of_runs"]] + param[["seed_offset"]],
       create_seeds
     )
   }

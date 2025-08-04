@@ -13,6 +13,8 @@
 #' @param number_of_runs Number of simulation runs (int).
 #' @param scenario_name Label for the scenario (int|float|string).
 #' @param cores Number of cores to use for parallel execution (int).
+#' @param seed_offset Optional value to add to each run number when generating
+#' seeds for simulation replications (used for sensitivity analyses).
 #' @param log_to_console Whether to print activity log to console.
 #' @param log_to_file Whether to save activity log to file.
 #' @param file_path Path to save log to file.
@@ -29,6 +31,7 @@ parameters <- function(
   number_of_runs = 31L,
   scenario_name = NULL,
   cores = 1L,
+  seed_offset = 0L,
   log_to_console = FALSE,
   log_to_file = FALSE,
   file_path = NULL

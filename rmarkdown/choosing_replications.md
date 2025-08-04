@@ -178,6 +178,9 @@ ci_df <- confidence_interval_method(
     ## $cores
     ## [1] 1
     ## 
+    ## $seed_offset
+    ## [1] 0
+    ## 
     ## $log_to_console
     ## [1] FALSE
     ## 
@@ -289,6 +292,9 @@ ci_df <- confidence_interval_method(
     ## $cores
     ## [1] 1
     ## 
+    ## $seed_offset
+    ## [1] 0
+    ## 
     ## $log_to_console
     ## [1] FALSE
     ## 
@@ -367,6 +373,9 @@ ci_df <- confidence_interval_method(
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -448,6 +457,9 @@ alg <- ReplicationsAlgorithm$new(param = parameters())
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -591,7 +603,7 @@ again with a new set of seeds using `seed_offset`.
 
 ``` r
 # Set up and run algorithm
-alg <- ReplicationsAlgorithm$new(param = parameters(), seed_offset=1000L)
+alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=1000L))
 ```
 
     ## [1] "Model parameters:"
@@ -618,6 +630,9 @@ alg <- ReplicationsAlgorithm$new(param = parameters(), seed_offset=1000L)
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 1000
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -911,4 +926,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 48s
+    ## Notebook run time: 0m 47s
