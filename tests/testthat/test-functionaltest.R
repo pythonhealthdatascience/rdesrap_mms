@@ -553,4 +553,3 @@ test_that("log to console and file work correctly", {
   expect_match(readLines(log_file), "Parameters:", all = FALSE)
   expect_match(readLines(log_file), "Log:", all = FALSE)
 })
-

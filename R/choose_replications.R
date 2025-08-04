@@ -115,7 +115,7 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
   #' as the percentage deviation of the half width from the mean.
   deviation = function() {
     mw <- self$mean
-    if (is.na(mw) || mw == 0) return(NA_real_)
+    if (is.na(mw) || mw == 0L) return(NA_real_)
     self$half_width() / mw
   }
 ))
@@ -418,11 +418,11 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     is_all_solved <- function(solutions_list) {
       statuses <- unlist(lapply(solutions_list, function(x) x$solved))
       # If any are NA or FALSE, treat as not solved
-      all(statuses %in% TRUE)
+      all(statuses)
     }
 
     while (!is_all_solved(solutions) &&
-           self$reps < self$replication_budget + self$klimit()) {
+             self$reps < self$replication_budget + self$klimit()) {
 
       # Increment counter
       self$reps <- self$reps + 1L

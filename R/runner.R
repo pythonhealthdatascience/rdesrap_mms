@@ -26,7 +26,8 @@ runner <- function(param, use_future_seeding = TRUE) {
       "seed_offset can only be used when use_future_seeding = FALSE. You ",
       "should not attempt to offset the seed with use_future_seeding = TRUE. ",
       "This is because future's seeded parallel random streams are generated ",
-      "from a single base seed and cannot accept offsets for each run."
+      "from a single base seed and cannot accept offsets for each run.",
+      call. = FALSE
     )
   }
 

@@ -19,7 +19,7 @@
 #' steady-state before data collection begins.
 
 run_simulation_model <- function(
-    patient_inter, mean_n_consult_time, number_of_nurses
+  patient_inter, mean_n_consult_time, number_of_nurses
 ) {
   # Run simulation
   param <- parameters(
@@ -37,23 +37,23 @@ run_simulation_model <- function(
   # Get overall results, using queueing theory notation in column names
   results <- run_results |>
     summarise(
-      RO = mean(utilisation_nurse),
-      Lq = mean(mean_queue_length_nurse),
-      W = mean(mean_time_in_system),
-      Wq = mean(mean_waiting_time_nurse)
+      RO = mean(.data[["utilisation_nurse"]]),
+      Lq = mean(.data[["mean_queue_length_nurse"]]),
+      W = mean(.data[["mean_time_in_system"]]),
+      Wq = mean(.data[["mean_waiting_time_nurse"]])
     )
-  return(results)
+  results
 }
 
 
 patrick::with_parameters_test_that(
-  "simulation is consistent with theoretical M/M/s queue calculations.",
+  "simulation is consistent with theoretical MMs queue calculations.",
   {
     # Create theoretical M/M/s queue model
-    lambda <- 1 / patient_inter
-    mu <- 1 / mean_n_consult_time
+    lambda <- 1L / patient_inter
+    mu <- 1L / mean_n_consult_time
     i_mmc <- queueing::NewInput.MMC(
-      lambda=lambda, mu=mu, c=number_of_nurses, n=0, method=0
+      lambda = lambda, mu = mu, c = number_of_nurses, n = 0L, method = 0L
     )
     theory <- queueing::QueueingModel(i_mmc)
 
@@ -72,11 +72,11 @@ patrick::with_parameters_test_that(
       c("Wq", "Wait time")
     )
     for (metric in metrics) {
-      key <- metric[1]
-      label <- metric[2]
+      key <- metric[1L]
+      label <- metric[2L]
 
-      sim_val <- round(sim[[key]], 3)
-      theory_val <- round(theory[[key]], 3)
+      sim_val <- round(sim[[key]], 3L)
+      theory_val <- round(theory[[key]], 3L)
 
       expect_equal(
         sim_val,
@@ -90,18 +90,18 @@ patrick::with_parameters_test_that(
   },
   patrick::cases(
     # Test case 1: Low utilisation (ρ ≈ 0.3)
-    list(patient_inter = 10, mean_n_consult_time = 3, number_of_nurses = 2),
+    list(patient_inter = 10L, mean_n_consult_time = 3L, number_of_nurses = 2L),
     # Test case 2: Medium utilisation (ρ ≈ 0.67)
-    list(patient_inter = 6, mean_n_consult_time = 4, number_of_nurses = 2),
+    list(patient_inter = 6L, mean_n_consult_time = 4L, number_of_nurses = 2L),
     # Test case 3: M/M/1 (ρ = 0.75)
-    list(patient_inter = 4, mean_n_consult_time = 3, number_of_nurses = 1),
+    list(patient_inter = 4L, mean_n_consult_time = 3L, number_of_nurses = 1L),
     # Test case 4: Multiple servers, high utilisation (ρ ≈ 0.91)
-    list(patient_inter = 5.5, mean_n_consult_time = 5, number_of_nurses = 3),
+    list(patient_inter = 5.5, mean_n_consult_time = 5L, number_of_nurses = 3L),
     # Test case 5: Balanced system (ρ = 0.5)
-    list(patient_inter = 8, mean_n_consult_time = 4, number_of_nurses = 1),
+    list(patient_inter = 8L, mean_n_consult_time = 4L, number_of_nurses = 1L),
     # Test case 6: Many servers, low individual utilisation (ρ ≈ 0.63)
-    list(patient_inter = 4, mean_n_consult_time = 10, number_of_nurses = 4),
+    list(patient_inter = 4L, mean_n_consult_time = 10L, number_of_nurses = 4L),
     # Test case 7: Very low utilisation (ρ ≈ 0.167)
-    list(patient_inter = 60, mean_n_consult_time = 10, number_of_nurses = 15)
+    list(patient_inter = 60L, mean_n_consult_time = 10L, number_of_nurses = 15L)
   )
 )

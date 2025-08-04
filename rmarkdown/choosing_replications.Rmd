@@ -35,7 +35,6 @@ Load required packages.
 library(data.table)
 library(dplyr)
 library(knitr)
-library(tidyr)
 
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
@@ -215,7 +214,7 @@ To check the stability of the suggested number of replications, run again with a
 
 ```{r}
 # Set up and run algorithm
-alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=1000L))
+alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = 1000L))
 alg$select()
 
 # View results
@@ -259,10 +258,10 @@ include_graphics(path)
 Further variations, just reporting number of replications:
 
 ```{r}
-seed_offsets <- seq(2000L, 10000L, by=1000L)
+seed_offsets <- seq(2000L, 10000L, by = 1000L)
 sensitivity_nreps <- list()
 for (offset in seed_offsets) {
-  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=offset))
+  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = offset))
   alg$select()
   sensitivity_nreps <- c(sensitivity_nreps, alg$nreps)
 }
