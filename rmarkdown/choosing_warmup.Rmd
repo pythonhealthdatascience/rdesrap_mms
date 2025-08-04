@@ -61,15 +61,13 @@ output_dir <- file.path("..", "outputs")
 Run the model, ensuring multiple replications and a sufficient data collection period are used.
 
 ```{r}
-data_collection_period <- 50000L
-
 # Use default parameters, but with no warm-up, five replications, and the
 # specified data collection period
 param <- parameters(
   warm_up_period = 0L,
-  data_collection_period = data_collection_period,
   number_of_runs = 5L
 )
+param[["data_collection_period"]] <- param[["data_collection_period"]] * 10L
 print(param)
 
 # Run model
@@ -88,7 +86,7 @@ path <- file.path(output_dir, "choose_param_time_series.png")
 time_series_inspection(
   result = result,
   file_path = path,
-  warm_up = 10000L
+  warm_up = 38880L  # Location for dashed red line (manually chosen)
 )
 ```
 
