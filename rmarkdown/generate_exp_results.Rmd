@@ -45,7 +45,8 @@ param <- parameters(
   warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 10L,
-  cores = 1L
+  cores = 1L,
+  seed_offset = 0L
 )
 print(param)
 
@@ -62,6 +63,12 @@ write.csv(arrange(results[["arrivals"]], replication, start_time),
 head(results[["resources"]])
 write.csv(results[["resources"]],
           file.path(testdata_dir, "base_resources.csv"),
+          row.names = FALSE)
+
+# Patients in service
+head(results[["patients_in_service"]])
+write.csv(results[["patients_in_service"]],
+          file.path(testdata_dir, "base_patients_in_service.csv"),
           row.names = FALSE)
 
 # Run results
@@ -82,7 +89,8 @@ param <- parameters(
   warm_up_period = 40L,
   data_collection_period = 80L,
   number_of_runs = 10L,
-  cores = 1L
+  cores = 1L,
+  seed_offset = 0L
 )
 
 # Run the replications
@@ -104,9 +112,11 @@ param <- parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
+  warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 3L,
-  cores = 1L
+  cores = 1L,
+  seed_offset = 0L
 )
 
 # Run scenario analysis
@@ -125,8 +135,6 @@ write.csv(scenario_results, file.path(testdata_dir, "scenario_results.csv"),
 ```
 
 ## Running the simulation when attempting to determine an appropriate number of parameters
-
-The `confidence_interval_method` and `ReplicationsAlgorithm` should return the same results, so we will just run one to use in the back tests.
 
 ```{r}
 # Specify parameters (so consistent even if defaults change)
@@ -150,6 +158,36 @@ head(rep_results)
 
 # Save to csv
 write.csv(rep_results, file.path(testdata_dir, "choose_rep_results.csv"),
+          row.names = FALSE)
+```
+
+```{r}
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  warm_up_period = 0L,
+  data_collection_period = 80L
+)
+
+# Run the confidence_interval_method()
+alg <- ReplicationsAlgorithm$new(
+  param = param,
+  metrics = "mean_serve_time_nurse",
+  desired_precision = 0.1,
+  initial_replications = 15L,
+  look_ahead = 0L,
+  replication_budget = 15L,
+  verbose = FALSE
+)
+suppressWarnings(alg$select())
+alg_results <- alg$summary_table
+
+# Preview
+head(alg_results)
+
+# Save to csv
+write.csv(alg_results, file.path(testdata_dir, "rep_algorithm_results.csv"),
           row.names = FALSE)
 ```
 
