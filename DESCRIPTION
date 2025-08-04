@@ -42,5 +42,6 @@ Suggests:
     lubridate,
     plotly,
     covr,
-    DT
+    DT,
+    queueing
 Config/testthat/edition: 3

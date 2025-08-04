@@ -1352,6 +1352,16 @@
       ],
       "Hash": "9240cfb47489133f809918a0d3cc60cb"
     },
+    "queueing": {
+      "Package": "queueing",
+      "Version": "0.2.12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "1bcb703b5374f616b5926ecd3aa213e3"
+    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.3.3",
