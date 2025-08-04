@@ -10,6 +10,7 @@ Amy Heather
   replications](#automated-detection-of-the-number-of-replications)
 - [Sensitivity analysis: running algorithm with seed
   offset](#sensitivity-analysis-running-algorithm-with-seed-offset)
+- [Chosen number of replications](#chosen-number-of-replications)
 - [Explanation of the automated
   method](#explanation-of-the-automated-method)
   - [WelfordStats](#welfordstats)
@@ -761,6 +762,441 @@ include_graphics(path)
 
 ![](../outputs/reps_algorithm_utilisation_2.png)<!-- -->
 
+Further variations, just reporting number of replications:
+
+``` r
+seed_offsets <- seq(2000L, 10000L, by=1000L)
+sensitivity_nreps <- list()
+for (offset in seed_offsets) {
+  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=offset))
+  alg$select()
+  sensitivity_nreps <- c(sensitivity_nreps, alg$nreps)
+}
+```
+
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 2000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 3000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 4000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 5000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 6000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 7000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 8000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 9000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 10000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
+print(sensitivity_nreps)
+```
+
+    ## $mean_waiting_time_nurse
+    ## [1] 11
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 10
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 9
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 11
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 9
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 13
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 8
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 8
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 7
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+
+## Chosen number of replications
+
+Given the variations observed using the algorithm in the sensitivity
+analysis, decided appropriate number of replications to be **15**.
+
 ## Explanation of the automated method
 
 This section walks through how the automation code is structured. The
@@ -926,4 +1362,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 47s
+    ## Notebook run time: 1m 59s

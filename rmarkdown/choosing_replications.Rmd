@@ -256,6 +256,26 @@ plot_replication_ci(
 include_graphics(path)
 ```
 
+Further variations, just reporting number of replications:
+
+```{r}
+seed_offsets <- seq(2000L, 10000L, by=1000L)
+sensitivity_nreps <- list()
+for (offset in seed_offsets) {
+  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset=offset))
+  alg$select()
+  sensitivity_nreps <- c(sensitivity_nreps, alg$nreps)
+}
+```
+
+```{r}
+print(sensitivity_nreps)
+```
+
+## Chosen number of replications
+
+Given the variations observed using the algorithm in the sensitivity analysis, decided appropriate number of replications to be **15**.
+
 ## Explanation of the automated method
 
 This section walks through how the automation code is structured. The algorithm that determines the number of replications is `ReplicationsAlgorithm`. This depends on other R6 classes including `WelfordStats` and `ReplicationTabuliser`.
