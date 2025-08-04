@@ -252,6 +252,11 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   #' replication for each metric
   summary_table = NA,
 
+  #' @field seed_offset Integer. Optional value to add to each run number when
+  #' generating seeds for simulation replications (used for sensitivity
+  #' analyses).
+  seed_offset = NA,
+
   #' @description Initialise the ReplicationsAlgorithm object.
   #' @param param Model parameters.
   #' @param metrics List of performance measure to track.
@@ -259,6 +264,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
   #' @param initial_replications Number of initial replications to perform.
   #' @param look_ahead Minimum additional replications to look ahead.
   #' @param replication_budget Maximum allowed replications.
+  #' @param seed_offset Value added to each run's seed.
   #' @param verbose Boolean, whether to print messages about parameters.
   initialize = function(
     param,
@@ -269,6 +275,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     initial_replications = 3L,
     look_ahead = 5L,
     replication_budget = 1000L,
+    seed_offset = 0L,
     verbose = TRUE
   ) {
     self$param <- param
@@ -277,6 +284,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     self$initial_replications <- initial_replications
     self$look_ahead <- look_ahead
     self$replication_budget <- replication_budget
+    self$seed_offset <- seed_offset
 
     # Initially set reps to the number of initial replications
     self$reps <- initial_replications
@@ -393,7 +401,9 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
       # WelfordStats pre-loaded with data from the initial replications... we
       # use runner so allows for parallel processing if desired...
       self$param[["number_of_runs"]] <- self$initial_replications
-      result <- runner(self$param, use_future_seeding = FALSE)[["run_results"]]
+      result <- runner(
+        self$param, use_future_seeding = FALSE, seed_offset=self$seed_offset
+      )[["run_results"]]
       stats <- setNames(
         lapply(self$metrics, function(x) {
           WelfordStats$new(data = result[[x]], observer = observers[[x]])
@@ -430,7 +440,8 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
       # Run another replication
       result <- model(run_number = self$reps,
                       param = self$param,
-                      set_seed = TRUE)[["run_results"]]
+                      set_seed = TRUE,
+                      seed_offset = self$seed_offset)[["run_results"]]
 
       # Loop through the metrics...
       for (metric in self$metrics) {

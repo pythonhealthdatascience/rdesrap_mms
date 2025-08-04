@@ -1,13 +1,15 @@
 Choosing replications
 ================
 Amy Heather
-2025-07-31
+2025-08-04
 
 - [Set up](#set-up)
 - [Choosing the number of
   replications](#choosing-the-number-of-replications)
 - [Automated detection of the number of
   replications](#automated-detection-of-the-number-of-replications)
+- [Sensitivity analysis: running algorithm with seed
+  offset](#sensitivity-analysis-running-algorithm-with-seed-offset)
 - [Explanation of the automated
   method](#explanation-of-the-automated-method)
   - [WelfordStats](#welfordstats)
@@ -582,6 +584,168 @@ include_graphics(path)
 
 ![](../outputs/reps_algorithm_utilisation.png)<!-- -->
 
+## Sensitivity analysis: running algorithm with seed offset
+
+To check the stability of the suggested number of replications, run
+again with a new set of seeds using `seed_offset`.
+
+``` r
+# Set up and run algorithm
+alg <- ReplicationsAlgorithm$new(param = parameters(), seed_offset=1000L)
+```
+
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 31
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
+alg$select()
+
+# View results
+alg$nreps
+```
+
+    ## $mean_waiting_time_nurse
+    ## [1] 7
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+
+``` r
+alg$summary_table
+```
+
+    ##    replications       data cumulative_mean       stdev  lower_ci   upper_ci
+    ## 1             1  0.4625687       0.4625687          NA        NA         NA
+    ## 2             2  0.4940957       0.4783322          NA        NA         NA
+    ## 3             3  0.4756249       0.4774298 0.015840788 0.4380791  0.5167805
+    ## 4             4  0.5192984       0.4878969 0.024607577 0.4487408  0.5270531
+    ## 5             5  0.5817088       0.5066593 0.047056180 0.4482313  0.5650873
+    ## 6             6  0.4414834       0.4957967 0.049793685 0.4435414  0.5480519
+    ## 7             7  0.4901753       0.4949936 0.045504836 0.4529087  0.5370786
+    ## 8             8  0.4280896       0.4866306 0.048315577 0.4462378  0.5270234
+    ## 9             9  0.5840528       0.4974553 0.055652140 0.4546773  0.5402333
+    ## 10           10  0.4320584       0.4909156 0.056397756 0.4505711  0.5312601
+    ## 11           11  0.5552236       0.4967618 0.056908632 0.4585301  0.5349935
+    ## 12           12  0.4194864       0.4903222 0.058666848 0.4530470  0.5275973
+    ## 13            1  9.8506876       9.8506876          NA        NA         NA
+    ## 14            2 10.0911232       9.9709054          NA        NA         NA
+    ## 15            3 10.1362092      10.0260067 0.153495171 9.6447035 10.4073098
+    ## 16            4 10.0650726      10.0357732 0.126841302 9.8339403 10.2376060
+    ## 17            5 10.0823453      10.0450876 0.111804877 9.9062635 10.1839117
+    ## 18            6 10.1246399      10.0583463 0.105142886 9.9480056 10.1686870
+    ## 19            7 10.0995484      10.0642323 0.097237018 9.9743031 10.1541616
+    ## 20            8  9.9183998      10.0460033 0.103743469 9.9592715 10.1327350
+    ## 21            1  0.4965996       0.4965996          NA        NA         NA
+    ## 22            2  0.5049821       0.5007909          NA        NA         NA
+    ## 23            3  0.5039593       0.5018470 0.004573041 0.4904870  0.5132071
+    ## 24            4  0.5067048       0.5030615 0.004454365 0.4959736  0.5101494
+    ## 25            5  0.5109795       0.5046451 0.005236407 0.4981432  0.5111469
+    ## 26            6  0.5055618       0.5047979 0.004698515 0.4998671  0.5097286
+    ## 27            7  0.5007459       0.5042190 0.004554365 0.5000069  0.5084311
+    ## 28            8  0.4947891       0.5030403 0.005375354 0.4985464  0.5075342
+    ##      deviation                  metric
+    ## 1           NA mean_waiting_time_nurse
+    ## 2           NA mean_waiting_time_nurse
+    ## 3  0.082421960 mean_waiting_time_nurse
+    ## 4  0.080254954 mean_waiting_time_nurse
+    ## 5  0.115320024 mean_waiting_time_nurse
+    ## 6  0.105396570 mean_waiting_time_nurse
+    ## 7  0.085021208 mean_waiting_time_nurse
+    ## 8  0.083005123 mean_waiting_time_nurse
+    ## 9  0.085993699 mean_waiting_time_nurse
+    ## 10 0.082182199 mean_waiting_time_nurse
+    ## 11 0.076961916 mean_waiting_time_nurse
+    ## 12 0.076021724 mean_waiting_time_nurse
+    ## 13          NA   mean_serve_time_nurse
+    ## 14          NA   mean_serve_time_nurse
+    ## 15 0.038031407   mean_serve_time_nurse
+    ## 16 0.020111337   mean_serve_time_nurse
+    ## 17 0.013820098   mean_serve_time_nurse
+    ## 18 0.010970063   mean_serve_time_nurse
+    ## 19 0.008935529   mean_serve_time_nurse
+    ## 20 0.008633454   mean_serve_time_nurse
+    ## 21          NA       utilisation_nurse
+    ## 22          NA       utilisation_nurse
+    ## 23 0.022636509       utilisation_nurse
+    ## 24 0.014089508       utilisation_nurse
+    ## 25 0.012884022       utilisation_nurse
+    ## 26 0.009767848       utilisation_nurse
+    ## 27 0.008353682       utilisation_nurse
+    ## 28 0.008933496       utilisation_nurse
+
+``` r
+path <- file.path(output_dir, "reps_algorithm_wait_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_waiting_time_nurse"),
+  yaxis_title = "Mean wait time for nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_waiting_time_nurse"]]
+)
+include_graphics(path)
+```
+
+![](../outputs/reps_algorithm_wait_time_2.png)<!-- -->
+
+``` r
+path <- file.path(output_dir, "reps_algorithm_serve_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_serve_time_nurse"),
+  yaxis_title = "Mean time with nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_serve_time_nurse"]]
+)
+include_graphics(path)
+```
+
+![](../outputs/reps_algorithm_serve_time_2.png)<!-- -->
+
+``` r
+path <- file.path(output_dir, "reps_algorithm_utilisation_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "utilisation_nurse"),
+  yaxis_title = "Mean nurse utilisation",
+  file_path = path,
+  min_rep = alg$nreps[["utilisation_nurse"]]
+)
+include_graphics(path)
+```
+
+![](../outputs/reps_algorithm_utilisation_2.png)<!-- -->
+
 ## Explanation of the automated method
 
 This section walks through how the automation code is structured. The
@@ -747,4 +911,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 41s
+    ## Notebook run time: 0m 48s

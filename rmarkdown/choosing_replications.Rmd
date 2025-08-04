@@ -209,6 +209,53 @@ plot_replication_ci(
 include_graphics(path)
 ```
 
+## Sensitivity analysis: running algorithm with seed offset
+
+To check the stability of the suggested number of replications, run again with a new set of seeds using `seed_offset`.
+
+```{r}
+# Set up and run algorithm
+alg <- ReplicationsAlgorithm$new(param = parameters(), seed_offset=1000L)
+alg$select()
+
+# View results
+alg$nreps
+alg$summary_table
+```
+
+```{r}
+path <- file.path(output_dir, "reps_algorithm_wait_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_waiting_time_nurse"),
+  yaxis_title = "Mean wait time for nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_waiting_time_nurse"]]
+)
+include_graphics(path)
+```
+
+```{r}
+path <- file.path(output_dir, "reps_algorithm_serve_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_serve_time_nurse"),
+  yaxis_title = "Mean time with nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_serve_time_nurse"]]
+)
+include_graphics(path)
+```
+
+```{r}
+path <- file.path(output_dir, "reps_algorithm_utilisation_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "utilisation_nurse"),
+  yaxis_title = "Mean nurse utilisation",
+  file_path = path,
+  min_rep = alg$nreps[["utilisation_nurse"]]
+)
+include_graphics(path)
+```
+
 ## Explanation of the automated method
 
 This section walks through how the automation code is structured. The algorithm that determines the number of replications is `ReplicationsAlgorithm`. This depends on other R6 classes including `WelfordStats` and `ReplicationTabuliser`.
