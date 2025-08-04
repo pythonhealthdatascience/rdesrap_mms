@@ -8,8 +8,6 @@ Amy Heather
 - [View spread of results across
   replication](#view-spread-of-results-across-replication)
 - [Scenario analysis](#scenario-analysis)
-  - [Running a basic example (which can compare to Python m/m/s
-    model)](#running-a-basic-example-which-can-compare-to-python-mms-model)
 - [Sensitivity analysis](#sensitivity-analysis)
 - [NaN results](#nan-results)
 - [Calculate run time](#calculate-run-time)
@@ -493,7 +491,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Aug  4 11:23:23 2025
+    ## % Mon Aug  4 12:09:51 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -514,183 +512,6 @@ print(table_latex,
       comment = FALSE,
       file = file.path(output_dir, "scenario_nurse_util.tex"))
 ```
-
-### Running a basic example (which can compare to Python m/m/s model)
-
-To enable comparison between the python and R m/m/s models, this section
-runs the model with a simple set of base case parameters (matched to
-Python), and then running some scenarios on top of that base case.
-
-``` r
-# Define the base param for this altered run
-new_base <- parameters(
-  patient_inter = 4L,
-  mean_n_consult_time = 10L,
-  number_of_nurses = 5L,
-  # No warm-up (not possible in R, but set to 0 in Python)
-  data_collection_period = 1440L,
-  number_of_runs = 10L,
-  cores = 1L
-)
-
-# Define scenarios
-scenarios <- list(
-  patient_inter = c(3L, 4L, 5L, 6L, 7L),
-  number_of_nurses = c(5L, 6L, 7L, 8L)
-)
-
-# Run scenarios
-compare_results <- run_scenarios(scenarios, new_base)
-```
-
-    ## There are 20 scenarios.
-
-    ## Base parameters:
-
-    ## $patient_inter
-    ## [1] 4
-    ## 
-    ## $mean_n_consult_time
-    ## [1] 10
-    ## 
-    ## $number_of_nurses
-    ## [1] 5
-    ## 
-    ## $warm_up_period
-    ## [1] 38880
-    ## 
-    ## $data_collection_period
-    ## [1] 1440
-    ## 
-    ## $number_of_runs
-    ## [1] 10
-    ## 
-    ## $scenario_name
-    ## NULL
-    ## 
-    ## $cores
-    ## [1] 1
-    ## 
-    ## $seed_offset
-    ## [1] 0
-    ## 
-    ## $log_to_console
-    ## [1] FALSE
-    ## 
-    ## $log_to_file
-    ## [1] FALSE
-    ## 
-    ## $file_path
-    ## NULL
-
-    ## Scenario: patient_inter = 3, number_of_nurses = 5
-
-    ## Scenario: patient_inter = 4, number_of_nurses = 5
-
-    ## Scenario: patient_inter = 5, number_of_nurses = 5
-
-    ## Scenario: patient_inter = 6, number_of_nurses = 5
-
-    ## Scenario: patient_inter = 7, number_of_nurses = 5
-
-    ## Scenario: patient_inter = 3, number_of_nurses = 6
-
-    ## Scenario: patient_inter = 4, number_of_nurses = 6
-
-    ## Scenario: patient_inter = 5, number_of_nurses = 6
-
-    ## Scenario: patient_inter = 6, number_of_nurses = 6
-
-    ## Scenario: patient_inter = 7, number_of_nurses = 6
-
-    ## Scenario: patient_inter = 3, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 4, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 5, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 6, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 7, number_of_nurses = 7
-
-    ## Scenario: patient_inter = 3, number_of_nurses = 8
-
-    ## Scenario: patient_inter = 4, number_of_nurses = 8
-
-    ## Scenario: patient_inter = 5, number_of_nurses = 8
-
-    ## Scenario: patient_inter = 6, number_of_nurses = 8
-
-    ## Scenario: patient_inter = 7, number_of_nurses = 8
-
-``` r
-# Preview scenario results dataframe
-print(dim(compare_results))
-```
-
-    ## [1] 200  12
-
-``` r
-head(compare_results)
-```
-
-    ## # A tibble: 6 × 12
-    ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
-    ##         <int>    <int>                    <dbl>                   <dbl>
-    ## 1           1      454                     3.43                   0.408
-    ## 2           2      460                     3.29                   0.266
-    ## 3           3      486                     5.63                   1.95 
-    ## 4           4      472                     4.40                   1.11 
-    ## 5           5      499                     3.80                   0.510
-    ## 6           6      484                     3.75                   0.467
-    ## # ℹ 8 more variables: mean_waiting_time_nurse <dbl>,
-    ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
-    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
-    ## #   scenario <int>, patient_inter <int>, number_of_nurses <int>
-
-``` r
-# Define path
-path <- file.path(output_dir, "scenario_nurse_wait_compare_python_r.png")
-
-# Calculate results and generate plot
-result <- plot_scenario(
-  results = compare_results,
-  x_var = "patient_inter",
-  result_var = "mean_waiting_time_nurse",
-  colour_var = "number_of_nurses",
-  xaxis_title = "Patient inter-arrival time",
-  yaxis_title = "Mean wait time for nurse (minutes)",
-  legend_title = "Nurses",
-  path = path
-)
-
-# View plot
-include_graphics(path)
-```
-
-![](../outputs/scenario_nurse_wait_compare_python_r.png)<!-- -->
-
-``` r
-# Define path
-path <- file.path(output_dir, "scenario_nurse_util_compare_python_r.png")
-
-# Calculate results and generate plot
-result <- plot_scenario(
-  results = compare_results,
-  x_var = "patient_inter",
-  result_var = "utilisation_nurse",
-  colour_var = "number_of_nurses",
-  xaxis_title = "Patient inter-arrival time",
-  yaxis_title = "Mean nurse utilisation",
-  legend_title = "Nurses",
-  path = path
-)
-
-# View plot
-include_graphics(path)
-```
-
-![](../outputs/scenario_nurse_util_compare_python_r.png)<!-- -->
 
 ## Sensitivity analysis
 
@@ -827,7 +648,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Aug  4 11:25:22 2025
+    ## % Mon Aug  4 12:10:59 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -996,4 +817,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 5m 21s
+    ## Notebook run time: 4m 44s
