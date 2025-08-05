@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-08-04
+2025-08-05
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -182,6 +182,10 @@ run_results |>
 
 ## View spread of results across replication
 
+The chosen bin widths are consistent with those using in the equivalent
+python version of this analysis
+([pydesrap_mms](https://github.com/pythonhealthdatascience/pydesrap_mms/)).
+
 ``` r
 #' Plot spread of results from across replications, for chosen column.
 #'
@@ -191,12 +195,28 @@ run_results |>
 #' @param column Name of column to plot.
 #' @param x_label X axis label.
 #' @param file Filename to save figure to.
+#' @param bin_width Bin size.
 
-plot_results_spread <- function(run_results, column, x_label, file) {
-
-  # Generate plot
-  p <- ggplot(run_results, aes(.data[[column]])) +
-    geom_histogram(bins = 10L) +
+plot_results_spread <- function (
+  run_results, column, x_label, file, bin_width = NULL
+) {
+  if (!is.null(bin_width)) {
+    # Calculate bin breaks based on bin_width
+    min_val <- min(run_results[[column]], na.rm = TRUE)
+    max_val <- max(run_results[[column]], na.rm = TRUE)
+    start_break <- bin_width * floor(min_val / bin_width)
+    end_break <- bin_width * ceiling(max_val / bin_width)
+    breaks <- seq(start_break, end_break, by = bin_width)
+  
+    # Generate plot
+    p <- ggplot(run_results, aes(.data[[column]])) +
+      geom_histogram(breaks = breaks) +
+      scale_x_continuous(breaks = breaks)
+  } else {
+    p <- ggplot(run_results, aes(.data[[column]])) +
+      geom_histogram(bins = 5L)
+  }
+  p <- p +
     labs(x = x_label, y = "Frequency") +
     theme_minimal()
 
@@ -213,8 +233,9 @@ plot_results_spread <- function(run_results, column, x_label, file) {
 ``` r
 plot_results_spread(run_results = run_results,
                     column = "arrivals",
-                    x_label = "Arrivals",
-                    file = "spread_arrivals.png")
+                    x_label = "Number of arrivals",
+                    file = "spread_arrivals.png",
+                    bin_width = 100)
 ```
 
 ![](../outputs/spread_arrivals.png)<!-- -->
@@ -222,8 +243,9 @@ plot_results_spread(run_results = run_results,
 ``` r
 plot_results_spread(run_results = run_results,
                     column = "mean_waiting_time_nurse",
-                    x_label = "Mean wait time for nurse",
-                    file = "spread_nurse_wait.png")
+                    x_label = "Mean wait time for nurse (minutes)",
+                    file = "spread_nurse_wait.png",
+                    bin_width = 0.05)
 ```
 
 ![](../outputs/spread_nurse_wait.png)<!-- -->
@@ -231,8 +253,9 @@ plot_results_spread(run_results = run_results,
 ``` r
 plot_results_spread(run_results = run_results,
                     column = "mean_serve_time_nurse",
-                    x_label = "Mean length of nurse consultation",
-                    file = "spread_nurse_time.png")
+                    x_label = "Mean consultation time with nurse (minutes)",
+                    file = "spread_nurse_time.png",
+                    bin_width = 0.1)
 ```
 
 ![](../outputs/spread_nurse_time.png)<!-- -->
@@ -241,7 +264,8 @@ plot_results_spread(run_results = run_results,
 plot_results_spread(run_results = run_results,
                     column = "utilisation_nurse",
                     x_label = "Mean nurse utilisation",
-                    file = "spread_nurse_util.png")
+                    file = "spread_nurse_util.png",
+                    bin_width = 0.01)
 ```
 
 ![](../outputs/spread_nurse_util.png)<!-- -->
@@ -493,7 +517,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Aug  4 15:49:45 2025
+    ## % Tue Aug  5 11:24:02 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -650,7 +674,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Mon Aug  4 15:50:50 2025
+    ## % Tue Aug  5 11:25:09 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -819,4 +843,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 4m 31s
+    ## Notebook run time: 4m 39s
