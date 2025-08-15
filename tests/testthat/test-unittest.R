@@ -26,7 +26,7 @@ test_that("parallel processing runs successfully", {
     )
   }
   mockery::stub(runner, "simulation::model", test_model)
-  param <- list(cores = 2L, number_of_runs = 5L)
+  param <- list(cores = 2L, number_of_runs = 5L, seed_offset = 0L)
 
   # Attempt parallel processing
   result <- tryCatch({
