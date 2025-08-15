@@ -25,7 +25,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
   # Set random seed based on run number
   if (set_seed) {
-    set.seed(run_number)
+    set.seed(run_number + param[["seed_offset"]])
   }
 
   # Determine whether to get verbose activity logs
@@ -98,6 +98,11 @@ model <- function(run_number, param, set_seed = TRUE) {
     # Merge extra attributes with the arrival data
     result[["arrivals"]] <- left_join(
       result[["arrivals"]], extra_attributes, by = c("name", "resource")
+    )
+
+    # Add time in system (unfinished patients will set to NaN)
+    result[["arrivals"]][["time_in_system"]] <- (
+      result[["arrivals"]][["end_time"]] - result[["arrivals"]][["start_time"]]
     )
 
     # Filter the output results if a warm-up period was specified...

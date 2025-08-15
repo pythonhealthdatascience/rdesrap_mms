@@ -35,7 +35,6 @@ Load required packages.
 library(data.table)
 library(dplyr)
 library(knitr)
-library(tidyr)
 
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
@@ -79,7 +78,7 @@ It's important to check ahead, to check that the 10% precision is maintained - w
 ```{r}
 # Run calculations and produce plot
 ci_df <- confidence_interval_method(
-  replications = 150L,
+  replications = 20L,
   desired_precision = 0.1,
   metric = "mean_serve_time_nurse"
 )
@@ -100,7 +99,7 @@ plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean time with nurse",
   file_path = path,
-  min_rep = 86L
+  min_rep = 3L
 )
 # View plot
 include_graphics(path)
@@ -111,20 +110,23 @@ It is also important to check across multiple metrics.
 ```{r}
 # Run calculations
 ci_df <- confidence_interval_method(
-  replications = 1000L,
+  replications = 20L,
   desired_precision = 0.1,
   metric = "mean_waiting_time_nurse"
 )
 
 # Preview dataframe
 tail(ci_df)
+```
 
+```{r}
 # Create plot
 path <- file.path(output_dir, "conf_int_method_wait_time.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean wait time for the nurse",
-  file_path = path
+  file_path = path,
+  min_rep = 4L
 )
 # View plot
 include_graphics(path)
@@ -133,26 +135,23 @@ include_graphics(path)
 ```{r}
 # Run calculations
 ci_df <- confidence_interval_method(
-  replications = 200L,
+  replications = 20L,
   desired_precision = 0.1,
   metric = "utilisation_nurse"
 )
 
 # Preview dataframe
 head(ci_df)
+```
 
-# View first ten rows where percentage deviation is below 5
-ci_df |>
-  filter(deviation < 0.05) |>
-  head(10L)
-
+```{r}
 # Create plot
 path <- file.path(output_dir, "conf_int_method_utilisation.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean nurse utilisation",
   file_path = path,
-  min_rep = 151L
+  min_rep = 3L
 )
 # View plot
 include_graphics(path)
@@ -166,10 +165,12 @@ Run the algorithm (which will run model with increasing reps) for a few differen
 # Set up and run algorithm
 alg <- ReplicationsAlgorithm$new(param = parameters())
 alg$select()
+```
 
+```{r}
 # View results
 alg$nreps
-head(alg$summary_table)
+alg$summary_table
 ```
 
 Visualise results for each metric...
@@ -179,7 +180,8 @@ path <- file.path(output_dir, "reps_algorithm_wait_time.png")
 plot_replication_ci(
   conf_ints = filter(alg$summary_table, metric == "mean_waiting_time_nurse"),
   yaxis_title = "Mean wait time for nurse",
-  file_path = path
+  file_path = path,
+  min_rep = alg$nreps[["mean_waiting_time_nurse"]]
 )
 include_graphics(path)
 ```
@@ -205,6 +207,73 @@ plot_replication_ci(
 )
 include_graphics(path)
 ```
+
+## Sensitivity analysis: running algorithm with seed offset
+
+To check the stability of the suggested number of replications, run again with a new set of seeds using `seed_offset`.
+
+```{r}
+# Set up and run algorithm
+alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = 1000L))
+alg$select()
+
+# View results
+alg$nreps
+alg$summary_table
+```
+
+```{r}
+path <- file.path(output_dir, "reps_algorithm_wait_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_waiting_time_nurse"),
+  yaxis_title = "Mean wait time for nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_waiting_time_nurse"]]
+)
+include_graphics(path)
+```
+
+```{r}
+path <- file.path(output_dir, "reps_algorithm_serve_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_serve_time_nurse"),
+  yaxis_title = "Mean time with nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_serve_time_nurse"]]
+)
+include_graphics(path)
+```
+
+```{r}
+path <- file.path(output_dir, "reps_algorithm_utilisation_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "utilisation_nurse"),
+  yaxis_title = "Mean nurse utilisation",
+  file_path = path,
+  min_rep = alg$nreps[["utilisation_nurse"]]
+)
+include_graphics(path)
+```
+
+Further variations, just reporting number of replications:
+
+```{r}
+seed_offsets <- seq(2000L, 10000L, by = 1000L)
+sensitivity_nreps <- list()
+for (offset in seed_offsets) {
+  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = offset))
+  alg$select()
+  sensitivity_nreps <- c(sensitivity_nreps, alg$nreps)
+}
+```
+
+```{r}
+print(sensitivity_nreps)
+```
+
+## Chosen number of replications
+
+Given the variations observed using the algorithm in the sensitivity analysis, decided appropriate number of replications to be **15**.
 
 ## Explanation of the automated method
 

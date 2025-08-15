@@ -40,7 +40,6 @@ Import required packages.
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(knitr)
-library(simmer, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
 library(xtable)
 
@@ -86,13 +85,22 @@ run_results |>
   dplyr::select(!c(replication, arrivals)) |>
   gather() |>
   group_by(key) |>
-  reframe(mean = mean(value, na.rm = TRUE),
-          std_dev = stats::sd(value, na.rm = TRUE),
-          ci_lower = stats::t.test(value)[["conf.int"]][[1L]],
-          ci_upper = stats::t.test(value)[["conf.int"]][[2L]])
+  reframe(
+    n_complete = sum(!is.na(value)),
+    mean = mean(value, na.rm = TRUE),
+    std_dev = stats::sd(value, na.rm = TRUE),
+    ci_lower = (
+      if (n_complete >= 2L) stats::t.test(value)$conf.int[1L] else NA_real_
+    ),
+    ci_upper = (
+      if (n_complete >= 2L) stats::t.test(value)$conf.int[2L] else NA_real_
+    )
+  )
 ```
 
 ## View spread of results across replication
+
+The chosen bin widths are consistent with those using in the equivalent python version of this analysis ([pydesrap_mms](https://github.com/pythonhealthdatascience/pydesrap_mms/)).
 
 ```{r}
 #' Plot spread of results from across replications, for chosen column.
@@ -103,12 +111,28 @@ run_results |>
 #' @param column Name of column to plot.
 #' @param x_label X axis label.
 #' @param file Filename to save figure to.
+#' @param bin_width Bin size.
 
-plot_results_spread <- function(run_results, column, x_label, file) {
+plot_results_spread <- function(
+  run_results, column, x_label, file, bin_width = NULL
+) {
+  if (!is.null(bin_width)) {
+    # Calculate bin breaks based on bin_width
+    min_val <- min(run_results[[column]], na.rm = TRUE)
+    max_val <- max(run_results[[column]], na.rm = TRUE)
+    start_break <- bin_width * floor(min_val / bin_width)
+    end_break <- bin_width * ceiling(max_val / bin_width)
+    breaks <- seq(start_break, end_break, by = bin_width)
 
-  # Generate plot
-  p <- ggplot(run_results, aes(.data[[column]])) +
-    geom_histogram(bins = 10L) +
+    # Generate plot
+    p <- ggplot(run_results, aes(.data[[column]])) +
+      geom_histogram(breaks = breaks) +
+      scale_x_continuous(breaks = breaks)
+  } else {
+    p <- ggplot(run_results, aes(.data[[column]])) +
+      geom_histogram(bins = 5L)
+  }
+  p <- p +
     labs(x = x_label, y = "Frequency") +
     theme_minimal()
 
@@ -125,23 +149,27 @@ plot_results_spread <- function(run_results, column, x_label, file) {
 ```{r}
 plot_results_spread(run_results = run_results,
                     column = "arrivals",
-                    x_label = "Arrivals",
-                    file = "spread_arrivals.png")
+                    x_label = "Number of arrivals",
+                    file = "spread_arrivals.png",
+                    bin_width = 100L)
 
 plot_results_spread(run_results = run_results,
                     column = "mean_waiting_time_nurse",
-                    x_label = "Mean wait time for nurse",
-                    file = "spread_nurse_wait.png")
+                    x_label = "Mean wait time for nurse (minutes)",
+                    file = "spread_nurse_wait.png",
+                    bin_width = 0.05)
 
 plot_results_spread(run_results = run_results,
                     column = "mean_serve_time_nurse",
-                    x_label = "Mean length of nurse consultation",
-                    file = "spread_nurse_time.png")
+                    x_label = "Mean consultation time with nurse (minutes)",
+                    file = "spread_nurse_time.png",
+                    bin_width = 0.1)
 
 plot_results_spread(run_results = run_results,
                     column = "utilisation_nurse",
                     x_label = "Mean nurse utilisation",
-                    file = "spread_nurse_util.png")
+                    file = "spread_nurse_util.png",
+                    bin_width = 0.01)
 ```
 
 ## Scenario analysis
@@ -287,76 +315,6 @@ print(table_latex)
 print(table_latex,
       comment = FALSE,
       file = file.path(output_dir, "scenario_nurse_util.tex"))
-```
-
-### Running a basic example (which can compare to Python m/m/s model)
-
-To enable comparison between the python and R m/m/s models, this section runs the model with a simple set of base case parameters (matched to Python), and then running some scenarios on top of that base case.
-
-```{r}
-# Define the base param for this altered run
-new_base <- parameters(
-  patient_inter = 4L,
-  mean_n_consult_time = 10L,
-  number_of_nurses = 5L,
-  # No warm-up (not possible in R, but set to 0 in Python)
-  data_collection_period = 1440L,
-  number_of_runs = 10L,
-  cores = 1L
-)
-
-# Define scenarios
-scenarios <- list(
-  patient_inter = c(3L, 4L, 5L, 6L, 7L),
-  number_of_nurses = c(5L, 6L, 7L, 8L)
-)
-
-# Run scenarios
-compare_results <- run_scenarios(scenarios, new_base)
-```
-
-```{r}
-# Preview scenario results dataframe
-print(dim(compare_results))
-head(compare_results)
-```
-
-```{r}
-# Define path
-path <- file.path(output_dir, "scenario_nurse_wait_compare_python_r.png")
-
-# Calculate results and generate plot
-result <- plot_scenario(
-  results = compare_results,
-  x_var = "patient_inter",
-  result_var = "mean_waiting_time_nurse",
-  colour_var = "number_of_nurses",
-  xaxis_title = "Patient inter-arrival time",
-  yaxis_title = "Mean wait time for nurse (minutes)",
-  legend_title = "Nurses",
-  path = path
-)
-
-# View plot
-include_graphics(path)
-
-# Define path
-path <- file.path(output_dir, "scenario_nurse_util_compare_python_r.png")
-
-# Calculate results and generate plot
-result <- plot_scenario(
-  results = compare_results,
-  x_var = "patient_inter",
-  result_var = "utilisation_nurse",
-  colour_var = "number_of_nurses",
-  xaxis_title = "Patient inter-arrival time",
-  yaxis_title = "Mean nurse utilisation",
-  legend_title = "Nurses",
-  path = path
-)
-
-# View plot
-include_graphics(path)
 ```
 
 ## Sensitivity analysis

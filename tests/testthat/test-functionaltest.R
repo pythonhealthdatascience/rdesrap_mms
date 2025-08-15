@@ -205,19 +205,29 @@ test_that("columns that are expected to be complete have no NA", {
 
   # Helper function to remove columns where expect NA and then check that
   # remaining dataframe has no NA
-  check_no_na <- function(data, exclude = NULL) {
+  check_no_na <- function(df_name, exclude = NULL) {
+    data <- results[[df_name]]
     if (!is.null(exclude)) {
       data <- data[, !names(data) %in% exclude]
     }
-    expect_true(all(colSums(is.na(data)) == 0L))
+    na_counts <- colSums(is.na(data))
+    bad_cols  <- names(na_counts)[na_counts > 0]
+    msg <- if (length(bad_cols) > 0) {
+      paste0("In dataframe '", df_name, "':\n",
+             "Columns with NA: ", paste(bad_cols, collapse = ", "),
+             "\nNA counts: ", paste(na_counts[bad_cols], collapse = ", "))
+    } else {
+      NULL
+    }
+    expect_true(all(na_counts == 0), info = msg)
   }
 
   # Check raw and processed results, excluding columns where expect NA
-  check_no_na(results[["arrivals"]],
+  check_no_na(df_name = "arrivals",
               exclude = c("end_time", "activity_time", "serve_start",
                           "serve_length", "wait_time", "wait_time_unseen"))
-  check_no_na(results[["resources"]])
-  check_no_na(results[["run_results"]])
+  check_no_na(df_name = "resources")
+  check_no_na(df_name = "run_results")
 })
 
 
@@ -553,4 +563,3 @@ test_that("log to console and file work correctly", {
   expect_match(readLines(log_file), "Parameters:", all = FALSE)
   expect_match(readLines(log_file), "Log:", all = FALSE)
 })
-

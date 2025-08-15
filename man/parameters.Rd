@@ -8,11 +8,12 @@ parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
-  warm_up_period = 0L,
-  data_collection_period = 80L,
-  number_of_runs = 100L,
+  warm_up_period = 1440L * 27L,
+  data_collection_period = 1440L * 30L,
+  number_of_runs = 15L,
   scenario_name = NULL,
   cores = 1L,
+  seed_offset = 0L,
   log_to_console = FALSE,
   log_to_file = FALSE,
   file_path = NULL
@@ -35,6 +36,9 @@ minutes.}
 \item{scenario_name}{Label for the scenario (int|float|string).}
 
 \item{cores}{Number of cores to use for parallel execution (int).}
+
+\item{seed_offset}{Optional value to add to each run number when generating
+seeds for simulation replications (used for sensitivity analyses).}
 
 \item{log_to_console}{Whether to print activity log to console.}
 

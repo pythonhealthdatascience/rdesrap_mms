@@ -95,25 +95,6 @@ results <- runner(param = params)
 bash run_rmarkdown.sh
 ```
 
-**Run tests:**
-
-```{.r}
-devtools::test()
-```
-
-**Compute test coverage:**
-
-```{.r}
-devtools::test_coverage()
-```
-
-**Lint code:**
-
-```{.r}
-lintr::lint_package()
-lintr::lint_dir("rmarkdown")
-```
-
 <br>
 
 ## ❓ How does the model work
@@ -230,14 +211,20 @@ repo/
 
 Run times from our analyses (on Intel Core i7-12700H, 32GB RAM, Ubuntu 24.04.1):
 
-* `analysis.Rmd`: 2m 12s
-* `choosing_cores.Rmd`: 2m 12s
-* `choosing_replications.Rmd`: 1m 35s
-* `choosing_warmup.Rmd`: 3s
-* `generate_exp_results.Rmd`: 2s
-* `input_modelling.Rmd`: 13s
+* `analysis.Rmd`: 5m 21s
+* `choosing_cores.Rmd`: 0m 51s
+* `choosing_replications.Rmd`: 2m 2s
+* `choosing_warmup.Rmd`: 16s
+* `generate_exp_results.Rmd`: 13s
+* `input_modelling.Rmd`: 8s
 
 There are also two notebooks illustrating logging functionality (`logs.Rmd`) and about the impact of using `set_attributes()` and `get_attributes` (`using_set_attributes.Rmd`).
+
+<br>
+
+## Community
+
+Curious about contributing? Check out the [contributing guidelines](CONTRIBUTING.md) to learn how you can help. Every bit of help counts, and your contribution - no matter how minor - is highly valued.
 
 <br>
 

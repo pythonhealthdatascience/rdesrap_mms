@@ -1,7 +1,7 @@
 Package: simulation
 Type: Package
 Title: Simulation
-Version: 0.1.0
+Version: 0.4.0
 Authors@R: c(
     person(
       "Amy", "Heather",
@@ -18,7 +18,6 @@ LazyData: true
 RoxygenNote: 7.3.2
 Imports:
     simmer,
-    magrittr,
     dplyr,
     purrr,
     rlang,
@@ -42,5 +41,6 @@ Suggests:
     lubridate,
     plotly,
     covr,
-    DT
+    DT,
+    queueing
 Config/testthat/edition: 3

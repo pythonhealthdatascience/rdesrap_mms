@@ -13,7 +13,8 @@ test_that("results from a new run match those previously generated", {
     warm_up_period = 0L,
     data_collection_period = 80L,
     number_of_runs = 10L,
-    cores = 1L
+    cores = 1L,
+    seed_offset = 0L
   )
   results <- runner(param)
 
@@ -25,6 +26,9 @@ test_that("results from a new run match those previously generated", {
   # Import the expected results
   exp_arrivals <- read.csv(test_path("testdata", "base_arrivals.csv"))
   exp_resources <- read.csv(test_path("testdata", "base_resources.csv"))
+  exp_in_service <- read.csv(
+    test_path("testdata", "base_patients_in_service.csv")
+  )
   exp_run_results <- read.csv(test_path("testdata", "base_run_results.csv"))
 
   # Compare results
@@ -32,6 +36,7 @@ test_that("results from a new run match those previously generated", {
   expect_equal(arrange(results[["arrivals"]], name),
                arrange(exp_arrivals, name))
   expect_equal(as.data.frame(results[["resources"]]), exp_resources)
+  expect_equal(results[["patients_in_service"]], exp_in_service)
   expect_equal(as.data.frame(results[["run_results"]]), exp_run_results)
   # nolint end: expect_identical_linter
 })
@@ -47,7 +52,8 @@ test_that("results from a new run match those previously generated", {
     warm_up_period = 40L,
     data_collection_period = 80L,
     number_of_runs = 10L,
-    cores = 1L
+    cores = 1L,
+    seed_offset = 0L
   )
 
   # Run the replications then get the monitored arrivals and resources
@@ -71,7 +77,8 @@ test_that("results from scenario analysis match those previously generated", {
     warm_up_period = 0L,
     data_collection_period = 80L,
     number_of_runs = 3L,
-    cores = 1L
+    cores = 1L,
+    seed_offset = 0L
   )
 
   # Run scenario analysis

@@ -50,7 +50,7 @@ test_that("results from ReplicationsAlgorithm are consistent", {
   rep_results <- alg$summary_table
 
   # Import the expected results
-  exp_results <- read.csv(test_path("testdata", "choose_rep_results.csv"))
+  exp_results <- read.csv(test_path("testdata", "rep_algorithm_results.csv"))
 
   # Compare to those generated
   expect_equal(rep_results, exp_results) # nolint: expect_identical_linter

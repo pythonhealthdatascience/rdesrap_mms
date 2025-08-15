@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-07-30
+2025-08-04
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -60,7 +60,8 @@ param <- parameters(
   warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 10L,
-  cores = 1L
+  cores = 1L,
+  seed_offset = 0L
 )
 print(param)
 ```
@@ -89,6 +90,9 @@ print(param)
     ## $cores
     ## [1] 1
     ## 
+    ## $seed_offset
+    ## [1] 0
+    ## 
     ## $log_to_console
     ## [1] FALSE
     ## 
@@ -113,13 +117,20 @@ head(results[["arrivals"]])
     ## 4 patient2  19.966026 32.789001     12.822975    nurse           1
     ## 5 patient5  28.808098 32.923921      4.115823    nurse           1
     ## 6 patient6  30.048144 37.857589      7.809445    nurse           1
-    ##   queue_on_arrival serve_start serve_length wait_time wait_time_unseen
-    ## 1                0    7.958939     1.380687         0               NA
-    ## 2                0   14.376952     2.705948         0               NA
-    ## 3                0   22.423647     1.855580         0               NA
-    ## 4                0   19.966026    12.822975         0               NA
-    ## 5                0   28.808098     4.115823         0               NA
-    ## 6                0   30.048144     7.809445         0               NA
+    ##   queue_on_arrival serve_start serve_length time_in_system wait_time
+    ## 1                0    7.958939     1.380687       1.380687         0
+    ## 2                0   14.376952     2.705948       2.705948         0
+    ## 3                0   22.423647     1.855580       1.855580         0
+    ## 4                0   19.966026    12.822975      12.822975         0
+    ## 5                0   28.808098     4.115823       4.115823         0
+    ## 6                0   30.048144     7.809445       7.809445         0
+    ##   wait_time_unseen
+    ## 1               NA
+    ## 2               NA
+    ## 3               NA
+    ## 4               NA
+    ## 5               NA
+    ## 6               NA
 
 ``` r
 write.csv(arrange(results[["arrivals"]], replication, start_time),
@@ -143,11 +154,28 @@ write.csv(results[["resources"]],
           file.path(testdata_dir, "base_resources.csv"),
           row.names = FALSE)
 
+# Patients in service
+head(results[["patients_in_service"]])
+```
+
+    ##        time count replication
+    ## 1  7.958939     1           1
+    ## 2  9.339626     0           1
+    ## 3 14.376952     1           1
+    ## 4 17.082901     0           1
+    ## 5 19.966026     1           1
+    ## 6 22.423647     2           1
+
+``` r
+write.csv(results[["patients_in_service"]],
+          file.path(testdata_dir, "base_patients_in_service.csv"),
+          row.names = FALSE)
+
 # Run results
 head(results[["run_results"]])
 ```
 
-    ## # A tibble: 6 × 9
+    ## # A tibble: 6 × 10
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
     ## 1           1       17                     1.62                   0    
@@ -156,9 +184,10 @@ head(results[["run_results"]])
     ## 4           4       15                     1.76                   0    
     ## 5           5       25                     3.09                   0.349
     ## 6           6       17                     1.81                   0    
-    ## # ℹ 5 more variables: mean_waiting_time_nurse <dbl>,
+    ## # ℹ 6 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
-    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>
+    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
+    ## #   mean_time_in_system <dbl>
 
 ``` r
 write.csv(results[["run_results"]],
@@ -177,7 +206,8 @@ param <- parameters(
   warm_up_period = 40L,
   data_collection_period = 80L,
   number_of_runs = 10L,
-  cores = 1L
+  cores = 1L,
+  seed_offset = 0L
 )
 
 # Run the replications
@@ -187,7 +217,7 @@ results <- runner(param)[["run_results"]]
 head(results)
 ```
 
-    ## # A tibble: 6 × 9
+    ## # A tibble: 6 × 10
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
     ## 1           1       19                     2.34                  0     
@@ -196,9 +226,10 @@ head(results)
     ## 4           4       16                     2.02                  0.0634
     ## 5           5       20                     1.72                  0.272 
     ## 6           6       19                     1.50                  0     
-    ## # ℹ 5 more variables: mean_waiting_time_nurse <dbl>,
+    ## # ℹ 6 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
-    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>
+    ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
+    ## #   mean_time_in_system <dbl>
 
 ``` r
 # Save to csv
@@ -214,9 +245,11 @@ param <- parameters(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
+  warm_up_period = 0L,
   data_collection_period = 80L,
   number_of_runs = 3L,
-  cores = 1L
+  cores = 1L,
+  seed_offset = 0L
 )
 
 # Run scenario analysis
@@ -255,6 +288,9 @@ scenario_results <- run_scenarios(scenarios, base_list = param)
     ## $cores
     ## [1] 1
     ## 
+    ## $seed_offset
+    ## [1] 0
+    ## 
     ## $log_to_console
     ## [1] FALSE
     ## 
@@ -277,7 +313,7 @@ scenario_results <- run_scenarios(scenarios, base_list = param)
 head(scenario_results)
 ```
 
-    ## # A tibble: 6 × 12
+    ## # A tibble: 6 × 13
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
     ## 1           1       27                     2.74                  0     
@@ -286,10 +322,11 @@ head(scenario_results)
     ## 4           1       17                     1.58                  0     
     ## 5           2       21                     2.91                  0.0793
     ## 6           3       28                     3.26                  0     
-    ## # ℹ 8 more variables: mean_waiting_time_nurse <dbl>,
+    ## # ℹ 9 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
     ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
-    ## #   scenario <int>, patient_inter <int>, number_of_nurses <int>
+    ## #   mean_time_in_system <dbl>, scenario <int>, patient_inter <int>,
+    ## #   number_of_nurses <int>
 
 ``` r
 # Save to csv
@@ -298,10 +335,6 @@ write.csv(scenario_results, file.path(testdata_dir, "scenario_results.csv"),
 ```
 
 ## Running the simulation when attempting to determine an appropriate number of parameters
-
-The `confidence_interval_method` and `ReplicationsAlgorithm` should
-return the same results, so we will just run one to use in the back
-tests.
 
 ``` r
 # Specify parameters (so consistent even if defaults change)
@@ -331,10 +364,10 @@ rep_results <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
-    ## [1] 80
+    ## [1] 43200
     ## 
     ## $number_of_runs
     ## [1] 15
@@ -345,6 +378,9 @@ rep_results <- confidence_interval_method(
     ## $cores
     ## [1] 1
     ## 
+    ## $seed_offset
+    ## [1] 0
+    ## 
     ## $log_to_console
     ## [1] FALSE
     ## 
@@ -354,11 +390,58 @@ rep_results <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Warning: Running 15 replications did not reach desired precision (0.1).
+    ## Reached desired precision (0.1) in 3 replications.
 
 ``` r
 # Preview results
 head(rep_results)
+```
+
+    ##   replications      data cumulative_mean      stdev lower_ci upper_ci
+    ## 1            1  9.943731        9.943731         NA       NA       NA
+    ## 2            2 10.030844        9.987287         NA       NA       NA
+    ## 3            3  9.837930        9.937501 0.09660777 9.697514 10.17749
+    ## 4            4 10.035143        9.961912 0.09276587 9.814301 10.10952
+    ## 5            5 10.151207        9.999771 0.11670760 9.854859 10.14468
+    ## 6            6 10.013713       10.002095 0.10454153 9.892385 10.11180
+    ##    deviation                metric
+    ## 1         NA mean_serve_time_nurse
+    ## 2         NA mean_serve_time_nurse
+    ## 3 0.02414963 mean_serve_time_nurse
+    ## 4 0.01481756 mean_serve_time_nurse
+    ## 5 0.01449149 mean_serve_time_nurse
+    ## 6 0.01096866 mean_serve_time_nurse
+
+``` r
+# Save to csv
+write.csv(rep_results, file.path(testdata_dir, "choose_rep_results.csv"),
+          row.names = FALSE)
+```
+
+``` r
+param <- parameters(
+  patient_inter = 4L,
+  mean_n_consult_time = 10L,
+  number_of_nurses = 5L,
+  warm_up_period = 0L,
+  data_collection_period = 80L
+)
+
+# Run the confidence_interval_method()
+alg <- ReplicationsAlgorithm$new(
+  param = param,
+  metrics = "mean_serve_time_nurse",
+  desired_precision = 0.1,
+  initial_replications = 15L,
+  look_ahead = 0L,
+  replication_budget = 15L,
+  verbose = FALSE
+)
+suppressWarnings(alg$select())
+alg_results <- alg$summary_table
+
+# Preview
+head(alg_results)
 ```
 
     ##   replications      data cumulative_mean    stdev lower_ci upper_ci deviation
@@ -378,7 +461,7 @@ head(rep_results)
 
 ``` r
 # Save to csv
-write.csv(rep_results, file.path(testdata_dir, "choose_rep_results.csv"),
+write.csv(alg_results, file.path(testdata_dir, "rep_algorithm_results.csv"),
           row.names = FALSE)
 ```
 
@@ -395,4 +478,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 2s
+    ## Notebook run time: 0m 11s

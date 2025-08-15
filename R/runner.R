@@ -20,6 +20,17 @@
 #' @export
 
 runner <- function(param, use_future_seeding = TRUE) {
+  # Validation step
+  if (isTRUE(use_future_seeding) && param[["seed_offset"]] != 0L) {
+    stop(
+      "seed_offset can only be used when use_future_seeding = FALSE. You ",
+      "should not attempt to offset the seed with use_future_seeding = TRUE. ",
+      "This is because future's seeded parallel random streams are generated ",
+      "from a single base seed and cannot accept offsets for each run.",
+      call. = FALSE
+    )
+  }
+
   # Determine the parallel execution plan
   if (param[["cores"]] == 1L) {
     plan(sequential)  # Sequential execution
@@ -38,12 +49,15 @@ runner <- function(param, use_future_seeding = TRUE) {
     custom_seed <- 123456L
   } else {
     # Not recommended (but will allow match to model())
-    # Generates list of pre-generated seeds set to the run numbers
+    # Generates list of pre-generated seeds set to the run numbers (+ offset)
     create_seeds <- function(seed) {
       set.seed(seed)
       .Random.seed
     }
-    custom_seed <- lapply(1L:param[["number_of_runs"]], create_seeds)
+    custom_seed <- lapply(
+      1L:param[["number_of_runs"]] + param[["seed_offset"]],
+      create_seeds
+    )
   }
 
   # Run simulations (sequentially or in parallel)

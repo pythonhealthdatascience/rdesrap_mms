@@ -114,7 +114,9 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
   #' @description Computes the precision of the confidence interval expressed
   #' as the percentage deviation of the half width from the mean.
   deviation = function() {
-    self$half_width() / self$mean
+    mw <- self$mean
+    if (is.na(mw) || mw == 0L) return(NA_real_)
+    self$half_width() / mw
   }
 ))
 
@@ -413,7 +415,13 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 
     # Whilst have not yet got all metrics marked as solved = TRUE, and still
     # under replication budget + lookahead...
-    while (!all(unlist(lapply(solutions, function(x) x$solved))) &&
+    is_all_solved <- function(solutions_list) {
+      statuses <- unlist(lapply(solutions_list, function(x) x$solved))
+      # If any are NA or FALSE, treat as not solved
+      all(statuses)
+    }
+
+    while (!is_all_solved(solutions) &&
              self$reps < self$replication_budget + self$klimit()) {
 
       # Increment counter
@@ -455,6 +463,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
             # If precision was not achieved, ensure nreps is None (e.g. in cases
             # where precision is lost after a success)
             solutions[[metric]]$nreps <- NA
+            solutions[[metric]]$target_met <- 0L
           }
 
         }

@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-07-30
+2025-08-04
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -467,7 +467,7 @@ fit_distributions(data_iat, distributions)
     ## Warning: Skipped distributions due to data constraints: weibull
 
     ##       exp     gamma 
-    ## 0.1154607 0.2061950
+    ## 0.1154607 0.1154607
 
 ``` r
 fit_distributions(data_service, distributions)
@@ -476,7 +476,7 @@ fit_distributions(data_service, distributions)
     ## Warning: Skipped distributions due to data constraints: weibull
 
     ##        exp      gamma 
-    ## 0.04796992 0.09755396
+    ## 0.04796992 0.04796992
 
 Unsurprisingly, the best fit for both is the **exponential
 distribution** (lowest test statistic).
@@ -540,7 +540,7 @@ fit_distributions(data_iat, distributions)
     ## Warning: Skipped distributions due to data constraints: lnorm, beta, weibull
 
     ##      norm       exp    cauchy     gamma     logis      unif 
-    ## 0.1796464 0.1154607 0.1968200 0.2061950 0.1564321 0.7036682
+    ## 0.1796464 0.1154607 0.1968200 0.1154607 0.1564321 0.7036682
 
 ``` r
 fit_distributions(data_service, distributions)
@@ -549,7 +549,7 @@ fit_distributions(data_service, distributions)
     ## Warning: Skipped distributions due to data constraints: lnorm, beta, weibull
 
     ##       norm        exp     cauchy      gamma      logis       unif 
-    ## 0.15810466 0.04796992 0.19728636 0.09755396 0.15566197 0.71336153
+    ## 0.15810466 0.04796992 0.19728636 0.04796992 0.15566197 0.71336153
 
 ## Plots
 
@@ -615,4 +615,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 12s
+    ## Notebook run time: 0m 8s

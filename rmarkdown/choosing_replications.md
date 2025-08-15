@@ -1,13 +1,16 @@
 Choosing replications
 ================
 Amy Heather
-2025-07-30
+2025-08-04
 
 - [Set up](#set-up)
 - [Choosing the number of
   replications](#choosing-the-number-of-replications)
 - [Automated detection of the number of
   replications](#automated-detection-of-the-number-of-replications)
+- [Sensitivity analysis: running algorithm with seed
+  offset](#sensitivity-analysis-running-algorithm-with-seed-offset)
+- [Chosen number of replications](#chosen-number-of-replications)
 - [Explanation of the automated
   method](#explanation-of-the-automated-method)
   - [WelfordStats](#welfordstats)
@@ -77,17 +80,7 @@ library(dplyr)
 
 ``` r
 library(knitr)
-library(tidyr)
-```
 
-    ## 
-    ## Attaching package: 'tidyr'
-
-    ## The following object is masked from 'package:testthat':
-    ## 
-    ##     matches
-
-``` r
 options(data.table.summarise.inform = FALSE)
 options(dplyr.summarise.inform = FALSE)
 # nolint end
@@ -146,7 +139,7 @@ future deviation.
 ``` r
 # Run calculations and produce plot
 ci_df <- confidence_interval_method(
-  replications = 150L,
+  replications = 20L,
   desired_precision = 0.1,
   metric = "mean_serve_time_nurse"
 )
@@ -162,19 +155,22 @@ ci_df <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
-    ## [1] 80
+    ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 150
+    ## [1] 20
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -185,27 +181,27 @@ ci_df <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Reached desired precision (0.1) in 31 replications.
+    ## Reached desired precision (0.1) in 3 replications.
 
 ``` r
 # Preview dataframe
 head(ci_df)
 ```
 
-    ##   replications      data cumulative_mean    stdev lower_ci upper_ci deviation
-    ## 1            1 10.808606       10.808606       NA       NA       NA        NA
-    ## 2            2  9.319953       10.064280       NA       NA       NA        NA
-    ## 3            3 12.141014       10.756525 1.411251 7.250782 14.26227 0.3259178
-    ## 4            4  8.889448       10.289755 1.482986 7.929994 12.64952 0.2293312
-    ## 5            5  7.603423        9.752489 1.758611 7.568885 11.93609 0.2239022
-    ## 6            6  5.009584        8.962005 2.494667 6.344013 11.58000 0.2921212
-    ##                  metric
-    ## 1 mean_serve_time_nurse
-    ## 2 mean_serve_time_nurse
-    ## 3 mean_serve_time_nurse
-    ## 4 mean_serve_time_nurse
-    ## 5 mean_serve_time_nurse
-    ## 6 mean_serve_time_nurse
+    ##   replications      data cumulative_mean      stdev lower_ci upper_ci
+    ## 1            1  9.943731        9.943731         NA       NA       NA
+    ## 2            2 10.030844        9.987287         NA       NA       NA
+    ## 3            3  9.837930        9.937501 0.09660777 9.697514 10.17749
+    ## 4            4 10.035143        9.961912 0.09276587 9.814301 10.10952
+    ## 5            5 10.151207        9.999771 0.11670760 9.854859 10.14468
+    ## 6            6 10.013713       10.002095 0.10454153 9.892385 10.11180
+    ##    deviation                metric
+    ## 1         NA mean_serve_time_nurse
+    ## 2         NA mean_serve_time_nurse
+    ## 3 0.02414963 mean_serve_time_nurse
+    ## 4 0.01481756 mean_serve_time_nurse
+    ## 5 0.01449149 mean_serve_time_nurse
+    ## 6 0.01096866 mean_serve_time_nurse
 
 ``` r
 # View first ten rows where percentage deviation is below 5
@@ -214,28 +210,28 @@ ci_df |>
   head(10L)
 ```
 
-    ##    replications      data cumulative_mean    stdev lower_ci upper_ci  deviation
-    ## 1            83  9.371854        9.571474 2.189385 9.093408 10.04954 0.04994690
-    ## 2            84 11.420438        9.593485 2.185486 9.119206 10.06776 0.04943768
-    ## 3            85 12.854029        9.631845 2.201037 9.157092 10.10660 0.04928989
-    ## 4            86  8.139575        9.614493 2.193960 9.144107 10.08488 0.04892468
-    ## 5            87  7.425008        9.589326 2.193762 9.121772 10.05688 0.04875777
-    ## 6            88 14.565590        9.645875 2.244699 9.170268 10.12148 0.04930671
-    ## 7            89 10.722522        9.657972 2.234825 9.187201 10.12874 0.04874429
-    ## 8            90  7.670319        9.635887 2.232089 9.168385 10.10339 0.04851676
-    ## 9            91 11.396571        9.655235 2.227314 9.191374 10.11910 0.04804240
-    ## 10           92  8.807005        9.646015 2.216807 9.186927 10.10510 0.04759352
-    ##                   metric
-    ## 1  mean_serve_time_nurse
-    ## 2  mean_serve_time_nurse
-    ## 3  mean_serve_time_nurse
-    ## 4  mean_serve_time_nurse
-    ## 5  mean_serve_time_nurse
-    ## 6  mean_serve_time_nurse
-    ## 7  mean_serve_time_nurse
-    ## 8  mean_serve_time_nurse
-    ## 9  mean_serve_time_nurse
-    ## 10 mean_serve_time_nurse
+    ##    replications     data cumulative_mean      stdev lower_ci upper_ci
+    ## 1             3  9.83793        9.937501 0.09660777 9.697514 10.17749
+    ## 2             4 10.03514        9.961912 0.09276587 9.814301 10.10952
+    ## 3             5 10.15121        9.999771 0.11670760 9.854859 10.14468
+    ## 4             6 10.01371       10.002095 0.10454153 9.892385 10.11180
+    ## 5             7 10.04365       10.008030 0.09671647 9.918583 10.09748
+    ## 6             8 10.10287       10.019885 0.09561401 9.939950 10.09982
+    ## 7             9 10.08016       10.026582 0.09166773 9.956120 10.09704
+    ## 8            10 10.07725       10.031649 0.08789805 9.968771 10.09453
+    ## 9            11 10.00108       10.028870 0.08389535 9.972509 10.08523
+    ## 10           12 10.06799       10.032131 0.08078447 9.980803 10.08346
+    ##      deviation                metric
+    ## 1  0.024149633 mean_serve_time_nurse
+    ## 2  0.014817557 mean_serve_time_nurse
+    ## 3  0.014491495 mean_serve_time_nurse
+    ## 4  0.010968663 mean_serve_time_nurse
+    ## 5  0.008937605 mean_serve_time_nurse
+    ## 6  0.007977668 mean_serve_time_nurse
+    ## 7  0.007027525 mean_serve_time_nurse
+    ## 8  0.006268010 mean_serve_time_nurse
+    ## 9  0.005619941 mean_serve_time_nurse
+    ## 10 0.005116361 mean_serve_time_nurse
 
 ``` r
 # Create plot
@@ -244,7 +240,7 @@ plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean time with nurse",
   file_path = path,
-  min_rep = 86L
+  min_rep = 3L
 )
 # View plot
 include_graphics(path)
@@ -257,7 +253,7 @@ It is also important to check across multiple metrics.
 ``` r
 # Run calculations
 ci_df <- confidence_interval_method(
-  replications = 1000L,
+  replications = 20L,
   desired_precision = 0.1,
   metric = "mean_waiting_time_nurse"
 )
@@ -273,19 +269,22 @@ ci_df <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
-    ## [1] 80
+    ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 1000
+    ## [1] 20
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -296,27 +295,27 @@ ci_df <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Warning: Running 1000 replications did not reach desired precision (0.1).
+    ## Reached desired precision (0.1) in 4 replications.
 
 ``` r
 # Preview dataframe
 tail(ci_df)
 ```
 
-    ##      replications      data cumulative_mean     stdev  lower_ci  upper_ci
-    ## 995           995 0.0000000       0.2448502 0.5815286 0.2086729 0.2810276
-    ## 996           996 0.5931650       0.2451999 0.5813411 0.2090525 0.2813474
-    ## 997           997 0.2294206       0.2451841 0.5810494 0.2090729 0.2812953
-    ## 998           998 0.0869829       0.2450256 0.5807795 0.2089493 0.2811019
-    ## 999           999 0.1404389       0.2449209 0.5804979 0.2088802 0.2809616
-    ## 1000         1000 0.0000000       0.2446760 0.5802590 0.2086682 0.2806838
-    ##      deviation                  metric
-    ## 995  0.1477530 mean_waiting_time_nurse
-    ## 996  0.1474204 mean_waiting_time_nurse
-    ## 997  0.1472819 mean_waiting_time_nurse
-    ## 998  0.1472347 mean_waiting_time_nurse
-    ## 999  0.1471523 mean_waiting_time_nurse
-    ## 1000 0.1471652 mean_waiting_time_nurse
+    ##    replications      data cumulative_mean      stdev  lower_ci  upper_ci
+    ## 15           15 0.4970082       0.5299692 0.06659604 0.4930895 0.5668489
+    ## 16           16 0.5398594       0.5305873 0.06438539 0.4962788 0.5648959
+    ## 17           17 0.4826912       0.5277699 0.06341395 0.4951655 0.5603744
+    ## 18           18 0.5372420       0.5282962 0.06156107 0.4976826 0.5589097
+    ## 19           19 0.4573923       0.5245644 0.06199855 0.4946820 0.5544467
+    ## 20           20 0.4967360       0.5231730 0.06066493 0.4947809 0.5515650
+    ##     deviation                  metric
+    ## 15 0.06958831 mean_waiting_time_nurse
+    ## 16 0.06466146 mean_waiting_time_nurse
+    ## 17 0.06177776 mean_waiting_time_nurse
+    ## 18 0.05794780 mean_waiting_time_nurse
+    ## 19 0.05696602 mean_waiting_time_nurse
+    ## 20 0.05426898 mean_waiting_time_nurse
 
 ``` r
 # Create plot
@@ -324,7 +323,8 @@ path <- file.path(output_dir, "conf_int_method_wait_time.png")
 plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean wait time for the nurse",
-  file_path = path
+  file_path = path,
+  min_rep = 4L
 )
 # View plot
 include_graphics(path)
@@ -335,7 +335,7 @@ include_graphics(path)
 ``` r
 # Run calculations
 ci_df <- confidence_interval_method(
-  replications = 200L,
+  replications = 20L,
   desired_precision = 0.1,
   metric = "utilisation_nurse"
 )
@@ -351,19 +351,22 @@ ci_df <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
-    ## [1] 80
+    ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 200
+    ## [1] 20
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -374,57 +377,27 @@ ci_df <- confidence_interval_method(
     ## $file_path
     ## NULL
 
-    ## Reached desired precision (0.1) in 45 replications.
+    ## Reached desired precision (0.1) in 3 replications.
 
 ``` r
 # Preview dataframe
 head(ci_df)
 ```
 
-    ##   replications      data cumulative_mean      stdev  lower_ci  upper_ci
-    ## 1            1 0.6003166       0.6003166         NA        NA        NA
-    ## 2            2 0.4686088       0.5344627         NA        NA        NA
-    ## 3            3 0.6440834       0.5710029 0.09133618 0.3441113 0.7978946
-    ## 4            4 0.3507966       0.5159514 0.13298209 0.3043472 0.7275555
-    ## 5            5 0.3423309       0.4812273 0.13889561 0.3087656 0.6536889
-    ## 6            6 0.2285129       0.4391082 0.16148587 0.2696392 0.6085772
-    ##   deviation            metric
-    ## 1        NA utilisation_nurse
-    ## 2        NA utilisation_nurse
-    ## 3 0.3973564 utilisation_nurse
-    ## 4 0.4101243 utilisation_nurse
-    ## 5 0.3583789 utilisation_nurse
-    ## 6 0.3859391 utilisation_nurse
-
-``` r
-# View first ten rows where percentage deviation is below 5
-ci_df |>
-  filter(deviation < 0.05) |>
-  head(10L)
-```
-
-    ##    replications      data cumulative_mean     stdev  lower_ci  upper_ci
-    ## 1           128 0.5547391       0.4607563 0.1308109 0.4378769 0.4836357
-    ## 2           129 0.2973943       0.4594899 0.1310903 0.4366524 0.4823275
-    ## 3           130 0.6534065       0.4609816 0.1316842 0.4381307 0.4838325
-    ## 4           131 0.4492215       0.4608918 0.1311807 0.4382170 0.4835667
-    ## 5           132 0.3111502       0.4597574 0.1313274 0.4371450 0.4823698
-    ## 6           133 0.6151101       0.4609255 0.1315207 0.4383667 0.4834843
-    ## 7           134 0.4005429       0.4604749 0.1311291 0.4380688 0.4828809
-    ## 8           135 0.2899786       0.4592119 0.1314605 0.4368342 0.4815897
-    ## 9           136 0.3737779       0.4585837 0.1311774 0.4363379 0.4808295
-    ## 10          137 0.4161378       0.4582739 0.1307445 0.4361840 0.4803638
-    ##     deviation            metric
-    ## 1  0.04965623 utilisation_nurse
-    ## 2  0.04970194 utilisation_nurse
-    ## 3  0.04957009 utilisation_nurse
-    ## 4  0.04919775 utilisation_nurse
-    ## 5  0.04918338 utilisation_nurse
-    ## 6  0.04894244 utilisation_nurse
-    ## 7  0.04865849 utilisation_nurse
-    ## 8  0.04873075 utilisation_nurse
-    ## 9  0.04850981 utilisation_nurse
-    ## 10 0.04820232 utilisation_nurse
+    ##   replications      data cumulative_mean       stdev  lower_ci  upper_ci
+    ## 1            1 0.4967536       0.4967536          NA        NA        NA
+    ## 2            2 0.4992264       0.4979900          NA        NA        NA
+    ## 3            3 0.4908188       0.4955996 0.004320968 0.4848657 0.5063335
+    ## 4            4 0.5038593       0.4976645 0.005431675 0.4890215 0.5063075
+    ## 5            5 0.5017555       0.4984827 0.005047227 0.4922158 0.5047497
+    ## 6            6 0.5060808       0.4997491 0.005477344 0.4940009 0.5054972
+    ##    deviation            metric
+    ## 1         NA utilisation_nurse
+    ## 2         NA utilisation_nurse
+    ## 3 0.02165837 utilisation_nurse
+    ## 4 0.01736714 utilisation_nurse
+    ## 5 0.01257207 utilisation_nurse
+    ## 6 0.01150201 utilisation_nurse
 
 ``` r
 # Create plot
@@ -433,7 +406,7 @@ plot_replication_ci(
   conf_ints = ci_df,
   yaxis_title = "Mean nurse utilisation",
   file_path = path,
-  min_rep = 151L
+  min_rep = 3L
 )
 # View plot
 include_graphics(path)
@@ -462,19 +435,22 @@ alg <- ReplicationsAlgorithm$new(param = parameters())
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 0
+    ## [1] 38880
     ## 
     ## $data_collection_period
-    ## [1] 80
+    ## [1] 43200
     ## 
     ## $number_of_runs
-    ## [1] 100
+    ## [1] 15
     ## 
     ## $scenario_name
     ## NULL
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -489,41 +465,86 @@ alg <- ReplicationsAlgorithm$new(param = parameters())
 alg$select()
 ```
 
-    ## Warning: The replications did not reach the desired precision for the following
-    ## metrics - mean_waiting_time_nurse
-
 ``` r
 # View results
 alg$nreps
 ```
 
     ## $mean_waiting_time_nurse
-    ## [1] NA
+    ## [1] 9
     ## 
     ## $mean_serve_time_nurse
-    ## [1] 31
+    ## [1] 3
     ## 
     ## $utilisation_nurse
-    ## [1] 45
+    ## [1] 3
 
 ``` r
-head(alg$summary_table)
+alg$summary_table
 ```
 
-    ##   replications      data cumulative_mean     stdev    lower_ci  upper_ci
-    ## 1            1 0.3259768       0.3259768        NA          NA        NA
-    ## 2            2 0.0000000       0.1629884        NA          NA        NA
-    ## 3            3 0.4744693       0.2668154 0.2427042 -0.33609536 0.8697261
-    ## 4            4 0.0000000       0.2001115 0.2388888 -0.18001380 0.5802369
-    ## 5            5 0.0000000       0.1600892 0.2254103 -0.11979464 0.4399731
-    ## 6            6 0.0000000       0.1334077 0.2119417 -0.08901145 0.3558269
-    ##   deviation                  metric
-    ## 1        NA mean_waiting_time_nurse
-    ## 2        NA mean_waiting_time_nurse
-    ## 3  2.259655 mean_waiting_time_nurse
-    ## 4  1.899567 mean_waiting_time_nurse
-    ## 5  1.748299 mean_waiting_time_nurse
-    ## 6  1.667214 mean_waiting_time_nurse
+    ##    replications       data cumulative_mean       stdev  lower_ci   upper_ci
+    ## 1             1  0.5710589       0.5710589          NA        NA         NA
+    ## 2             2  0.5161697       0.5436143          NA        NA         NA
+    ## 3             3  0.5257707       0.5376664 0.029314456 0.4648453  0.6104876
+    ## 4             4  0.5381486       0.5377870 0.023936367 0.4996989  0.5758751
+    ## 5             5  0.5234430       0.5349182 0.021699356 0.5079749  0.5618615
+    ## 6             6  0.4579594       0.5220917 0.036929630 0.4833365  0.5608470
+    ## 7             7  0.6077136       0.5343234 0.046731144 0.4911043  0.5775425
+    ## 8             8  0.6767519       0.5521270 0.066389484 0.4966240  0.6076300
+    ## 9             9  0.4988971       0.5462126 0.064586709 0.4965668  0.5958583
+    ## 10           10  0.4934531       0.5409366 0.063137198 0.4957710  0.5861022
+    ## 11           11  0.6352630       0.5495117 0.066306383 0.5049665  0.5940570
+    ## 12           12  0.5037119       0.5456951 0.064588338 0.5046576  0.5867326
+    ## 13           13  0.4551971       0.5387337 0.066738344 0.4984041  0.5790633
+    ## 14           14  0.4489918       0.5323236 0.068459102 0.4927965  0.5718507
+    ## 15            1  9.9437308       9.9437308          NA        NA         NA
+    ## 16            2 10.0308438       9.9872873          NA        NA         NA
+    ## 17            3  9.8379297       9.9375014 0.096607773 9.6975144 10.1774884
+    ## 18            4 10.0351429       9.9619118 0.092765866 9.8143006 10.1095230
+    ## 19            5 10.1512070       9.9997708 0.116707602 9.8548592 10.1446824
+    ## 20            6 10.0137134      10.0020946 0.104541526 9.8923850 10.1118042
+    ## 21            7 10.0436450      10.0080304 0.096716474 9.9185825 10.0974782
+    ## 22            8 10.1028675      10.0198850 0.095614011 9.9399497 10.0998203
+    ## 23            1  0.4967536       0.4967536          NA        NA         NA
+    ## 24            2  0.4992264       0.4979900          NA        NA         NA
+    ## 25            3  0.4908188       0.4955996 0.004320968 0.4848657  0.5063335
+    ## 26            4  0.5038593       0.4976645 0.005431675 0.4890215  0.5063075
+    ## 27            5  0.5017555       0.4984827 0.005047227 0.4922158  0.5047497
+    ## 28            6  0.5060808       0.4997491 0.005477344 0.4940009  0.5054972
+    ## 29            7  0.5081200       0.5009449 0.005917056 0.4954725  0.5064173
+    ## 30            8  0.5050496       0.5014580 0.005667093 0.4967202  0.5061958
+    ##      deviation                  metric
+    ## 1           NA mean_waiting_time_nurse
+    ## 2           NA mean_waiting_time_nurse
+    ## 3  0.135439266 mean_waiting_time_nurse
+    ## 4  0.070823772 mean_waiting_time_nurse
+    ## 5  0.050369028 mean_waiting_time_nurse
+    ## 6  0.074230768 mean_waiting_time_nurse
+    ## 7  0.080885654 mean_waiting_time_nurse
+    ## 8  0.100525782 mean_waiting_time_nurse
+    ## 9  0.090890878 mean_waiting_time_nurse
+    ## 10 0.083495238 mean_waiting_time_nurse
+    ## 11 0.081063300 mean_waiting_time_nurse
+    ## 12 0.075202202 mean_waiting_time_nurse
+    ## 13 0.074859950 mean_waiting_time_nurse
+    ## 14 0.074253914 mean_waiting_time_nurse
+    ## 15          NA   mean_serve_time_nurse
+    ## 16          NA   mean_serve_time_nurse
+    ## 17 0.024149633   mean_serve_time_nurse
+    ## 18 0.014817557   mean_serve_time_nurse
+    ## 19 0.014491495   mean_serve_time_nurse
+    ## 20 0.010968663   mean_serve_time_nurse
+    ## 21 0.008937605   mean_serve_time_nurse
+    ## 22 0.007977668   mean_serve_time_nurse
+    ## 23          NA       utilisation_nurse
+    ## 24          NA       utilisation_nurse
+    ## 25 0.021658371       utilisation_nurse
+    ## 26 0.017367136       utilisation_nurse
+    ## 27 0.012572072       utilisation_nurse
+    ## 28 0.011502014       utilisation_nurse
+    ## 29 0.010924084       utilisation_nurse
+    ## 30 0.009448066       utilisation_nurse
 
 Visualise results for each metric…
 
@@ -532,7 +553,8 @@ path <- file.path(output_dir, "reps_algorithm_wait_time.png")
 plot_replication_ci(
   conf_ints = filter(alg$summary_table, metric == "mean_waiting_time_nurse"),
   yaxis_title = "Mean wait time for nurse",
-  file_path = path
+  file_path = path,
+  min_rep = alg$nreps[["mean_waiting_time_nurse"]]
 )
 include_graphics(path)
 ```
@@ -564,6 +586,606 @@ include_graphics(path)
 ```
 
 ![](../outputs/reps_algorithm_utilisation.png)<!-- -->
+
+## Sensitivity analysis: running algorithm with seed offset
+
+To check the stability of the suggested number of replications, run
+again with a new set of seeds using `seed_offset`.
+
+``` r
+# Set up and run algorithm
+alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = 1000L))
+```
+
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 1000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
+alg$select()
+
+# View results
+alg$nreps
+```
+
+    ## $mean_waiting_time_nurse
+    ## [1] 7
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+
+``` r
+alg$summary_table
+```
+
+    ##    replications       data cumulative_mean       stdev  lower_ci   upper_ci
+    ## 1             1  0.4625687       0.4625687          NA        NA         NA
+    ## 2             2  0.4940957       0.4783322          NA        NA         NA
+    ## 3             3  0.4756249       0.4774298 0.015840788 0.4380791  0.5167805
+    ## 4             4  0.5192984       0.4878969 0.024607577 0.4487408  0.5270531
+    ## 5             5  0.5817088       0.5066593 0.047056180 0.4482313  0.5650873
+    ## 6             6  0.4414834       0.4957967 0.049793685 0.4435414  0.5480519
+    ## 7             7  0.4901753       0.4949936 0.045504836 0.4529087  0.5370786
+    ## 8             8  0.4280896       0.4866306 0.048315577 0.4462378  0.5270234
+    ## 9             9  0.5840528       0.4974553 0.055652140 0.4546773  0.5402333
+    ## 10           10  0.4320584       0.4909156 0.056397756 0.4505711  0.5312601
+    ## 11           11  0.5552236       0.4967618 0.056908632 0.4585301  0.5349935
+    ## 12           12  0.4194864       0.4903222 0.058666848 0.4530470  0.5275973
+    ## 13            1  9.8506876       9.8506876          NA        NA         NA
+    ## 14            2 10.0911232       9.9709054          NA        NA         NA
+    ## 15            3 10.1362092      10.0260067 0.153495171 9.6447035 10.4073098
+    ## 16            4 10.0650726      10.0357732 0.126841302 9.8339403 10.2376060
+    ## 17            5 10.0823453      10.0450876 0.111804877 9.9062635 10.1839117
+    ## 18            6 10.1246399      10.0583463 0.105142886 9.9480056 10.1686870
+    ## 19            7 10.0995484      10.0642323 0.097237018 9.9743031 10.1541616
+    ## 20            8  9.9183998      10.0460033 0.103743469 9.9592715 10.1327350
+    ## 21            1  0.4965996       0.4965996          NA        NA         NA
+    ## 22            2  0.5049821       0.5007909          NA        NA         NA
+    ## 23            3  0.5039593       0.5018470 0.004573041 0.4904870  0.5132071
+    ## 24            4  0.5067048       0.5030615 0.004454365 0.4959736  0.5101494
+    ## 25            5  0.5109795       0.5046451 0.005236407 0.4981432  0.5111469
+    ## 26            6  0.5055618       0.5047979 0.004698515 0.4998671  0.5097286
+    ## 27            7  0.5007459       0.5042190 0.004554365 0.5000069  0.5084311
+    ## 28            8  0.4947891       0.5030403 0.005375354 0.4985464  0.5075342
+    ##      deviation                  metric
+    ## 1           NA mean_waiting_time_nurse
+    ## 2           NA mean_waiting_time_nurse
+    ## 3  0.082421960 mean_waiting_time_nurse
+    ## 4  0.080254954 mean_waiting_time_nurse
+    ## 5  0.115320024 mean_waiting_time_nurse
+    ## 6  0.105396570 mean_waiting_time_nurse
+    ## 7  0.085021208 mean_waiting_time_nurse
+    ## 8  0.083005123 mean_waiting_time_nurse
+    ## 9  0.085993699 mean_waiting_time_nurse
+    ## 10 0.082182199 mean_waiting_time_nurse
+    ## 11 0.076961916 mean_waiting_time_nurse
+    ## 12 0.076021724 mean_waiting_time_nurse
+    ## 13          NA   mean_serve_time_nurse
+    ## 14          NA   mean_serve_time_nurse
+    ## 15 0.038031407   mean_serve_time_nurse
+    ## 16 0.020111337   mean_serve_time_nurse
+    ## 17 0.013820098   mean_serve_time_nurse
+    ## 18 0.010970063   mean_serve_time_nurse
+    ## 19 0.008935529   mean_serve_time_nurse
+    ## 20 0.008633454   mean_serve_time_nurse
+    ## 21          NA       utilisation_nurse
+    ## 22          NA       utilisation_nurse
+    ## 23 0.022636509       utilisation_nurse
+    ## 24 0.014089508       utilisation_nurse
+    ## 25 0.012884022       utilisation_nurse
+    ## 26 0.009767848       utilisation_nurse
+    ## 27 0.008353682       utilisation_nurse
+    ## 28 0.008933496       utilisation_nurse
+
+``` r
+path <- file.path(output_dir, "reps_algorithm_wait_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_waiting_time_nurse"),
+  yaxis_title = "Mean wait time for nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_waiting_time_nurse"]]
+)
+include_graphics(path)
+```
+
+![](../outputs/reps_algorithm_wait_time_2.png)<!-- -->
+
+``` r
+path <- file.path(output_dir, "reps_algorithm_serve_time_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "mean_serve_time_nurse"),
+  yaxis_title = "Mean time with nurse",
+  file_path = path,
+  min_rep = alg$nreps[["mean_serve_time_nurse"]]
+)
+include_graphics(path)
+```
+
+![](../outputs/reps_algorithm_serve_time_2.png)<!-- -->
+
+``` r
+path <- file.path(output_dir, "reps_algorithm_utilisation_2.png")
+plot_replication_ci(
+  conf_ints = filter(alg$summary_table, metric == "utilisation_nurse"),
+  yaxis_title = "Mean nurse utilisation",
+  file_path = path,
+  min_rep = alg$nreps[["utilisation_nurse"]]
+)
+include_graphics(path)
+```
+
+![](../outputs/reps_algorithm_utilisation_2.png)<!-- -->
+
+Further variations, just reporting number of replications:
+
+``` r
+seed_offsets <- seq(2000L, 10000L, by = 1000L)
+sensitivity_nreps <- list()
+for (offset in seed_offsets) {
+  alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = offset))
+  alg$select()
+  sensitivity_nreps <- c(sensitivity_nreps, alg$nreps)
+}
+```
+
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 2000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 3000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 4000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 5000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 6000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 7000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 8000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 9000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+    ## 
+    ## [1] "Model parameters:"
+    ## $patient_inter
+    ## [1] 4
+    ## 
+    ## $mean_n_consult_time
+    ## [1] 10
+    ## 
+    ## $number_of_nurses
+    ## [1] 5
+    ## 
+    ## $warm_up_period
+    ## [1] 38880
+    ## 
+    ## $data_collection_period
+    ## [1] 43200
+    ## 
+    ## $number_of_runs
+    ## [1] 15
+    ## 
+    ## $scenario_name
+    ## NULL
+    ## 
+    ## $cores
+    ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 10000
+    ## 
+    ## $log_to_console
+    ## [1] FALSE
+    ## 
+    ## $log_to_file
+    ## [1] FALSE
+    ## 
+    ## $file_path
+    ## NULL
+
+``` r
+print(sensitivity_nreps)
+```
+
+    ## $mean_waiting_time_nurse
+    ## [1] 11
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 10
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 9
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 11
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 9
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 13
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 8
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 8
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 7
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 3
+
+## Chosen number of replications
+
+Given the variations observed using the algorithm in the sensitivity
+analysis, decided appropriate number of replications to be **15**.
 
 ## Explanation of the automated method
 
@@ -730,4 +1352,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 2m 5s
+    ## Notebook run time: 2m 1s

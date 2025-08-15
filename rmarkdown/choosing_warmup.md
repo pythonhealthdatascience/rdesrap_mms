@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-07-30
+2025-08-04
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -77,15 +77,13 @@ Run the model, ensuring multiple replications and a sufficient data
 collection period are used.
 
 ``` r
-data_collection_period <- 50000L
-
 # Use default parameters, but with no warm-up, five replications, and the
 # specified data collection period
 param <- parameters(
   warm_up_period = 0L,
-  data_collection_period = data_collection_period,
   number_of_runs = 5L
 )
+param[["data_collection_period"]] <- param[["data_collection_period"]] * 10L
 print(param)
 ```
 
@@ -102,7 +100,7 @@ print(param)
     ## [1] 0
     ## 
     ## $data_collection_period
-    ## [1] 50000
+    ## [1] 432000
     ## 
     ## $number_of_runs
     ## [1] 5
@@ -112,6 +110,9 @@ print(param)
     ## 
     ## $cores
     ## [1] 1
+    ## 
+    ## $seed_offset
+    ## [1] 0
     ## 
     ## $log_to_console
     ## [1] FALSE
@@ -135,13 +136,17 @@ it, for three metrics:
 - Mean service length
 - Utilisation
 
+We’ve add a line to the point where it appears to reach a steady state -
+this is a subjective choice but here, for example, we could select **27
+days** (1440\*27=38880 minutes).
+
 ``` r
 path <- file.path(output_dir, "choose_param_time_series.png")
 
 time_series_inspection(
   result = result,
   file_path = path,
-  warm_up = 10000L
+  warm_up = 38880L  # Location for dashed red line (manually chosen)
 )
 ```
 
@@ -164,4 +169,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 3s
+    ## Notebook run time: 0m 16s
