@@ -102,8 +102,7 @@ devtools::test_coverage()
 ### Linting
 
 ```{.r}
-lintr::lint_package()
-lintr::lint_dir("rmarkdown")
+lintr::lint_dir()
 ```
 
 <br>
