@@ -95,25 +95,6 @@ results <- runner(param = params)
 bash run_rmarkdown.sh
 ```
 
-**Run tests:**
-
-```{.r}
-devtools::test()
-```
-
-**Compute test coverage:**
-
-```{.r}
-devtools::test_coverage()
-```
-
-**Lint code:**
-
-```{.r}
-lintr::lint_package()
-lintr::lint_dir("rmarkdown")
-```
-
 <br>
 
 ## ❓ How does the model work
@@ -238,6 +219,12 @@ Run times from our analyses (on Intel Core i7-12700H, 32GB RAM, Ubuntu 24.04.1):
 * `input_modelling.Rmd`: 8s
 
 There are also two notebooks illustrating logging functionality (`logs.Rmd`) and about the impact of using `set_attributes()` and `get_attributes` (`using_set_attributes.Rmd`).
+
+<br>
+
+## Community
+
+Curious about contributing? Check out the [contributing guidelines](CONTRIBUTING.md) to learn how you can help. Every bit of help counts, and your contribution - no matter how minor - is highly valued.
 
 <br>
 
