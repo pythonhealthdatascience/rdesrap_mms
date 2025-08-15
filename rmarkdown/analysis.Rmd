@@ -113,7 +113,7 @@ The chosen bin widths are consistent with those using in the equivalent python v
 #' @param file Filename to save figure to.
 #' @param bin_width Bin size.
 
-plot_results_spread <- function (
+plot_results_spread <- function(
   run_results, column, x_label, file, bin_width = NULL
 ) {
   if (!is.null(bin_width)) {
@@ -123,7 +123,7 @@ plot_results_spread <- function (
     start_break <- bin_width * floor(min_val / bin_width)
     end_break <- bin_width * ceiling(max_val / bin_width)
     breaks <- seq(start_break, end_break, by = bin_width)
-  
+
     # Generate plot
     p <- ggplot(run_results, aes(.data[[column]])) +
       geom_histogram(breaks = breaks) +
@@ -151,7 +151,7 @@ plot_results_spread(run_results = run_results,
                     column = "arrivals",
                     x_label = "Number of arrivals",
                     file = "spread_arrivals.png",
-                    bin_width = 100)
+                    bin_width = 100L)
 
 plot_results_spread(run_results = run_results,
                     column = "mean_waiting_time_nurse",

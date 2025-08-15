@@ -1,7 +1,7 @@
 Analysis
 ================
 Amy Heather
-2025-08-05
+2025-08-15
 
 - [Set up](#set-up)
 - [Default run](#default-run)
@@ -197,7 +197,7 @@ python version of this analysis
 #' @param file Filename to save figure to.
 #' @param bin_width Bin size.
 
-plot_results_spread <- function (
+plot_results_spread <- function(
   run_results, column, x_label, file, bin_width = NULL
 ) {
   if (!is.null(bin_width)) {
@@ -207,7 +207,7 @@ plot_results_spread <- function (
     start_break <- bin_width * floor(min_val / bin_width)
     end_break <- bin_width * ceiling(max_val / bin_width)
     breaks <- seq(start_break, end_break, by = bin_width)
-  
+
     # Generate plot
     p <- ggplot(run_results, aes(.data[[column]])) +
       geom_histogram(breaks = breaks) +
@@ -235,7 +235,7 @@ plot_results_spread(run_results = run_results,
                     column = "arrivals",
                     x_label = "Number of arrivals",
                     file = "spread_arrivals.png",
-                    bin_width = 100)
+                    bin_width = 100L)
 ```
 
 ![](../outputs/spread_arrivals.png)<!-- -->
@@ -517,7 +517,7 @@ print(table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Aug  5 11:24:02 2025
+    ## % Fri Aug 15 10:21:44 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrllll}
@@ -674,7 +674,7 @@ print(sensitivity_table_latex)
 ```
 
     ## % latex table generated in R 4.4.1 by xtable 1.8-4 package
-    ## % Tue Aug  5 11:25:09 2025
+    ## % Fri Aug 15 10:22:49 2025
     ## \begin{table}[ht]
     ## \centering
     ## \begin{tabular}{rrl}
@@ -843,4 +843,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 4m 39s
+    ## Notebook run time: 4m 32s

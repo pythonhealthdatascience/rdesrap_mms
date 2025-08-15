@@ -325,6 +325,7 @@ calc_unseen_mean <- function(arrivals, groups = NULL) {
 #' Calculate the mean time in the system for finished patients.
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
+#' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @return Tibble with column containing the mean time in the system.
 
