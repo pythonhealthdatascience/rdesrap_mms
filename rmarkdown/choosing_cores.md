@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-08-04
+2025-11-04
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -32,18 +32,22 @@ parallel, you must use `devtools::install()` and then
 devtools::install(upgrade = "never")
 ```
 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’
+    ## Installing 1 packages: S7
+
+    ## Installing package into '/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu'
+    ## (as 'lib' is unspecified)
+
+    ## ── R CMD build ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    ##   ✔  checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
-    ##    Removed empty directory ‘simulation/tests/testthat/_snaps’
     ##    Omitted ‘LazyData’ from DESCRIPTION
-    ##   ─  building ‘simulation_0.1.0.tar.gz’
+    ##   ─  building ‘simulation_0.4.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpdnquJp/simulation_0.1.0.tar.gz --install-tests 
+    ##   /tmp/Rtmp1dQ0Zp/simulation_0.4.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation

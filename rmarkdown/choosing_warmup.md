@@ -141,6 +141,7 @@ path <- file.path(output_dir, "choose_param_time_series.png")
 
 time_series_inspection(
   result = result,
+  simulation_end_time = param[["data_collection_period"]],
   file_path = path,
   warm_up = 38880L  # Location for dashed red line (manually chosen)
 )

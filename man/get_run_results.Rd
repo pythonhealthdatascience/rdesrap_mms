@@ -4,7 +4,7 @@
 \alias{get_run_results}
 \title{Get average results for the provided single run.}
 \usage{
-get_run_results(results, run_number)
+get_run_results(results, run_number, simulation_end_time)
 }
 \arguments{
 \item{results}{Named list with `arrivals` containing output from
@@ -12,6 +12,8 @@ get_run_results(results, run_number)
 `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
 
 \item{run_number}{Integer representing index of current simulation run.}
+
+\item{simulation_end_time}{Time at end of simulation run.}
 }
 \value{
 Tibble with processed results from replication.

@@ -1,7 +1,7 @@
 Using `set_attributes()`
 ================
 Amy Heather
-2025-08-04
+2025-11-04
 
 - [Original model](#original-model)
 - [Model with record of allocation to a nurse
