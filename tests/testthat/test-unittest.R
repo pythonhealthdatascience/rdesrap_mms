@@ -108,7 +108,7 @@ test_that("warm-up filtering works as expected", {
 # 3. Metrics
 # -----------------------------------------------------------------------------
 
-test_that("Time-weighted mean queue accounts for final interval", {
+test_that("Mean queue length accounts for final interval", {
   # Create test data with known final interval gap
   test_arrivals <- data.frame(
     resource = "nurse",
@@ -126,9 +126,62 @@ test_that("Time-weighted mean queue accounts for final interval", {
   # Expected mean: 15/15 = 1.0
 
   # Function calculation (with fix for final interval)
-  result <- calc_mean_queue(test_arrivals, simulation_end_time = simulation_end_time)
+  result <- calc_mean_queue(test_arrivals,
+                            simulation_end_time = simulation_end_time)
 
   # Test nurse mean queue length
   expect_equal(result$mean_queue_length_nurse, 1.0)
+})
+
+
+test_that("Mean number of patients in service accounts for final interval", {
+  # Create test data with known final interval gap
+  test_patient_count <- data.frame(
+    time = c(0, 5, 10),
+    count = c(0, 1, 2)
+  )
+
+  # Simulation ran until time=15
+  simulation_end_time <- 15
+
+  # Manual calculation:
+  # Intervals: [0-5), [5-10), [10-15)
+  # Patient time: 5*0 + 5*1 + 5*2 = 0 + 5 + 10 = 15
+  # Total time: 15
+  # Expected mean: 15/15 = 1.0
+
+  # Function calculation
+  result <- calc_mean_patients_in_service(test_patient_count)
+
+  # Test mean patients in service
+  expect_equal(result$mean_patients_in_service, 1.0)
+})
+
+
+test_that("Time-weighted utilisation accounts for final interval", {
+  # Create test data for resource utilisation
+  test_resources <- data.frame(
+    resource = "nurse",
+    time = c(0, 5, 10),
+    server = c(0, 1, 2),
+    capacity = c(2, 2, 2)
+  )
+
+  # Simulation ran until time=15
+  simulation_end_time <- 15
+
+  # Manual calculation:
+  # Intervals: [0-5), [5-10), [10-15)
+  # Utilisation per interval:
+  # utilisation = server / capacity = c(0, 0.5, 1)
+  # time-weighted: 5*0 + 5*0.5 + 5*1 = 0 + 2.5 + 5 = 7.5
+  # Total time: 15
+  # Expected mean: 7.5 / 15 = 0.5
+
+  # Function calculation
+  result <- calc_utilisation(test_resources)
+
+  # Test nurse utilisation
+  expect_equal(result$utilisation_nurse, 0.5)
 })
 
