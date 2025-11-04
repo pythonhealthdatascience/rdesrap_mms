@@ -5,6 +5,7 @@
 #' @param result Named list with `arrivals` containing output from
 #' `get_mon_arrivals()` and `resources` containing output from
 #' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
+#' @param simulation_end_time Time at end of simulation run.
 #' @param file_path Path to save figure to.
 #' @param warm_up Location on X axis to plot vertical red line indicating the
 #' chosen warm-up period. Defaults to NULL, which will not plot a line.
@@ -18,7 +19,9 @@
 #'
 #' @export
 
-time_series_inspection <- function(result, file_path, warm_up = NULL) {
+time_series_inspection <- function(
+  result, simulation_end_time, file_path, warm_up = NULL
+) {
 
   plot_list <- list()
 
@@ -35,6 +38,7 @@ time_series_inspection <- function(result, file_path, warm_up = NULL) {
 
   # Utilisation at each time point
   metrics[[2L]] <- calc_utilisation(result[["resources"]],
+                                    simulation_end_time = simulation_end_time,
                                     groups = c("resource", "replication"),
                                     summarise = FALSE) |>
     dplyr::select(all_of(c("replication", "time", "utilisation")))
