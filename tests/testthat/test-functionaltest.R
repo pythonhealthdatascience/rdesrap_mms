@@ -137,6 +137,7 @@ patrick::with_parameters_test_that(
     default_param <- parameters(number_of_nurses = 4L,
                                 patient_inter = 3L,
                                 mean_n_consult_time = 15L,
+                                warm_up_period = 0L,
                                 data_collection_period = 200L,
                                 number_of_runs = 1L)
 
@@ -198,6 +199,7 @@ test_that("columns that are expected to be complete have no NA", {
   # Run model with low resources and definite arrivals
   param <- parameters(
     number_of_nurses = 1L,
+    warm_up_period = 0L,
     data_collection_period = 300L,
     patient_inter = 1L
   )
@@ -225,7 +227,8 @@ test_that("columns that are expected to be complete have no NA", {
   # Check raw and processed results, excluding columns where expect NA
   check_no_na(df_name = "arrivals",
               exclude = c("end_time", "activity_time", "serve_start",
-                          "serve_length", "wait_time", "wait_time_unseen"))
+                          "serve_length", "time_in_system", "wait_time",
+                          "wait_time_unseen"))
   check_no_na(df_name = "resources")
   check_no_na(df_name = "run_results")
 })
@@ -251,7 +254,11 @@ test_that("all patients are seen when there are plenty nurses", {
 
 test_that("the model can cope with having no arrivals", {
   # Run with extremely high inter-arrival time and short length
-  param <- parameters(patient_inter = 99999999L, data_collection_period = 10L)
+  param <- parameters(
+    patient_inter = 99999999L,
+    warm_up_period = 0L,
+    data_collection_period = 10L
+  )
   result <- model(run_number = 1L, param = param)
 
   # Check that the raw result are two empty dataframes
@@ -270,6 +277,7 @@ test_that("the model can cope with some replications having no arrivals", {
   # and some do not
   param <- parameters(
     patient_inter = 200L,
+    warm_up_period = 0L,
     data_collection_period = 100L,
     number_of_runs = 5L
   )
