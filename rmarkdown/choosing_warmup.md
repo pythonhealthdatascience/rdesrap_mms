@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-08-04
+2025-11-04
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -130,11 +130,7 @@ result <- runner(param)
 
 Use the `time_series_inspection` function, which will find the
 cumulative mean over time (for each replication, and overall) and plot
-it, for three metrics:
-
-- Mean wait time
-- Mean service length
-- Utilisation
+it.
 
 We’ve add a line to the point where it appears to reach a steady state -
 this is a subjective choice but here, for example, we could select **27
@@ -149,6 +145,12 @@ time_series_inspection(
   warm_up = 38880L  # Location for dashed red line (manually chosen)
 )
 ```
+
+    ## Warning: Removed 20 rows containing missing values or values outside the scale range
+    ## (`geom_line()`).
+
+    ## Warning: Removed 26 rows containing missing values or values outside the scale range
+    ## (`geom_line()`).
 
 ``` r
 include_graphics(path)
@@ -169,4 +171,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 16s
+    ## Notebook run time: 0m 19s

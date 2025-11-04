@@ -14,6 +14,7 @@
 #' @importFrom ggplot2 theme_minimal ggplot
 #' @importFrom gridExtra marrangeGrob
 #' @importFrom rlang .data
+#' @importFrom tidyselect all_of
 #'
 #' @export
 
@@ -30,24 +31,27 @@ time_series_inspection <- function(result, file_path, warm_up = NULL) {
   # Wait time of each patient at each time point
   metrics[[1L]] <- result[["arrivals"]] |>
     rename(time = .data[["serve_start"]]) |>
-    select(.data[["replication"]],
-           .data[["time"]],
-           .data[["wait_time"]])
-
-  # Service length of each patient at each time point
-  metrics[[2L]] <- result[["arrivals"]] |>
-    rename(time = .data[["serve_start"]]) |>
-    select(.data[["replication"]],
-           .data[["time"]],
-           .data[["serve_length"]])
+    dplyr::select(all_of(c("replication", "time", "wait_time")))
 
   # Utilisation at each time point
-  metrics[[3L]] <- calc_utilisation(result[["resources"]],
+  metrics[[2L]] <- calc_utilisation(result[["resources"]],
                                     groups = c("resource", "replication"),
                                     summarise = FALSE) |>
-    select(.data[["replication"]],
-           .data[["time"]],
-           .data[["utilisation"]])
+    dplyr::select(all_of(c("replication", "time", "utilisation")))
+
+  # Queue length at each timepoint
+  metrics[[3L]] <- result[["arrivals"]] |>
+    rename(time = .data[["start_time"]]) |>
+    dplyr::select(all_of(c("replication", "time", "queue_on_arrival")))
+
+  # Time in system at each timepoint
+  metrics[[4L]] <- result[["arrivals"]] |>
+    rename(time = .data[["start_time"]]) |>
+    dplyr::select(all_of(c("replication", "time", "time_in_system")))
+
+  # Patients in system at each timepoint
+  metrics[[5L]] <- rename(result[["patients_in_service"]],
+                          patients_in_system = .data[["count"]])
 
   # Loop through all the dataframes in df_list
   for (i in seq_along(metrics)) {

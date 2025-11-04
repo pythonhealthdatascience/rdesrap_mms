@@ -74,11 +74,7 @@ print(param)
 result <- runner(param)
 ```
 
-Use the `time_series_inspection` function, which will find the cumulative mean over time (for each replication, and overall) and plot it, for three metrics:
-
-* Mean wait time
-* Mean service length
-* Utilisation
+Use the `time_series_inspection` function, which will find the cumulative mean over time (for each replication, and overall) and plot it.
 
 We've add a line to the point where it appears to reach a steady state - this is a subjective choice but here, for example, we could select **27 days** (1440*27=38880 minutes).
 
