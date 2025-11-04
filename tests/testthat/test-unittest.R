@@ -151,7 +151,9 @@ test_that("Mean number of patients in service accounts for final interval", {
   # Expected mean: 15/15 = 1.0
 
   # Function calculation
-  result <- calc_mean_patients_in_service(test_patient_count)
+  result <- calc_mean_patients_in_service(
+    test_patient_count, simulation_end_time = simulation_end_time
+  )
 
   # Test mean patients in service
   expect_equal(result$mean_patients_in_service, 1.0)
@@ -179,7 +181,8 @@ test_that("Time-weighted utilisation accounts for final interval", {
   # Expected mean: 7.5 / 15 = 0.5
 
   # Function calculation
-  result <- calc_utilisation(test_resources)
+  result <- calc_utilisation(test_resources,
+                             simulation_end_time = simulation_end_time)
 
   # Test nurse utilisation
   expect_equal(result$utilisation_nurse, 0.5)

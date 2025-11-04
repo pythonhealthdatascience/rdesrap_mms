@@ -4,10 +4,17 @@
 \alias{calc_utilisation}
 \title{Calculate the resource utilisation}
 \usage{
-calc_utilisation(resources, groups = NULL, summarise = TRUE)
+calc_utilisation(
+  resources,
+  simulation_end_time,
+  groups = NULL,
+  summarise = TRUE
+)
 }
 \arguments{
 \item{resources}{Dataframe with times patients use or queue for resources.}
+
+\item{simulation_end_time}{Time at end of simulation run.}
 
 \item{groups}{Optional list of columns to group by for the calculation.}
 
