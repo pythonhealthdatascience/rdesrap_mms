@@ -4,13 +4,14 @@
 #' `get_mon_arrivals()` and `resources` containing output from
 #' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
 #' @param run_number Integer representing index of current simulation run.
+#' @param simulation_end_time Time at end of simulation run.
 #'
 #' @importFrom tibble tibble
 #'
 #' @return Tibble with processed results from replication.
 #' @export
 
-get_run_results <- function(results, run_number) {
+get_run_results <- function(results, run_number, simulation_end_time) {
 
   # If there were no arrivals, return dataframe row with just the replication
   # number and arrivals column set to 0
@@ -24,7 +25,7 @@ get_run_results <- function(results, run_number) {
     metrics <- list(
       calc_arrivals(results[["arrivals"]]),
       calc_mean_patients_in_service(results[["patients_in_service"]]),
-      calc_mean_queue(results[["arrivals"]]),
+      calc_mean_queue(results[["arrivals"]], simulation_end_time),
       calc_mean_wait(results[["arrivals"]], results[["resources"]]),
       calc_mean_serve_length(results[["arrivals"]], results[["resources"]]),
       calc_utilisation(results[["resources"]]),
@@ -101,9 +102,11 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
 #' Calculate the time-weighted mean queue length.
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
+#' @param simulation_end_time Time at end of simulation run.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
-#' @importFrom dplyr group_by across arrange mutate lead summarise ungroup
+#' @importFrom dplyr across arrange lead group_by mutate n row_number summarise
+#' @importFrom dplyr ungroup
 #' @importFrom rlang .data
 #' @importFrom tidyselect all_of
 #' @importFrom tidyr pivot_wider
@@ -111,7 +114,7 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
 #' @return Tibble with column containing mean queue length.
 #' @export
 
-calc_mean_queue <- function(arrivals, groups = NULL) {
+calc_mean_queue <- function(arrivals, simulation_end_time, groups = NULL) {
   # Create list of grouping variables (always "resource", but can add others)
   group_vars <- c("resource", groups)
 
@@ -120,9 +123,14 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
     group_by(across(all_of(group_vars))) |>
     # Sort by arrival time
     arrange(.data[["start_time"]]) |>
-    # Calculate time between this row and the next
+    # Calculate time between this row and the next. For final row,
+    # lead(start_time) returns NA, so use simulation_end_time - start_time
     mutate(
-      interval_duration = (lead(.data[["start_time"]]) - .data[["start_time"]])
+      interval_duration = ifelse(
+        row_number() == n(),
+        simulation_end_time - .data[["start_time"]],
+        lead(.data[["start_time"]]) - .data[["start_time"]]
+      )
     ) |>
     # Multiply each queue length by its own unique duration. The total of
     # those is then divided by the total duration of all intervals.

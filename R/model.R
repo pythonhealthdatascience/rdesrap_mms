@@ -31,6 +31,10 @@ model <- function(run_number, param, set_seed = TRUE) {
     set.seed(run_number + param[["seed_offset"]])
   }
 
+  # Calculate full run length
+  full_run_length <- (param[["warm_up_period"]] +
+                      param[["data_collection_period"]])
+
   # Determine whether to get verbose activity logs
   verbose <- any(c(param[["log_to_console"]], param[["log_to_file"]]))
 
@@ -61,8 +65,7 @@ model <- function(run_number, param, set_seed = TRUE) {
       add_generator("patient", patient, function() {
         rexp(n = 1L, rate = 1L / param[["patient_inter"]])
       }, mon = 2L) |>
-      simmer::run(param[["warm_up_period"]] +
-                    param[["data_collection_period"]]) |>
+      simmer::run(full_run_length) |>
       wrap()
   )
 
@@ -157,7 +160,9 @@ model <- function(run_number, param, set_seed = TRUE) {
   }
 
   # Calculate the average results for that run and add to result list
-  result[["run_results"]] <- get_run_results(result, run_number)
+  result[["run_results"]] <- get_run_results(
+    result, run_number, simulation_end_time = full_run_length
+  )
 
   return(result)
 }

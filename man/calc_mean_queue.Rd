@@ -4,10 +4,12 @@
 \alias{calc_mean_queue}
 \title{Calculate the time-weighted mean queue length.}
 \usage{
-calc_mean_queue(arrivals, groups = NULL)
+calc_mean_queue(arrivals, simulation_end_time, groups = NULL)
 }
 \arguments{
 \item{arrivals}{Dataframe with times for each patient with each resource.}
+
+\item{simulation_end_time}{Time at end of simulation run.}
 
 \item{groups}{Optional list of columns to group by for the calculation.}
 }
