@@ -92,7 +92,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
     # Get the extra arrivals attributes
     extra_attributes <- get_mon_attributes(env) |>
-      select("name", "key", "value") |>
+      dplyr::select("name", "key", "value") |>
       # Add column with resource name, and remove that from key
       mutate(resource = gsub("_.+", "", .data[["key"]]),
              key = gsub("^[^_]+_", "", .data[["key"]])) |>
