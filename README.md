@@ -232,9 +232,9 @@ Curious about contributing? Check out the [contributing guidelines](CONTRIBUTING
 
 If you use this repository, please cite either the GitHub repository or Zenodo:
 
-> Heather, A. (2025). Simple M/M/s queuing model: R DES RAP. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
+> Heather, A. & Monks, T. (2025). Simple M/M/s queuing model: R DES RAP. GitHub. https://github.com/pythonhealthdatascience/rdesrap_mms.
 >
-> Heather, A. (2025). Simple M/M/s queuing model: R DES RAP. Zenodo. https://doi.org/10.5281/zenodo.14980863.
+> Heather, A. & Monks, T. (2025). Simple M/M/s queuing model: R DES RAP. Zenodo. https://doi.org/10.5281/zenodo.14980863.
 
 **Contributors:**
 
