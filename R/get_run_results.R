@@ -148,6 +148,7 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
 #' @param groups Optional list of columns to group by for the calculation.
 #'
 #' @importFrom tidyr drop_na
+#' @importFrom tidyselect any_of
 #'
 #' @return Tibble with columns containing result for each resource.
 #' @export
@@ -193,7 +194,7 @@ calc_mean_wait <- function(arrivals, resources, groups = NULL) {
 #' @importFrom stats setNames
 #' @importFrom tibble tibble
 #' @importFrom tidyr drop_na pivot_wider
-#' @importFrom tidyselect all_of
+#' @importFrom tidyselect all_of any_of
 #'
 #' @return Tibble with columns containing result for each resource.
 #' @export

@@ -9,8 +9,9 @@
 #' @importFrom dplyr bind_rows desc left_join mutate select transmute
 #' @importFrom rlang .data
 #' @importFrom simmer add_generator add_resource get_attribute get_mon_arrivals
-#' @importFrom simmer get_mon_attributes get_queue_count run seize
-#' @importFrom simmer set_attribute simmer timeout trajectory release wrap
+#' @importFrom simmer get_mon_attributes get_mon_resources get_queue_count now
+#' @importFrom simmer run seize set_attribute simmer timeout trajectory release
+#' @importFrom simmer wrap
 #' @importFrom stats rexp
 #' @importFrom tidyr drop_na pivot_wider
 #' @importFrom tidyselect all_of

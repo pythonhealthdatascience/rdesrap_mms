@@ -13,7 +13,6 @@
 #'
 #' @docType class
 #' @importFrom R6 R6Class
-#' @importFrom stats qt sqrt
 #'
 #' @return Object of `R6Class` with methods for running mean and variance
 #' calculation.
