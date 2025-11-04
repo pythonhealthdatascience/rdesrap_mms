@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-08-04
+2025-11-04
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -87,7 +87,7 @@ Import data.
 ``` r
 # Import data
 data <- read_csv(
-  file.path("..", "inputs", "NHS_synthetic.csv"), show_col_types = FALSE
+  file.path("..", "inst", "extdata", "NHS_synthetic.csv"), show_col_types = FALSE
 )
 
 # Preview data
@@ -172,10 +172,10 @@ model, which are often modelled using exponential distributions.
 
 Then, we **inspect the data** in two different ways:
 
-| Plot type       | What does it show?                                                  | Why do we create this plot?                                                                                                                                                                                                                                                                        |
-|-----------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Plot type | What does it show? | Why do we create this plot? |
+|----|----|----|
 | **Time series** | Trends, seasonality, and outliers (e.g., spikes or dips over time). | To check for **stationarity** (i.e. no trends or sudden changes). Stationary is an assumption of many distributions, and if trends or anomalies do exist, we may need to exclude certain periods or model them separately. The time series can also be useful for spotting outliers and data gaps. |
-| **Histogram**   | The shape of the data’s distribution.                               | Helps **identify which distributions might fit** the data.                                                                                                                                                                                                                                         |
+| **Histogram** | The shape of the data’s distribution. | Helps **identify which distributions might fit** the data. |
 
 We repeat this for arrivals and service time, so have created a function
 to avoid duplicate code between each.
@@ -379,7 +379,7 @@ distributions. For categorical (or binned) data, consider using a
 The KS Test returns a statistic and p value.
 
 - **Statistic:** Measures how well the distribution fits your data.
-  - **Higher values indicate a better fit**.
+  - **Lower KS test statistics indicate a better fit**.
   - Ranges from 0 to 1.
 - **P-value:** Tells you if the fit could have happened by chance.
   - **Higher p-values suggest the data follow the distribution**.
