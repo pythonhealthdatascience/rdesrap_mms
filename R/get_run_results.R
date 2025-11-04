@@ -368,7 +368,7 @@ calc_mean_time_in_system <- function(arrivals, groups = NULL) {
   if (!is.null(groups)) {
     arrivals <- group_by(arrivals, across(all_of(groups)))
   }
-  # Calculate number of arrivals
+  # Calculate mean time in system
   arrivals |>
     summarise(
       mean_time_in_system = mean(.data[["time_in_system"]], na.rm = TRUE)

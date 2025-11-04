@@ -73,7 +73,6 @@ runner <- function(param, use_future_seeding = TRUE) {
     future.seed = custom_seed
   )
 
-  # Combine the results from multiple replications into just two dataframes
   if (param[["number_of_runs"]] == 1L) {
     results <- results[[1L]]
   } else {
