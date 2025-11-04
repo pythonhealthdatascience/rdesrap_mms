@@ -35,6 +35,8 @@ check_run_number <- function(run_number) {
 #'
 #' @param param List containing parameters for the simulation.
 #'
+#' @importFrom utils toString
+#'
 #' @return Throws an error if there are missing or extra parameters.
 
 check_param_names <- function(param) {

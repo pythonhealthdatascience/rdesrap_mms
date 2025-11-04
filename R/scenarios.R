@@ -6,6 +6,8 @@
 #' be partial (as will input to parameters() function).
 #' @param verbose Boolean, whether to print messages about scenarios as run.
 #'
+#' @importFrom utils expand.grid
+#'
 #' @return Tibble with results from each replication for each scenario.
 #' @export
 

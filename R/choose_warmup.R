@@ -9,10 +9,11 @@
 #' @param warm_up Location on X axis to plot vertical red line indicating the
 #' chosen warm-up period. Defaults to NULL, which will not plot a line.
 #'
-#' @importFrom dplyr rename
-#' @importFrom ggplot2 ggplot geom_line aes_string labs theme_minimal geom_vline
-#' @importFrom ggplot2 annotate ggsave
+#' @importFrom dplyr arrange group_by mutate rename select ungroup
+#' @importFrom ggplot2 aes_string annotate geom_line geom_vline ggsave labs
+#' @importFrom ggplot2 theme_minimal ggplot
 #' @importFrom gridExtra marrangeGrob
+#' @importFrom rlang .data
 #'
 #' @export
 

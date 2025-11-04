@@ -13,6 +13,7 @@
 #'
 #' @docType class
 #' @importFrom R6 R6Class
+#' @importFrom stats qt sqrt
 #'
 #' @return Object of `R6Class` with methods for running mean and variance
 #' calculation.
@@ -514,6 +515,8 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' @param metric Name of performance metric to assess.
 #' @param verbose Boolean, whether to print messages about parameters.
 #'
+#' @importFrom dplyr filter pull select slice_head
+#' @importFrom stats sd t.test
 #' @importFrom utils tail
 #'
 #' @return Dataframe with results from each replication.
@@ -607,6 +610,10 @@ confidence_interval_method <- function(replications, desired_precision,
 #' @param file_path Path and filename to save the plot to.
 #' @param min_rep The number of replications required to meet the desired
 #' precision.
+#'
+#' @importFrom ggplot2 aes geom_line geom_ribbon geom_vline ggplot ggsave labs
+#' @importFrom ggplot2 theme_minimal
+#' @importFrom rlang .data
 
 plot_replication_ci <- function(
   conf_ints, yaxis_title, file_path = NULL, min_rep = NULL

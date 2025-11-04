@@ -6,13 +6,15 @@
 #' may not wish to do if being set elsewhere - such as done in runner()).
 #' Default is TRUE.
 #'
-#' @importFrom simmer trajectory seize timeout release simmer add_resource
-#' @importFrom simmer add_generator run wrap get_mon_arrivals set_attribute
-#' @importFrom simmer get_attribute get_mon_attributes get_queue_count
+#' @importFrom dplyr bind_rows desc left_join mutate select transmute
+#' @importFrom rlang .data
+#' @importFrom simmer add_generator add_resource get_attribute get_mon_arrivals
+#' @importFrom simmer get_mon_attributes get_queue_count run seize
+#' @importFrom simmer set_attribute simmer timeout trajectory release wrap
 #' @importFrom stats rexp
-#' @importFrom utils capture.output
-#' @importFrom dplyr select left_join transmute desc
+#' @importFrom tidyr drop_na pivot_wider
 #' @importFrom tidyselect all_of
+#' @importFrom utils capture.output
 #'
 #' @return Named list with three tables: monitored arrivals,
 #' monitored resources, and the processed results from the run.
