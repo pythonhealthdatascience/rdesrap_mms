@@ -103,3 +103,32 @@ test_that("warm-up filtering works as expected", {
                    mock_result[["arrivals"]])
   expect_identical(short_warm_up[["resources"]], mock_result[["resources"]])
 })
+
+# -----------------------------------------------------------------------------
+# 3. Metrics
+# -----------------------------------------------------------------------------
+
+test_that("Time-weighted mean queue accounts for final interval", {
+  # Create test data with known final interval gap
+  test_arrivals <- data.frame(
+    resource = "nurse",
+    start_time = c(0, 5, 10),
+    queue_on_arrival = c(0, 1, 2)
+  )
+
+  # Simulation ran until time=15
+  simulation_end_time <- 15
+
+  # Manual calculation:
+  # Intervals: [0-5), [5-10), [10-15)
+  # Queue durations: 5*0 + 5*1 + 5*2 = 0 + 5 + 10 = 15
+  # Total time: 15
+  # Expected mean: 15/15 = 1.0
+
+  # Function calculation (with fix for final interval)
+  result <- calc_mean_queue(test_arrivals, simulation_end_time = simulation_end_time)
+
+  # Test nurse mean queue length
+  expect_equal(result$mean_queue_length_nurse, 1.0)
+})
+
