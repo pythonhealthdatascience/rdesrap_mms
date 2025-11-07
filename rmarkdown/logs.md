@@ -1,7 +1,7 @@
 Logs
 ================
 Amy Heather
-2025-11-04
+2025-11-07
 
 - [Set up](#set-up)
 - [Simulation run with logs printed to the
@@ -286,7 +286,7 @@ verbose <- TRUE
 
 # Create simmer environment
 env <- simmer("simulation", verbose = FALSE,
-              log_level = if(verbose) 1L else 0L)
+              log_level = if (verbose) 1L else 0L)
 
 # Define the patient trajectory
 patient <- trajectory("appointment") |>

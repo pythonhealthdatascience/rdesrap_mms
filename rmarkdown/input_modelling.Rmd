@@ -65,7 +65,8 @@ Import data.
 ```{r}
 # Import data
 data <- read_csv(
-  file.path("..", "inst", "extdata", "NHS_synthetic.csv"), show_col_types = FALSE
+  file.path("..", "inst", "extdata", "NHS_synthetic.csv"),
+  show_col_types = FALSE
 )
 
 # Preview data

@@ -129,7 +129,7 @@ verbose <- TRUE
 
 # Create simmer environment
 env <- simmer("simulation", verbose = FALSE,
-              log_level = if(verbose) 1L else 0L)
+              log_level = if (verbose) 1L else 0L)
 
 # Define the patient trajectory
 patient <- trajectory("appointment") |>

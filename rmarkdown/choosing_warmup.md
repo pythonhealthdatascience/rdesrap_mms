@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-11-04
+2025-11-07
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -147,11 +147,11 @@ time_series_inspection(
 )
 ```
 
-    ## Warning: Removed 20 rows containing missing values or values outside the scale range
-    ## (`geom_line()`).
+    ## Warning: Removed 20 rows containing missing values or values outside the scale
+    ## range (`geom_line()`).
 
-    ## Warning: Removed 26 rows containing missing values or values outside the scale range
-    ## (`geom_line()`).
+    ## Warning: Removed 26 rows containing missing values or values outside the scale
+    ## range (`geom_line()`).
 
 ``` r
 include_graphics(path)

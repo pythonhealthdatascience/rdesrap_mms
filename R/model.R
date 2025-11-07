@@ -33,7 +33,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
   # Calculate full run length
   full_run_length <- (param[["warm_up_period"]] +
-                      param[["data_collection_period"]])
+                        param[["data_collection_period"]])
 
   # Determine whether to get verbose activity logs
   verbose <- any(c(param[["log_to_console"]], param[["log_to_file"]]))
