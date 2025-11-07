@@ -24,5 +24,5 @@ repository-code: >-
 abstract: >-
   Reproducible analytical pipeline (RAP) for R discrete-event simulation (DES)
   implementing a simple M/M/s queueing model.
-version: 0.4.0
-date-released: '2025-06-04'
+version: 0.5.0
+date-released: '2025-11-07'

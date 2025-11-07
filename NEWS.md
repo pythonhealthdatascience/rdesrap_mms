@@ -1,6 +1,35 @@
-# Simple M/M/s queuing model: R DES RAP (unreleased)
+# Simple M/M/s queuing model: R DES RAP v0.5.0
 
-TBC.
+This update adds new performance measures and tests, improves the GitHub actions, implements some fixes and documentation improvements, among other changes.
+
+## New features
+
+* Add choice of operating system when manually trigger R-CMD-check GitHub action.
+* Add check in model validation for non-null file path when `log_to_file = TRUE`.
+* Calculate test coverage.
+* Environment - add `covr` and `queueing` and `DT` and switched to "all" snapshot type.
+* Add `seed_offset` and ran sensitivity analysis on seed in `choosing_replications.Rmd`.
+* Add test comparing against analytical queueing theory model from `queueing` package.
+* Add mean time in system to performance measures.
+* Add `CODE_OF_CONDUCT.md`.
+
+## Bug fixes
+
+* Skip parallel processing test on Mac GitHub action.
+* Fix deviation calculation so it doesn't get stuck for NA/0.
+* Corrected choice of warm-up to run model for longer.
+* Fixed/expanded back tests.
+
+## Other changes
+
+* Replaced `rap_template_r_des` with `rdesrap_mms`.
+* Changed all magrittr's `%>%` to be base R's `>|` (as per tidyverse style guide).
+* Improved `README.md` and `CONTRIBUTING.md`.
+* Simplify package loading.
+* Reorganised tests.
+* Update parameters to match python version of model.
+* Adjusted `analysis.Rmd` bin widths to be more consistent with python version of analysis.
+* Other minor corrections and amendments (e.g., linting, docstrings, tests).
 
 # R DES RAP Template 0.4.0
 
