@@ -4,12 +4,14 @@
 \alias{time_series_inspection}
 \title{Time series inspection method for determining length of warm-up.}
 \usage{
-time_series_inspection(result, file_path, warm_up = NULL)
+time_series_inspection(result, simulation_end_time, file_path, warm_up = NULL)
 }
 \arguments{
 \item{result}{Named list with `arrivals` containing output from
 `get_mon_arrivals()` and `resources` containing output from
 `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
+
+\item{simulation_end_time}{Time at end of simulation run.}
 
 \item{file_path}{Path to save figure to.}
 
