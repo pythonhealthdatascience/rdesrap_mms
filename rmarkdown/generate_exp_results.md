@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-08-04
+2025-11-07
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -178,12 +178,12 @@ head(results[["run_results"]])
     ## # A tibble: 6 × 10
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
-    ## 1           1       17                     1.62                   0    
-    ## 2           2       19                     2.29                   0    
+    ## 1           1       17                     1.63                   0    
+    ## 2           2       19                     2.27                   0    
     ## 3           3       28                     3.26                   0    
-    ## 4           4       15                     1.76                   0    
-    ## 5           5       25                     3.09                   0.349
-    ## 6           6       17                     1.81                   0    
+    ## 4           4       15                     1.73                   0    
+    ## 5           5       25                     3.05                   0.316
+    ## 6           6       17                     1.83                   0    
     ## # ℹ 6 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
     ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
@@ -220,12 +220,12 @@ head(results)
     ## # A tibble: 6 × 10
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
-    ## 1           1       19                     2.34                  0     
-    ## 2           2       15                     2.07                  0     
+    ## 1           1       19                     2.31                  0     
+    ## 2           2       15                     2.08                  0     
     ## 3           3       26                     2.88                  0     
-    ## 4           4       16                     2.02                  0.0634
-    ## 5           5       20                     1.72                  0.272 
-    ## 6           6       19                     1.50                  0     
+    ## 4           4       16                     2.02                  0.0632
+    ## 5           5       20                     1.74                  0.264 
+    ## 6           6       19                     1.51                  0     
     ## # ℹ 6 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,
     ## #   count_unseen_nurse <int>, mean_waiting_time_unseen_nurse <dbl>,
@@ -316,11 +316,11 @@ head(scenario_results)
     ## # A tibble: 6 × 13
     ##   replication arrivals mean_patients_in_service mean_queue_length_nurse
     ##         <int>    <int>                    <dbl>                   <dbl>
-    ## 1           1       27                     2.74                  0     
-    ## 2           2       29                     4.58                  0.0613
-    ## 3           3       39                     4.62                  0.0946
-    ## 4           1       17                     1.58                  0     
-    ## 5           2       21                     2.91                  0.0793
+    ## 1           1       27                     2.76                  0     
+    ## 2           2       29                     4.64                  0.0574
+    ## 3           3       39                     4.63                  0.0972
+    ## 4           1       17                     1.66                  0     
+    ## 5           2       21                     2.89                  0.0772
     ## 6           3       28                     3.26                  0     
     ## # ℹ 9 more variables: mean_waiting_time_nurse <dbl>,
     ## #   mean_serve_time_nurse <dbl>, utilisation_nurse <dbl>,

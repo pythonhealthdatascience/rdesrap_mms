@@ -137,6 +137,7 @@ patrick::with_parameters_test_that(
     default_param <- parameters(number_of_nurses = 4L,
                                 patient_inter = 3L,
                                 mean_n_consult_time = 15L,
+                                warm_up_period = 0L,
                                 data_collection_period = 200L,
                                 number_of_runs = 1L)
 
@@ -198,6 +199,7 @@ test_that("columns that are expected to be complete have no NA", {
   # Run model with low resources and definite arrivals
   param <- parameters(
     number_of_nurses = 1L,
+    warm_up_period = 0L,
     data_collection_period = 300L,
     patient_inter = 1L
   )
@@ -206,26 +208,27 @@ test_that("columns that are expected to be complete have no NA", {
   # Helper function to remove columns where expect NA and then check that
   # remaining dataframe has no NA
   check_no_na <- function(df_name, exclude = NULL) {
-    data <- results[[df_name]]
+    dataset <- results[[df_name]]
     if (!is.null(exclude)) {
-      data <- data[, !names(data) %in% exclude]
+      dataset <- dataset[, !names(dataset) %in% exclude]
     }
-    na_counts <- colSums(is.na(data))
-    bad_cols  <- names(na_counts)[na_counts > 0]
-    msg <- if (length(bad_cols) > 0) {
+    na_counts <- colSums(is.na(dataset))
+    bad_cols  <- names(na_counts)[na_counts > 0L]
+    msg <- if (length(bad_cols) > 0L) {
       paste0("In dataframe '", df_name, "':\n",
-             "Columns with NA: ", paste(bad_cols, collapse = ", "),
-             "\nNA counts: ", paste(na_counts[bad_cols], collapse = ", "))
+             "Columns with NA: ", toString(bad_cols),
+             "\nNA counts: ", toString(na_counts[bad_cols]))
     } else {
       NULL
     }
-    expect_true(all(na_counts == 0), info = msg)
+    expect_true(all(na_counts == 0L), info = msg)
   }
 
   # Check raw and processed results, excluding columns where expect NA
   check_no_na(df_name = "arrivals",
               exclude = c("end_time", "activity_time", "serve_start",
-                          "serve_length", "wait_time", "wait_time_unseen"))
+                          "serve_length", "time_in_system", "wait_time",
+                          "wait_time_unseen"))
   check_no_na(df_name = "resources")
   check_no_na(df_name = "run_results")
 })
@@ -251,7 +254,11 @@ test_that("all patients are seen when there are plenty nurses", {
 
 test_that("the model can cope with having no arrivals", {
   # Run with extremely high inter-arrival time and short length
-  param <- parameters(patient_inter = 99999999L, data_collection_period = 10L)
+  param <- parameters(
+    patient_inter = 99999999L,
+    warm_up_period = 0L,
+    data_collection_period = 10L
+  )
   result <- model(run_number = 1L, param = param)
 
   # Check that the raw result are two empty dataframes
@@ -270,6 +277,7 @@ test_that("the model can cope with some replications having no arrivals", {
   # and some do not
   param <- parameters(
     patient_inter = 200L,
+    warm_up_period = 0L,
     data_collection_period = 100L,
     number_of_runs = 5L
   )

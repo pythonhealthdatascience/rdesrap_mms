@@ -1,7 +1,7 @@
 Logs
 ================
 Amy Heather
-2025-08-04
+2025-11-07
 
 - [Set up](#set-up)
 - [Simulation run with logs printed to the
@@ -269,7 +269,7 @@ arrange(verbose_run[["arrivals"]], start_time)
 The `simmer` package allows us to add additional log messages using the
 `_log()` function.
 
-Here, we take our simmer code from `model.R` but set `verbose = TRUE`.
+Here, we take our simmer code from `model.R` but set `verbose = FALSE`.
 We can then add additional `_log()` messages within the patient
 trajectory.
 
@@ -281,11 +281,16 @@ distinct).
 # Set the seed
 set.seed(0L)
 
-env <- simmer("simulation", verbose = FALSE)
+# This could be in parameters, or based on log_to_file/log_to_console/etc.
+verbose <- TRUE
+
+# Create simmer environment
+env <- simmer("simulation", verbose = FALSE,
+              log_level = if (verbose) 1L else 0L)
 
 # Define the patient trajectory
 patient <- trajectory("appointment") |>
-  simmer::log_("🚶 Arrives.") |>
+  simmer::log_("🚶 Arrives.", level = 1L) |>
   seize("nurse", 1L) |>
   set_attribute("nurse_serve_start", function() now(env)) |>
   set_attribute("nurse_serve_length", function() {
@@ -294,10 +299,10 @@ patient <- trajectory("appointment") |>
   simmer::log_(function() {
     paste0("🩺 Nurse consultation begins (length: ",
            round(get_attribute(env, "nurse_serve_length"), 5L), ")")
-  }) |>
+  }, level = 1L) |>
   timeout(function() get_attribute(env, "nurse_serve_length")) |>
   release("nurse", 1L) |>
-  simmer::log_("🚪 Leaves.")
+  simmer::log_("🚪 Leaves.", level = 1L)
 
 env <- env |>
   add_resource("nurse", param[["number_of_nurses"]]) |>

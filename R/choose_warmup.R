@@ -5,18 +5,23 @@
 #' @param result Named list with `arrivals` containing output from
 #' `get_mon_arrivals()` and `resources` containing output from
 #' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
+#' @param simulation_end_time Time at end of simulation run.
 #' @param file_path Path to save figure to.
 #' @param warm_up Location on X axis to plot vertical red line indicating the
 #' chosen warm-up period. Defaults to NULL, which will not plot a line.
 #'
-#' @importFrom dplyr rename
-#' @importFrom ggplot2 ggplot geom_line aes_string labs theme_minimal geom_vline
-#' @importFrom ggplot2 annotate ggsave
+#' @importFrom dplyr arrange group_by mutate rename select ungroup
+#' @importFrom ggplot2 aes_string annotate geom_line geom_vline ggsave labs
+#' @importFrom ggplot2 theme_minimal ggplot
 #' @importFrom gridExtra marrangeGrob
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
 #'
 #' @export
 
-time_series_inspection <- function(result, file_path, warm_up = NULL) {
+time_series_inspection <- function(
+  result, simulation_end_time, file_path, warm_up = NULL
+) {
 
   plot_list <- list()
 
@@ -29,24 +34,28 @@ time_series_inspection <- function(result, file_path, warm_up = NULL) {
   # Wait time of each patient at each time point
   metrics[[1L]] <- result[["arrivals"]] |>
     rename(time = .data[["serve_start"]]) |>
-    select(.data[["replication"]],
-           .data[["time"]],
-           .data[["wait_time"]])
-
-  # Service length of each patient at each time point
-  metrics[[2L]] <- result[["arrivals"]] |>
-    rename(time = .data[["serve_start"]]) |>
-    select(.data[["replication"]],
-           .data[["time"]],
-           .data[["serve_length"]])
+    dplyr::select(all_of(c("replication", "time", "wait_time")))
 
   # Utilisation at each time point
-  metrics[[3L]] <- calc_utilisation(result[["resources"]],
+  metrics[[2L]] <- calc_utilisation(result[["resources"]],
+                                    simulation_end_time = simulation_end_time,
                                     groups = c("resource", "replication"),
                                     summarise = FALSE) |>
-    select(.data[["replication"]],
-           .data[["time"]],
-           .data[["utilisation"]])
+    dplyr::select(all_of(c("replication", "time", "utilisation")))
+
+  # Queue length at each timepoint
+  metrics[[3L]] <- result[["arrivals"]] |>
+    rename(time = .data[["start_time"]]) |>
+    dplyr::select(all_of(c("replication", "time", "queue_on_arrival")))
+
+  # Time in system at each timepoint
+  metrics[[4L]] <- result[["arrivals"]] |>
+    rename(time = .data[["start_time"]]) |>
+    dplyr::select(all_of(c("replication", "time", "time_in_system")))
+
+  # Patients in system at each timepoint
+  metrics[[5L]] <- rename(result[["patients_in_service"]],
+                          patients_in_system = .data[["count"]])
 
   # Loop through all the dataframes in df_list
   for (i in seq_along(metrics)) {

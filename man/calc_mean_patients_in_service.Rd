@@ -4,10 +4,16 @@
 \alias{calc_mean_patients_in_service}
 \title{Calculate the time-weighted mean number of patients in the service.}
 \usage{
-calc_mean_patients_in_service(patient_count, groups = NULL)
+calc_mean_patients_in_service(
+  patient_count,
+  simulation_end_time,
+  groups = NULL
+)
 }
 \arguments{
 \item{patient_count}{Dataframe with patient counts over time.}
+
+\item{simulation_end_time}{Time at end of simulation run.}
 
 \item{groups}{Optional list of columns to group by for the calculation.}
 }

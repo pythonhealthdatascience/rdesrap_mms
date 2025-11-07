@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-08-04
+2025-11-07
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -87,7 +87,8 @@ Import data.
 ``` r
 # Import data
 data <- read_csv(
-  file.path("..", "inputs", "NHS_synthetic.csv"), show_col_types = FALSE
+  file.path("..", "inst", "extdata", "NHS_synthetic.csv"),
+  show_col_types = FALSE
 )
 
 # Preview data
@@ -379,7 +380,7 @@ distributions. For categorical (or binned) data, consider using a
 The KS Test returns a statistic and p value.
 
 - **Statistic:** Measures how well the distribution fits your data.
-  - **Higher values indicate a better fit**.
+  - **Lower KS test statistics indicate a better fit**.
   - Ranges from 0 to 1.
 - **P-value:** Tells you if the fit could have happened by chance.
   - **Higher p-values suggest the data follow the distribution**.

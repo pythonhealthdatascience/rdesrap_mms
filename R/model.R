@@ -6,13 +6,16 @@
 #' may not wish to do if being set elsewhere - such as done in runner()).
 #' Default is TRUE.
 #'
-#' @importFrom simmer trajectory seize timeout release simmer add_resource
-#' @importFrom simmer add_generator run wrap get_mon_arrivals set_attribute
-#' @importFrom simmer get_attribute get_mon_attributes get_queue_count
+#' @importFrom dplyr bind_rows desc left_join mutate select transmute
+#' @importFrom rlang .data
+#' @importFrom simmer add_generator add_resource get_attribute get_mon_arrivals
+#' @importFrom simmer get_mon_attributes get_mon_resources get_queue_count now
+#' @importFrom simmer run seize set_attribute simmer timeout trajectory release
+#' @importFrom simmer wrap
 #' @importFrom stats rexp
-#' @importFrom utils capture.output
-#' @importFrom dplyr select left_join transmute desc
+#' @importFrom tidyr drop_na pivot_wider
 #' @importFrom tidyselect all_of
+#' @importFrom utils capture.output
 #'
 #' @return Named list with three tables: monitored arrivals,
 #' monitored resources, and the processed results from the run.
@@ -27,6 +30,10 @@ model <- function(run_number, param, set_seed = TRUE) {
   if (set_seed) {
     set.seed(run_number + param[["seed_offset"]])
   }
+
+  # Calculate full run length
+  full_run_length <- (param[["warm_up_period"]] +
+                        param[["data_collection_period"]])
 
   # Determine whether to get verbose activity logs
   verbose <- any(c(param[["log_to_console"]], param[["log_to_file"]]))
@@ -58,8 +65,7 @@ model <- function(run_number, param, set_seed = TRUE) {
       add_generator("patient", patient, function() {
         rexp(n = 1L, rate = 1L / param[["patient_inter"]])
       }, mon = 2L) |>
-      simmer::run(param[["warm_up_period"]] +
-                    param[["data_collection_period"]]) |>
+      simmer::run(full_run_length) |>
       wrap()
   )
 
@@ -89,7 +95,7 @@ model <- function(run_number, param, set_seed = TRUE) {
 
     # Get the extra arrivals attributes
     extra_attributes <- get_mon_attributes(env) |>
-      select("name", "key", "value") |>
+      dplyr::select("name", "key", "value") |>
       # Add column with resource name, and remove that from key
       mutate(resource = gsub("_.+", "", .data[["key"]]),
              key = gsub("^[^_]+_", "", .data[["key"]])) |>
@@ -154,7 +160,9 @@ model <- function(run_number, param, set_seed = TRUE) {
   }
 
   # Calculate the average results for that run and add to result list
-  result[["run_results"]] <- get_run_results(result, run_number)
+  result[["run_results"]] <- get_run_results(
+    result, run_number, simulation_end_time = full_run_length
+  )
 
   return(result)
 }

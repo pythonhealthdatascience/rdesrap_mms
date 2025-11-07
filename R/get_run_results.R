@@ -4,21 +4,14 @@
 #' `get_mon_arrivals()` and `resources` containing output from
 #' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
 #' @param run_number Integer representing index of current simulation run.
+#' @param simulation_end_time Time at end of simulation run.
 #'
-#' @importFrom dplyr group_by summarise n_distinct mutate lead full_join
-#' @importFrom dplyr bind_cols across
-#' @importFrom purrr reduce
-#' @importFrom simmer get_mon_resources get_mon_arrivals now
-#' @importFrom tidyr pivot_wider drop_na
 #' @importFrom tibble tibble
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of any_of
-#' @importFrom stats setNames
 #'
 #' @return Tibble with processed results from replication.
 #' @export
 
-get_run_results <- function(results, run_number) {
+get_run_results <- function(results, run_number, simulation_end_time) {
 
   # If there were no arrivals, return dataframe row with just the replication
   # number and arrivals column set to 0
@@ -31,11 +24,12 @@ get_run_results <- function(results, run_number) {
     # Calculate metrics of interest
     metrics <- list(
       calc_arrivals(results[["arrivals"]]),
-      calc_mean_patients_in_service(results[["patients_in_service"]]),
-      calc_mean_queue(results[["arrivals"]]),
+      calc_mean_patients_in_service(results[["patients_in_service"]],
+                                    simulation_end_time),
+      calc_mean_queue(results[["arrivals"]], simulation_end_time),
       calc_mean_wait(results[["arrivals"]], results[["resources"]]),
       calc_mean_serve_length(results[["arrivals"]], results[["resources"]]),
-      calc_utilisation(results[["resources"]]),
+      calc_utilisation(results[["resources"]], simulation_end_time),
       calc_unseen_n(results[["arrivals"]]),
       calc_unseen_mean(results[["arrivals"]]),
       calc_mean_time_in_system(results[["arrivals"]])
@@ -50,6 +44,10 @@ get_run_results <- function(results, run_number) {
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @importFrom dplyr across group_by n_distinct summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
 #'
 #' @return Tibble with column containing total number of arrivals.
 #' @export
@@ -69,12 +67,20 @@ calc_arrivals <- function(arrivals, groups = NULL) {
 #' Calculate the time-weighted mean number of patients in the service.
 #'
 #' @param patient_count Dataframe with patient counts over time.
+#' @param simulation_end_time Time at end of simulation run.
 #' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @importFrom dplyr across group_by arrange mutate lead n row_number
+#' @importFrom dplyr summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
 #'
 #' @return Tibble with column containing mean number of patients in the service.
 #' @export
 
-calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
+calc_mean_patients_in_service <- function(
+  patient_count, simulation_end_time, groups = NULL
+) {
   # If provided, group the dataset
   if (!is.null(groups)) {
     patient_count <- group_by(patient_count, across(all_of(groups)))
@@ -83,8 +89,15 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
   patient_count |>
     # Sort by time
     arrange(.data[["time"]]) |>
-    # Calculate time between this row and the next
-    mutate(interval_duration = (lead(.data[["time"]]) - .data[["time"]])) |>
+    # Calculate time between this row and the next. For final row,
+    # lead(time) returns NA, so use simulation_end_time - time
+    mutate(
+      interval_duration = ifelse(
+        row_number() == n(),
+        simulation_end_time - .data[["time"]],
+        lead(.data[["time"]]) - .data[["time"]]
+      )
+    ) |>
     # Multiply each patient count by its own unique duration. The total of
     # those is then divided by the total duration of all intervals.
     # Hence, we are calculated a time-weighted average patient count.
@@ -101,12 +114,19 @@ calc_mean_patients_in_service <- function(patient_count, groups = NULL) {
 #' Calculate the time-weighted mean queue length.
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
+#' @param simulation_end_time Time at end of simulation run.
 #' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @importFrom dplyr across arrange lead group_by mutate n row_number summarise
+#' @importFrom dplyr ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
+#' @importFrom tidyr pivot_wider
 #'
 #' @return Tibble with column containing mean queue length.
 #' @export
 
-calc_mean_queue <- function(arrivals, groups = NULL) {
+calc_mean_queue <- function(arrivals, simulation_end_time, groups = NULL) {
   # Create list of grouping variables (always "resource", but can add others)
   group_vars <- c("resource", groups)
 
@@ -115,9 +135,14 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
     group_by(across(all_of(group_vars))) |>
     # Sort by arrival time
     arrange(.data[["start_time"]]) |>
-    # Calculate time between this row and the next
+    # Calculate time between this row and the next. For final row,
+    # lead(start_time) returns NA, so use simulation_end_time - start_time
     mutate(
-      interval_duration = (lead(.data[["start_time"]]) - .data[["start_time"]])
+      interval_duration = ifelse(
+        row_number() == n(),
+        simulation_end_time - .data[["start_time"]],
+        lead(.data[["start_time"]]) - .data[["start_time"]]
+      )
     ) |>
     # Multiply each queue length by its own unique duration. The total of
     # those is then divided by the total duration of all intervals.
@@ -141,6 +166,9 @@ calc_mean_queue <- function(arrivals, groups = NULL) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param resources Dataframe with times patients use or queue for resources.
 #' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @importFrom tidyr drop_na
+#' @importFrom tidyselect any_of
 #'
 #' @return Tibble with columns containing result for each resource.
 #' @export
@@ -180,6 +208,13 @@ calc_mean_wait <- function(arrivals, resources, groups = NULL) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param resources Dataframe with times patients use or queue for resources.
 #' @param groups Optional list of columns to group by for the calculation.
+#'
+#' @importFrom dplyr across group_by summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom stats setNames
+#' @importFrom tibble tibble
+#' @importFrom tidyr drop_na pivot_wider
+#' @importFrom tidyselect all_of any_of
 #'
 #' @return Tibble with columns containing result for each resource.
 #' @export
@@ -226,15 +261,23 @@ calc_mean_serve_length <- function(arrivals, resources, groups = NULL) {
 #' https://github.com/r-simmer/simmer.plot.).
 #'
 #' @param resources Dataframe with times patients use or queue for resources.
+#' @param simulation_end_time Time at end of simulation run.
 #' @param groups Optional list of columns to group by for the calculation.
 #' @param summarise If TRUE, return overall utilisation. If FALSE, just return
 #' the resource dataframe with the additional columns interval_duration,
 #' effective_capacity and utilisation.
 #'
+#' @importFrom dplyr across group_by mutate n row_number summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
+#' @importFrom tidyr pivot_wider
+#'
 #' @return Tibble with columns containing result for each resource.
 #' @export
 
-calc_utilisation <- function(resources, groups = NULL, summarise = TRUE) {
+calc_utilisation <- function(
+  resources, simulation_end_time, groups = NULL, summarise = TRUE
+) {
 
   # Create list of grouping variables (always "resource", but can add others)
   group_vars <- c("resource", groups)
@@ -243,8 +286,13 @@ calc_utilisation <- function(resources, groups = NULL, summarise = TRUE) {
   util_df <- resources |>
     group_by(across(all_of(group_vars))) |>
     mutate(
-      # Time between this row and the next
-      interval_duration = lead(.data[["time"]]) - .data[["time"]],
+      # Calculate time between this row and the next. For final row,
+      # lead(time) returns NA, so use simulation_end_time - time
+      interval_duration = ifelse(
+        row_number() == n(),
+        simulation_end_time - .data[["time"]],
+        lead(.data[["time"]]) - .data[["time"]]
+      ),
       # Ensures effective capacity is never less than number of servers in
       # use (in case of situations where servers may exceed "capacity").
       effective_capacity = pmax(.data[["capacity"]], .data[["server"]]),
@@ -282,6 +330,11 @@ calc_utilisation <- function(resources, groups = NULL, summarise = TRUE) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
+#' @importFrom dplyr across group_by summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
+#' @importFrom tidyr pivot_wider
+#'
 #' @return Tibble with columns containing result for each resource.
 #' @export
 
@@ -305,6 +358,11 @@ calc_unseen_n <- function(arrivals, groups = NULL) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
+#' @importFrom dplyr across group_by summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
+#' @importFrom tidyr pivot_wider
+#'
 #' @return Tibble with columns containing result for each resource.
 #' @export
 
@@ -327,6 +385,10 @@ calc_unseen_mean <- function(arrivals, groups = NULL) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
+#' @importFrom dplyr across group_by summarise ungroup
+#' @importFrom rlang .data
+#' @importFrom tidyselect all_of
+#'
 #' @return Tibble with column containing the mean time in the system.
 
 calc_mean_time_in_system <- function(arrivals, groups = NULL) {
@@ -334,7 +396,7 @@ calc_mean_time_in_system <- function(arrivals, groups = NULL) {
   if (!is.null(groups)) {
     arrivals <- group_by(arrivals, across(all_of(groups)))
   }
-  # Calculate number of arrivals
+  # Calculate mean time in system
   arrivals |>
     summarise(
       mean_time_in_system = mean(.data[["time_in_system"]], na.rm = TRUE)

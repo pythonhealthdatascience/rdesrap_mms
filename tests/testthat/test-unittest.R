@@ -103,3 +103,91 @@ test_that("warm-up filtering works as expected", {
                    mock_result[["arrivals"]])
   expect_identical(short_warm_up[["resources"]], mock_result[["resources"]])
 })
+
+# -----------------------------------------------------------------------------
+# 3. Metrics
+# -----------------------------------------------------------------------------
+
+test_that("Mean queue length accounts for final interval", {
+  # Create test data with known final interval gap
+  test_arrivals <- data.frame(
+    resource = "nurse",
+    start_time = c(0L, 5L, 10L),
+    queue_on_arrival = c(0L, 1L, 2L),
+    stringsAsFactors = FALSE
+  )
+
+  # Simulation ran until time=15
+  simulation_end_time <- 15L
+
+  # Manual calculation:
+  # Intervals: [0-5), [5-10), [10-15)
+  # Queue durations: 5*0 + 5*1 + 5*2 = 0 + 5 + 10 = 15
+  # Total time: 15
+  # Expected mean: 15/15 = 1.0
+
+  # Function calculation (with fix for final interval)
+  result <- calc_mean_queue(test_arrivals,
+                            simulation_end_time = simulation_end_time)
+
+  # Test nurse mean queue length
+  expect_identical(result$mean_queue_length_nurse, 1.0)
+})
+
+
+test_that("Mean number of patients in service accounts for final interval", {
+  # Create test data with known final interval gap
+  test_patient_count <- data.frame(
+    time = c(0L, 5L, 10L),
+    count = c(0L, 1L, 2L)
+  )
+
+  # Simulation ran until time=15
+  simulation_end_time <- 15L
+
+  # Manual calculation:
+  # Intervals: [0-5), [5-10), [10-15)
+  # Patient time: 5*0 + 5*1 + 5*2 = 0 + 5 + 10 = 15
+  # Total time: 15
+  # Expected mean: 15/15 = 1.0
+
+  # Function calculation
+  result <- calc_mean_patients_in_service(
+    test_patient_count, simulation_end_time = simulation_end_time
+  )
+
+  # Test mean patients in service
+  expect_equal(result$mean_patients_in_service, 1.0)
+})
+
+
+test_that("Time-weighted utilisation accounts for final interval", {
+  # Create test data for resource utilisation
+  test_resources <- data.frame(
+    resource = "nurse",
+    time = c(0L, 5L, 10L),
+    server = c(0L, 1L, 2L),
+    capacity = c(2L, 2L, 2L),
+    stringsAsFactors = FALSE
+  )
+
+  # Simulation ran until time=15
+  simulation_end_time <- 15L
+
+  # nolint start
+  # Manual calculation:
+  # Intervals: [0-5), [5-10), [10-15)
+  # Utilisation per interval:
+  # utilisation = server / capacity = c(0, 0.5, 1)
+  # time-weighted: 5*0 + 5*0.5 + 5*1 = 0 + 2.5 + 5 = 7.5
+  # Total time: 15
+  # Expected mean: 7.5 / 15 = 0.5
+  # nolint end
+
+  # Function calculation
+  result <- calc_utilisation(test_resources,
+                             simulation_end_time = simulation_end_time)
+
+  # Test nurse utilisation
+  expect_equal(result$utilisation_nurse, 0.5)
+})
