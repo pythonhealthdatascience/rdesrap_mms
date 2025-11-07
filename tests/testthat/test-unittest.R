@@ -112,12 +112,13 @@ test_that("Mean queue length accounts for final interval", {
   # Create test data with known final interval gap
   test_arrivals <- data.frame(
     resource = "nurse",
-    start_time = c(0, 5, 10),
-    queue_on_arrival = c(0, 1, 2)
+    start_time = c(0L, 5L, 10L),
+    queue_on_arrival = c(0L, 1L, 2L),
+    stringsAsFactors = FALSE
   )
 
   # Simulation ran until time=15
-  simulation_end_time <- 15
+  simulation_end_time <- 15L
 
   # Manual calculation:
   # Intervals: [0-5), [5-10), [10-15)
@@ -130,19 +131,19 @@ test_that("Mean queue length accounts for final interval", {
                             simulation_end_time = simulation_end_time)
 
   # Test nurse mean queue length
-  expect_equal(result$mean_queue_length_nurse, 1.0)
+  expect_identical(result$mean_queue_length_nurse, 1.0)
 })
 
 
 test_that("Mean number of patients in service accounts for final interval", {
   # Create test data with known final interval gap
   test_patient_count <- data.frame(
-    time = c(0, 5, 10),
-    count = c(0, 1, 2)
+    time = c(0L, 5L, 10L),
+    count = c(0L, 1L, 2L)
   )
 
   # Simulation ran until time=15
-  simulation_end_time <- 15
+  simulation_end_time <- 15L
 
   # Manual calculation:
   # Intervals: [0-5), [5-10), [10-15)
@@ -164,14 +165,16 @@ test_that("Time-weighted utilisation accounts for final interval", {
   # Create test data for resource utilisation
   test_resources <- data.frame(
     resource = "nurse",
-    time = c(0, 5, 10),
-    server = c(0, 1, 2),
-    capacity = c(2, 2, 2)
+    time = c(0L, 5L, 10L),
+    server = c(0L, 1L, 2L),
+    capacity = c(2L, 2L, 2L),
+    stringsAsFactors = FALSE
   )
 
   # Simulation ran until time=15
-  simulation_end_time <- 15
+  simulation_end_time <- 15L
 
+  # nolint start
   # Manual calculation:
   # Intervals: [0-5), [5-10), [10-15)
   # Utilisation per interval:
@@ -179,6 +182,7 @@ test_that("Time-weighted utilisation accounts for final interval", {
   # time-weighted: 5*0 + 5*0.5 + 5*1 = 0 + 2.5 + 5 = 7.5
   # Total time: 15
   # Expected mean: 7.5 / 15 = 0.5
+  # nolint end
 
   # Function calculation
   result <- calc_utilisation(test_resources,
@@ -187,4 +191,3 @@ test_that("Time-weighted utilisation accounts for final interval", {
   # Test nurse utilisation
   expect_equal(result$utilisation_nurse, 0.5)
 })
-

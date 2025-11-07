@@ -208,20 +208,20 @@ test_that("columns that are expected to be complete have no NA", {
   # Helper function to remove columns where expect NA and then check that
   # remaining dataframe has no NA
   check_no_na <- function(df_name, exclude = NULL) {
-    data <- results[[df_name]]
+    dataset <- results[[df_name]]
     if (!is.null(exclude)) {
-      data <- data[, !names(data) %in% exclude]
+      dataset <- dataset[, !names(dataset) %in% exclude]
     }
-    na_counts <- colSums(is.na(data))
-    bad_cols  <- names(na_counts)[na_counts > 0]
-    msg <- if (length(bad_cols) > 0) {
+    na_counts <- colSums(is.na(dataset))
+    bad_cols  <- names(na_counts)[na_counts > 0L]
+    msg <- if (length(bad_cols) > 0L) {
       paste0("In dataframe '", df_name, "':\n",
-             "Columns with NA: ", paste(bad_cols, collapse = ", "),
-             "\nNA counts: ", paste(na_counts[bad_cols], collapse = ", "))
+             "Columns with NA: ", toString(bad_cols),
+             "\nNA counts: ", toString(na_counts[bad_cols]))
     } else {
       NULL
     }
-    expect_true(all(na_counts == 0), info = msg)
+    expect_true(all(na_counts == 0L), info = msg)
   }
 
   # Check raw and processed results, excluding columns where expect NA
