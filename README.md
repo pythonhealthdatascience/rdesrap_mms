@@ -145,11 +145,11 @@ To generate the figures and tables from the paper (`mock_paper.md`), execute:
 
 Run times from our analyses (on Intel Core i7-12700H, 32GB RAM, Ubuntu 24.04.1):
 
-* `analysis.Rmd`: 4m 32s
-* `choosing_cores.Rmd`: 0m 51s
-* `choosing_replications.Rmd`: 2m 1s
-* `choosing_warmup.Rmd`: 16s
-* `generate_exp_results.Rmd`: 11s
+* `analysis.Rmd`: 3m 24s
+* `choosing_cores.Rmd`: 0m 45s
+* `choosing_replications.Rmd`: 1m 20s
+* `choosing_warmup.Rmd`: 4s
+* `generate_exp_results.Rmd`: 7s
 * `input_modelling.Rmd`: 8s
 
 There are also two notebooks illustrating logging functionality (`logs.Rmd`) and about the impact of using `set_attributes()` and `get_attributes` (`using_set_attributes.Rmd`).

@@ -148,11 +148,11 @@ time_series_inspection(
 )
 ```
 
-    ## Warning: Removed 5 rows containing missing values or values outside the scale range
-    ## (`geom_line()`).
+    ## Warning: Removed 5 rows containing missing values or values outside the scale
+    ## range (`geom_line()`).
 
-    ## Warning: Removed 1 row containing missing values or values outside the scale range
-    ## (`geom_line()`).
+    ## Warning: Removed 1 row containing missing values or values outside the scale
+    ## range (`geom_line()`).
 
 ``` r
 include_graphics(path)
@@ -173,4 +173,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 3s
+    ## Notebook run time: 0m 4s
