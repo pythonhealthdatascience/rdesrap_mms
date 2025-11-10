@@ -26,9 +26,9 @@ parameters <- function(
   patient_inter = 4L,
   mean_n_consult_time = 10L,
   number_of_nurses = 5L,
-  warm_up_period = 1440L * 27L,  # 27 days
-  data_collection_period = 1440L * 30L,  # 30 days
-  number_of_runs = 15L,
+  warm_up_period = 1440L * 7L,  # 7 days
+  data_collection_period = 1440L * 14L,  # 14 days
+  number_of_runs = 25L,
   scenario_name = NULL,
   cores = 1L,
   seed_offset = 0L,

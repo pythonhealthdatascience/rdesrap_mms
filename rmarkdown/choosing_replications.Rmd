@@ -82,14 +82,7 @@ ci_df <- confidence_interval_method(
   desired_precision = 0.1,
   metric = "mean_serve_time_nurse"
 )
-
-# Preview dataframe
-head(ci_df)
-
-# View first ten rows where percentage deviation is below 5
-ci_df |>
-  filter(deviation < 0.05) |>
-  head(10L)
+ci_df
 ```
 
 ```{r}
@@ -116,7 +109,7 @@ ci_df <- confidence_interval_method(
 )
 
 # Preview dataframe
-tail(ci_df)
+ci_df
 ```
 
 ```{r}
@@ -273,7 +266,7 @@ print(sensitivity_nreps)
 
 ## Chosen number of replications
 
-Given the variations observed using the algorithm in the sensitivity analysis, decided appropriate number of replications to be **15**.
+Given the variations observed using the algorithm in the sensitivity analysis, decided appropriate number of replications to be **25**.
 
 ## Explanation of the automated method
 

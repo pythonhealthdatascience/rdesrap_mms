@@ -1,7 +1,7 @@
 Choosing replications
 ================
 Amy Heather
-2025-11-07
+2025-11-10
 
 - [Set up](#set-up)
 - [Choosing the number of
@@ -155,10 +155,10 @@ ci_df <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
     ## [1] 20
@@ -184,54 +184,51 @@ ci_df <- confidence_interval_method(
     ## Reached desired precision (0.1) in 3 replications.
 
 ``` r
-# Preview dataframe
-head(ci_df)
+ci_df
 ```
 
-    ##   replications      data cumulative_mean      stdev lower_ci upper_ci
-    ## 1            1  9.943731        9.943731         NA       NA       NA
-    ## 2            2 10.030844        9.987287         NA       NA       NA
-    ## 3            3  9.837930        9.937501 0.09660777 9.697514 10.17749
-    ## 4            4 10.035143        9.961912 0.09276587 9.814301 10.10952
-    ## 5            5 10.151207        9.999771 0.11670760 9.854859 10.14468
-    ## 6            6 10.013713       10.002095 0.10454153 9.892385 10.11180
-    ##    deviation                metric
-    ## 1         NA mean_serve_time_nurse
-    ## 2         NA mean_serve_time_nurse
-    ## 3 0.02414963 mean_serve_time_nurse
-    ## 4 0.01481756 mean_serve_time_nurse
-    ## 5 0.01449149 mean_serve_time_nurse
-    ## 6 0.01096866 mean_serve_time_nurse
-
-``` r
-# View first ten rows where percentage deviation is below 5
-ci_df |>
-  filter(deviation < 0.05) |>
-  head(10L)
-```
-
-    ##    replications     data cumulative_mean      stdev lower_ci upper_ci
-    ## 1             3  9.83793        9.937501 0.09660777 9.697514 10.17749
-    ## 2             4 10.03514        9.961912 0.09276587 9.814301 10.10952
-    ## 3             5 10.15121        9.999771 0.11670760 9.854859 10.14468
-    ## 4             6 10.01371       10.002095 0.10454153 9.892385 10.11180
-    ## 5             7 10.04365       10.008030 0.09671647 9.918583 10.09748
-    ## 6             8 10.10287       10.019885 0.09561401 9.939950 10.09982
-    ## 7             9 10.08016       10.026582 0.09166773 9.956120 10.09704
-    ## 8            10 10.07725       10.031649 0.08789805 9.968771 10.09453
-    ## 9            11 10.00108       10.028870 0.08389535 9.972509 10.08523
-    ## 10           12 10.06799       10.032131 0.08078447 9.980803 10.08346
+    ##    replications      data cumulative_mean     stdev lower_ci upper_ci
+    ## 1             1  9.838471        9.838471        NA       NA       NA
+    ## 2             2 10.150584        9.994527        NA       NA       NA
+    ## 3             3  9.886796        9.958617 0.1679954 9.541293 10.37594
+    ## 4             4 10.192953       10.017201 0.1803976 9.730148 10.30425
+    ## 5             5 10.078433       10.029447 0.1586107 9.832506 10.22639
+    ## 6             6  9.847684        9.999153 0.1601006 9.831138 10.16717
+    ## 7             7 10.000492        9.999345 0.1461521 9.864177 10.13451
+    ## 8             8 10.117375       10.014099 0.1415993 9.895719 10.13248
+    ## 9             9  9.836465        9.994361 0.1450863 9.882838 10.10588
+    ## 10           10  9.992309        9.994156 0.1367902 9.896302 10.09201
+    ## 11           11  9.996690        9.994387 0.1297728 9.907204 10.08157
+    ## 12           12 10.069318       10.000631 0.1256100 9.920822 10.08044
+    ## 13           13  9.930993        9.995274 0.1218035 9.921669 10.06888
+    ## 14           14 10.010930        9.996392 0.1170998 9.928781 10.06400
+    ## 15           15  9.939161        9.992577 0.1138037 9.929555 10.05560
+    ## 16           16 10.014721        9.993961 0.1100841 9.935301 10.05262
+    ## 17           17  9.905736        9.988771 0.1087150 9.932875 10.04467
+    ## 18           18 10.005170        9.989682 0.1055399 9.937198 10.04217
+    ## 19           19  9.916638        9.985838 0.1039263 9.935747 10.03593
+    ## 20           20  9.903361        9.981714 0.1028219 9.933592 10.02984
     ##      deviation                metric
-    ## 1  0.024149633 mean_serve_time_nurse
-    ## 2  0.014817557 mean_serve_time_nurse
-    ## 3  0.014491495 mean_serve_time_nurse
-    ## 4  0.010968663 mean_serve_time_nurse
-    ## 5  0.008937605 mean_serve_time_nurse
-    ## 6  0.007977668 mean_serve_time_nurse
-    ## 7  0.007027525 mean_serve_time_nurse
-    ## 8  0.006268010 mean_serve_time_nurse
-    ## 9  0.005619941 mean_serve_time_nurse
-    ## 10 0.005116361 mean_serve_time_nurse
+    ## 1           NA mean_serve_time_nurse
+    ## 2           NA mean_serve_time_nurse
+    ## 3  0.041905787 mean_serve_time_nurse
+    ## 4  0.028655999 mean_serve_time_nurse
+    ## 5  0.019636300 mean_serve_time_nurse
+    ## 6  0.016802954 mean_serve_time_nurse
+    ## 7  0.013517700 mean_serve_time_nurse
+    ## 8  0.011821327 mean_serve_time_nurse
+    ## 9  0.011158612 mean_serve_time_nurse
+    ## 10 0.009791104 mean_serve_time_nurse
+    ## 11 0.008723155 mean_serve_time_nurse
+    ## 12 0.007980378 mean_serve_time_nurse
+    ## 13 0.007363992 mean_serve_time_nurse
+    ## 14 0.006763581 mean_serve_time_nurse
+    ## 15 0.006306918 mean_serve_time_nurse
+    ## 16 0.005869511 mean_serve_time_nurse
+    ## 17 0.005595895 mean_serve_time_nurse
+    ## 18 0.005253796 mean_serve_time_nurse
+    ## 19 0.005016189 mean_serve_time_nurse
+    ## 20 0.004821027 mean_serve_time_nurse
 
 ``` r
 # Create plot
@@ -269,10 +266,10 @@ ci_df <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
     ## [1] 20
@@ -299,23 +296,51 @@ ci_df <- confidence_interval_method(
 
 ``` r
 # Preview dataframe
-tail(ci_df)
+ci_df
 ```
 
     ##    replications      data cumulative_mean      stdev  lower_ci  upper_ci
-    ## 15           15 0.4970082       0.5299692 0.06659604 0.4930895 0.5668489
-    ## 16           16 0.5398594       0.5305873 0.06438539 0.4962788 0.5648959
-    ## 17           17 0.4826912       0.5277699 0.06341395 0.4951655 0.5603744
-    ## 18           18 0.5372420       0.5282962 0.06156107 0.4976826 0.5589097
-    ## 19           19 0.4573923       0.5245644 0.06199855 0.4946820 0.5544467
-    ## 20           20 0.4967360       0.5231730 0.06066493 0.4947809 0.5515650
+    ## 1             1 0.4671962       0.4671962         NA        NA        NA
+    ## 2             2 0.4671014       0.4671488         NA        NA        NA
+    ## 3             3 0.5074186       0.4805720 0.02324980 0.4228163 0.5383278
+    ## 4             4 0.4810697       0.4806965 0.01898502 0.4504871 0.5109058
+    ## 5             5 0.3934710       0.4632514 0.04233178 0.4106895 0.5158132
+    ## 6             6 0.4419879       0.4597075 0.03884507 0.4189421 0.5004728
+    ## 7             7 0.7299424       0.4983125 0.10811971 0.3983184 0.5983065
+    ## 8             8 0.6664858       0.5193341 0.11642669 0.4219990 0.6166693
+    ## 9             9 0.5852518       0.5266583 0.11110162 0.4412580 0.6120586
+    ## 10           10 0.4282092       0.5168134 0.10927619 0.4386419 0.5949849
+    ## 11           11 0.4958407       0.5149068 0.10386117 0.4451319 0.5846817
+    ## 12           12 0.6940603       0.5298362 0.11171910 0.4588533 0.6008192
+    ## 13           13 0.4061751       0.5203239 0.11232709 0.4524453 0.5882024
+    ## 14           14 0.4663022       0.5164652 0.10888187 0.4535986 0.5793317
+    ## 15           15 0.3807618       0.5074183 0.11061713 0.4461606 0.5686760
+    ## 16           16 0.4409244       0.5032624 0.10815149 0.4456326 0.5608923
+    ## 17           17 0.5017998       0.5031764 0.10471783 0.4493354 0.5570173
+    ## 18           18 0.5049785       0.5032765 0.10159211 0.4527559 0.5537971
+    ## 19           19 0.5483079       0.5056466 0.09926882 0.4578005 0.5534926
+    ## 20           20 0.4775298       0.5042407 0.09682550 0.4589250 0.5495565
     ##     deviation                  metric
-    ## 15 0.06958831 mean_waiting_time_nurse
-    ## 16 0.06466146 mean_waiting_time_nurse
-    ## 17 0.06177776 mean_waiting_time_nurse
-    ## 18 0.05794780 mean_waiting_time_nurse
-    ## 19 0.05696602 mean_waiting_time_nurse
-    ## 20 0.05426898 mean_waiting_time_nurse
+    ## 1          NA mean_waiting_time_nurse
+    ## 2          NA mean_waiting_time_nurse
+    ## 3  0.12018118 mean_waiting_time_nurse
+    ## 4  0.06284506 mean_waiting_time_nurse
+    ## 5  0.11346290 mean_waiting_time_nurse
+    ## 6  0.08867682 mean_waiting_time_nurse
+    ## 7  0.20066537 mean_waiting_time_nurse
+    ## 8  0.18742298 mean_waiting_time_nurse
+    ## 9  0.16215498 mean_waiting_time_nurse
+    ## 10 0.15125667 mean_waiting_time_nurse
+    ## 11 0.13550974 mean_waiting_time_nurse
+    ## 12 0.13397145 mean_waiting_time_nurse
+    ## 13 0.13045449 mean_waiting_time_nurse
+    ## 14 0.12172460 mean_waiting_time_nurse
+    ## 15 0.12072432 mean_waiting_time_nurse
+    ## 16 0.11451255 mean_waiting_time_nurse
+    ## 17 0.10700213 mean_waiting_time_nurse
+    ## 18 0.10038332 mean_waiting_time_nurse
+    ## 19 0.09462348 mean_waiting_time_nurse
+    ## 20 0.08986924 mean_waiting_time_nurse
 
 ``` r
 # Create plot
@@ -351,10 +376,10 @@ ci_df <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
     ## [1] 20
@@ -385,19 +410,19 @@ head(ci_df)
 ```
 
     ##   replications      data cumulative_mean       stdev  lower_ci  upper_ci
-    ## 1            1 0.4967531       0.4967531          NA        NA        NA
-    ## 2            2 0.4992277       0.4979904          NA        NA        NA
-    ## 3            3 0.4908259       0.4956022 0.004317528 0.4848769 0.5063276
-    ## 4            4 0.5038857       0.4976731 0.005438897 0.4890186 0.5063276
-    ## 5            5 0.5017580       0.4984901 0.005052084 0.4922171 0.5047631
-    ## 6            6 0.5060784       0.4997548 0.005478688 0.4940053 0.5055043
+    ## 1            1 0.4919823       0.4919823          NA        NA        NA
+    ## 2            2 0.5092291       0.5006057          NA        NA        NA
+    ## 3            3 0.4907129       0.4973081 0.010343360 0.4716138 0.5230024
+    ## 4            4 0.5100187       0.5004857 0.010569440 0.4836674 0.5173041
+    ## 5            5 0.5005043       0.5004895 0.009153408 0.4891240 0.5118549
+    ## 6            6 0.4995751       0.5003371 0.008195562 0.4917363 0.5089378
     ##    deviation            metric
     ## 1         NA utilisation_nurse
     ## 2         NA utilisation_nurse
-    ## 3 0.02164102 utilisation_nurse
-    ## 4 0.01738993 utilisation_nurse
-    ## 5 0.01258398 utilisation_nurse
-    ## 6 0.01150470 utilisation_nurse
+    ## 3 0.05166683 utilisation_nurse
+    ## 4 0.03360403 utilisation_nurse
+    ## 5 0.02270868 utilisation_nurse
+    ## 6 0.01718984 utilisation_nurse
 
 ``` r
 # Create plot
@@ -435,13 +460,13 @@ alg <- ReplicationsAlgorithm$new(param = parameters())
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -471,7 +496,7 @@ alg$nreps
 ```
 
     ## $mean_waiting_time_nurse
-    ## [1] 9
+    ## [1] 19
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -484,67 +509,87 @@ alg$summary_table
 ```
 
     ##    replications       data cumulative_mean       stdev  lower_ci   upper_ci
-    ## 1             1  0.5710589       0.5710589          NA        NA         NA
-    ## 2             2  0.5161697       0.5436143          NA        NA         NA
-    ## 3             3  0.5257707       0.5376664 0.029314456 0.4648453  0.6104876
-    ## 4             4  0.5381486       0.5377870 0.023936367 0.4996989  0.5758751
-    ## 5             5  0.5234430       0.5349182 0.021699356 0.5079749  0.5618615
-    ## 6             6  0.4579594       0.5220917 0.036929630 0.4833365  0.5608470
-    ## 7             7  0.6077136       0.5343234 0.046731144 0.4911043  0.5775425
-    ## 8             8  0.6767519       0.5521270 0.066389484 0.4966240  0.6076300
-    ## 9             9  0.4988971       0.5462126 0.064586709 0.4965668  0.5958583
-    ## 10           10  0.4934531       0.5409366 0.063137198 0.4957710  0.5861022
-    ## 11           11  0.6352630       0.5495117 0.066306383 0.5049665  0.5940570
-    ## 12           12  0.5037119       0.5456951 0.064588338 0.5046576  0.5867326
-    ## 13           13  0.4551971       0.5387337 0.066738344 0.4984041  0.5790633
-    ## 14           14  0.4489918       0.5323236 0.068459102 0.4927965  0.5718507
-    ## 15            1  9.9437308       9.9437308          NA        NA         NA
-    ## 16            2 10.0308438       9.9872873          NA        NA         NA
-    ## 17            3  9.8379297       9.9375014 0.096607773 9.6975144 10.1774884
-    ## 18            4 10.0351429       9.9619118 0.092765866 9.8143006 10.1095230
-    ## 19            5 10.1512070       9.9997708 0.116707602 9.8548592 10.1446824
-    ## 20            6 10.0137134      10.0020946 0.104541526 9.8923850 10.1118042
-    ## 21            7 10.0436450      10.0080304 0.096716474 9.9185825 10.0974782
-    ## 22            8 10.1028675      10.0198850 0.095614011 9.9399497 10.0998203
-    ## 23            1  0.4967531       0.4967531          NA        NA         NA
-    ## 24            2  0.4992277       0.4979904          NA        NA         NA
-    ## 25            3  0.4908259       0.4956022 0.004317528 0.4848769  0.5063276
-    ## 26            4  0.5038857       0.4976731 0.005438897 0.4890186  0.5063276
-    ## 27            5  0.5017580       0.4984901 0.005052084 0.4922171  0.5047631
-    ## 28            6  0.5060784       0.4997548 0.005478688 0.4940053  0.5055043
-    ## 29            7  0.5081147       0.5009491 0.005915862 0.4954778  0.5064204
-    ## 30            8  0.5050289       0.5014591 0.005663784 0.4967240  0.5061941
-    ##      deviation                  metric
-    ## 1           NA mean_waiting_time_nurse
-    ## 2           NA mean_waiting_time_nurse
-    ## 3  0.135439266 mean_waiting_time_nurse
-    ## 4  0.070823772 mean_waiting_time_nurse
-    ## 5  0.050369028 mean_waiting_time_nurse
-    ## 6  0.074230768 mean_waiting_time_nurse
-    ## 7  0.080885654 mean_waiting_time_nurse
-    ## 8  0.100525782 mean_waiting_time_nurse
-    ## 9  0.090890878 mean_waiting_time_nurse
-    ## 10 0.083495238 mean_waiting_time_nurse
-    ## 11 0.081063300 mean_waiting_time_nurse
-    ## 12 0.075202202 mean_waiting_time_nurse
-    ## 13 0.074859950 mean_waiting_time_nurse
-    ## 14 0.074253914 mean_waiting_time_nurse
-    ## 15          NA   mean_serve_time_nurse
-    ## 16          NA   mean_serve_time_nurse
-    ## 17 0.024149633   mean_serve_time_nurse
-    ## 18 0.014817557   mean_serve_time_nurse
-    ## 19 0.014491495   mean_serve_time_nurse
-    ## 20 0.010968663   mean_serve_time_nurse
-    ## 21 0.008937605   mean_serve_time_nurse
-    ## 22 0.007977668   mean_serve_time_nurse
-    ## 23          NA       utilisation_nurse
-    ## 24          NA       utilisation_nurse
-    ## 25 0.021641015       utilisation_nurse
-    ## 26 0.017389927       utilisation_nurse
-    ## 27 0.012583983       utilisation_nurse
-    ## 28 0.011504702       utilisation_nurse
-    ## 29 0.010921789       utilisation_nurse
-    ## 30 0.009442529       utilisation_nurse
+    ## 1             1  0.4671962       0.4671962          NA        NA         NA
+    ## 2             2  0.4671014       0.4671488          NA        NA         NA
+    ## 3             3  0.5074186       0.4805720 0.023249804 0.4228163  0.5383278
+    ## 4             4  0.4810697       0.4806965 0.018985016 0.4504871  0.5109058
+    ## 5             5  0.3934710       0.4632514 0.042331778 0.4106895  0.5158132
+    ## 6             6  0.4419879       0.4597075 0.038845066 0.4189421  0.5004728
+    ## 7             7  0.7299424       0.4983125 0.108119707 0.3983184  0.5983065
+    ## 8             8  0.6664858       0.5193341 0.116426687 0.4219990  0.6166693
+    ## 9             9  0.5852518       0.5266583 0.111101623 0.4412580  0.6120586
+    ## 10           10  0.4282092       0.5168134 0.109276187 0.4386419  0.5949849
+    ## 11           11  0.4958407       0.5149068 0.103861173 0.4451319  0.5846817
+    ## 12           12  0.6940603       0.5298362 0.111719103 0.4588533  0.6008192
+    ## 13           13  0.4061751       0.5203239 0.112327091 0.4524453  0.5882024
+    ## 14           14  0.4663022       0.5164652 0.108881866 0.4535986  0.5793317
+    ## 15           15  0.3807618       0.5074183 0.110617129 0.4461606  0.5686760
+    ## 16           16  0.4409244       0.5032624 0.108151492 0.4456326  0.5608923
+    ## 17           17  0.5017998       0.5031764 0.104717833 0.4493354  0.5570173
+    ## 18           18  0.5049785       0.5032765 0.101592108 0.4527559  0.5537971
+    ## 19           19  0.5483079       0.5056466 0.099268816 0.4578005  0.5534926
+    ## 20           20  0.4775298       0.5042407 0.096825503 0.4589250  0.5495565
+    ## 21           21  0.5807313       0.5078831 0.095838559 0.4642580  0.5515083
+    ## 22           22  0.3792790       0.5020375 0.097464974 0.4588240  0.5452510
+    ## 23           23  0.4170472       0.4983423 0.096859116 0.4564572  0.5402273
+    ## 24           24  0.5614241       0.5009707 0.095601223 0.4606018  0.5413395
+    ## 25            1  9.8384706       9.8384706          NA        NA         NA
+    ## 26            2 10.1505843       9.9945275          NA        NA         NA
+    ## 27            3  9.8867958       9.9586169 0.167995388 9.5412932 10.3759406
+    ## 28            4 10.1929529      10.0172009 0.180397637 9.7301480 10.3042538
+    ## 29            5 10.0784334      10.0294474 0.158610734 9.8325062 10.2263886
+    ## 30            6  9.8476840       9.9991535 0.160100638 9.8311382 10.1671688
+    ## 31            7 10.0004921       9.9993447 0.146152094 9.8641766 10.1345129
+    ## 32            8 10.1173754      10.0140986 0.141599253 9.8957186 10.1324785
+    ## 33            1  0.4919823       0.4919823          NA        NA         NA
+    ## 34            2  0.5092291       0.5006057          NA        NA         NA
+    ## 35            3  0.4907129       0.4973081 0.010343360 0.4716138  0.5230024
+    ## 36            4  0.5100187       0.5004857 0.010569440 0.4836674  0.5173041
+    ## 37            5  0.5005043       0.5004895 0.009153408 0.4891240  0.5118549
+    ## 38            6  0.4995751       0.5003371 0.008195562 0.4917363  0.5089378
+    ## 39            7  0.5066711       0.5012419 0.007855192 0.4939771  0.5085068
+    ## 40            8  0.5141450       0.5028548 0.008584897 0.4956777  0.5100320
+    ##     deviation                  metric
+    ## 1          NA mean_waiting_time_nurse
+    ## 2          NA mean_waiting_time_nurse
+    ## 3  0.12018118 mean_waiting_time_nurse
+    ## 4  0.06284506 mean_waiting_time_nurse
+    ## 5  0.11346290 mean_waiting_time_nurse
+    ## 6  0.08867682 mean_waiting_time_nurse
+    ## 7  0.20066537 mean_waiting_time_nurse
+    ## 8  0.18742298 mean_waiting_time_nurse
+    ## 9  0.16215498 mean_waiting_time_nurse
+    ## 10 0.15125667 mean_waiting_time_nurse
+    ## 11 0.13550974 mean_waiting_time_nurse
+    ## 12 0.13397145 mean_waiting_time_nurse
+    ## 13 0.13045449 mean_waiting_time_nurse
+    ## 14 0.12172460 mean_waiting_time_nurse
+    ## 15 0.12072432 mean_waiting_time_nurse
+    ## 16 0.11451255 mean_waiting_time_nurse
+    ## 17 0.10700213 mean_waiting_time_nurse
+    ## 18 0.10038332 mean_waiting_time_nurse
+    ## 19 0.09462348 mean_waiting_time_nurse
+    ## 20 0.08986924 mean_waiting_time_nurse
+    ## 21 0.08589611 mean_waiting_time_nurse
+    ## 22 0.08607634 mean_waiting_time_nurse
+    ## 23 0.08404871 mean_waiting_time_nurse
+    ## 24 0.08058128 mean_waiting_time_nurse
+    ## 25         NA   mean_serve_time_nurse
+    ## 26         NA   mean_serve_time_nurse
+    ## 27 0.04190579   mean_serve_time_nurse
+    ## 28 0.02865600   mean_serve_time_nurse
+    ## 29 0.01963630   mean_serve_time_nurse
+    ## 30 0.01680295   mean_serve_time_nurse
+    ## 31 0.01351770   mean_serve_time_nurse
+    ## 32 0.01182133   mean_serve_time_nurse
+    ## 33         NA       utilisation_nurse
+    ## 34         NA       utilisation_nurse
+    ## 35 0.05166683       utilisation_nurse
+    ## 36 0.03360403       utilisation_nurse
+    ## 37 0.02270868       utilisation_nurse
+    ## 38 0.01718984       utilisation_nurse
+    ## 39 0.01449368       utilisation_nurse
+    ## 40 0.01427281       utilisation_nurse
 
 Visualise results for each metric…
 
@@ -608,13 +653,13 @@ alg <- ReplicationsAlgorithm$new(param = parameters(seed_offset = 1000L))
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -642,7 +687,7 @@ alg$nreps
 ```
 
     ## $mean_waiting_time_nurse
-    ## [1] 7
+    ## [1] 10
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -655,63 +700,69 @@ alg$summary_table
 ```
 
     ##    replications       data cumulative_mean       stdev  lower_ci   upper_ci
-    ## 1             1  0.4625687       0.4625687          NA        NA         NA
-    ## 2             2  0.4940957       0.4783322          NA        NA         NA
-    ## 3             3  0.4756249       0.4774298 0.015840788 0.4380791  0.5167805
-    ## 4             4  0.5192984       0.4878969 0.024607577 0.4487408  0.5270531
-    ## 5             5  0.5817088       0.5066593 0.047056180 0.4482313  0.5650873
-    ## 6             6  0.4414834       0.4957967 0.049793685 0.4435414  0.5480519
-    ## 7             7  0.4901753       0.4949936 0.045504836 0.4529087  0.5370786
-    ## 8             8  0.4280896       0.4866306 0.048315577 0.4462378  0.5270234
-    ## 9             9  0.5840528       0.4974553 0.055652140 0.4546773  0.5402333
-    ## 10           10  0.4320584       0.4909156 0.056397756 0.4505711  0.5312601
-    ## 11           11  0.5552236       0.4967618 0.056908632 0.4585301  0.5349935
-    ## 12           12  0.4194864       0.4903222 0.058666848 0.4530470  0.5275973
-    ## 13            1  9.8506876       9.8506876          NA        NA         NA
-    ## 14            2 10.0911232       9.9709054          NA        NA         NA
-    ## 15            3 10.1362092      10.0260067 0.153495171 9.6447035 10.4073098
-    ## 16            4 10.0650726      10.0357732 0.126841302 9.8339403 10.2376060
-    ## 17            5 10.0823453      10.0450876 0.111804877 9.9062635 10.1839117
-    ## 18            6 10.1246399      10.0583463 0.105142886 9.9480056 10.1686870
-    ## 19            7 10.0995484      10.0642323 0.097237018 9.9743031 10.1541616
-    ## 20            8  9.9183998      10.0460033 0.103743469 9.9592715 10.1327350
-    ## 21            1  0.4965918       0.4965918          NA        NA         NA
-    ## 22            2  0.5049786       0.5007852          NA        NA         NA
-    ## 23            3  0.5039530       0.5018411 0.004574868 0.4904765  0.5132057
-    ## 24            4  0.5066972       0.5030552 0.004455148 0.4959660  0.5101443
-    ## 25            5  0.5109842       0.5046410 0.005240248 0.4981343  0.5111476
-    ## 26            6  0.5055365       0.5047902 0.004701257 0.4998566  0.5097239
-    ## 27            7  0.5007389       0.5042115 0.004556639 0.4999973  0.5084256
-    ## 28            8  0.4948137       0.5030367 0.005369976 0.4985473  0.5075261
+    ## 1             1  0.5117878       0.5117878          NA        NA         NA
+    ## 2             2  0.4614742       0.4866310          NA        NA         NA
+    ## 3             3  0.4757557       0.4830059 0.025928515 0.4185959  0.5474159
+    ## 4             4  0.5727835       0.5054503 0.049630584 0.4264770  0.5844236
+    ## 5             5  0.4510381       0.4945679 0.049391629 0.4332401  0.5558957
+    ## 6             6  0.5390701       0.5019849 0.047767148 0.4518564  0.5521134
+    ## 7             7  0.3570115       0.4812744 0.070027762 0.4165095  0.5460393
+    ## 8             8  0.4519212       0.4776053 0.065658463 0.4227134  0.5324971
+    ## 9             9  0.5317849       0.4836252 0.064018079 0.4344166  0.5328339
+    ## 10           10  0.5407115       0.4893338 0.062998651 0.4442673  0.5344004
+    ## 11           11  0.6365009       0.5027127 0.074437020 0.4527052  0.5527201
+    ## 12           12  0.5030761       0.5027430 0.070972991 0.4576489  0.5478370
+    ## 13           13  0.4636800       0.4997381 0.068809735 0.4581568  0.5413194
+    ## 14           14  0.6689347       0.5118236 0.080096110 0.4655775  0.5580697
+    ## 15           15  0.6552948       0.5213883 0.085611980 0.4739780  0.5687987
+    ## 16            1 10.0254785      10.0254785          NA        NA         NA
+    ## 17            2 10.0074253      10.0164519          NA        NA         NA
+    ## 18            3 10.0029263      10.0119434 0.011935664 9.9822935 10.0415932
+    ## 19            4 10.0460112      10.0204603 0.019624686 9.9892331 10.0516876
+    ## 20            5 10.3050777      10.0773838 0.128414375 9.9179363 10.2368313
+    ## 21            6  9.9073301      10.0490415 0.134208457 9.9081984 10.1898846
+    ## 22            7  9.8829917      10.0253201 0.137654856 9.8980106 10.1526296
+    ## 23            8  9.9813839      10.0198281 0.128386828 9.9124940 10.1271622
+    ## 24            1  0.4961528       0.4961528          NA        NA         NA
+    ## 25            2  0.5044461       0.5002994          NA        NA         NA
+    ## 26            3  0.4990688       0.4998892 0.004207070 0.4894383  0.5103402
+    ## 27            4  0.5001537       0.4999553 0.003437602 0.4944853  0.5054253
+    ## 28            5  0.5055505       0.5010744 0.003888943 0.4962456  0.5059031
+    ## 29            6  0.4939485       0.4998867 0.004534549 0.4951280  0.5046454
+    ## 30            7  0.4775227       0.4966919 0.009411965 0.4879872  0.5053965
+    ## 31            8  0.5086875       0.4981913 0.009691083 0.4900894  0.5062933
     ##      deviation                  metric
     ## 1           NA mean_waiting_time_nurse
     ## 2           NA mean_waiting_time_nurse
-    ## 3  0.082421960 mean_waiting_time_nurse
-    ## 4  0.080254954 mean_waiting_time_nurse
-    ## 5  0.115320024 mean_waiting_time_nurse
-    ## 6  0.105396570 mean_waiting_time_nurse
-    ## 7  0.085021208 mean_waiting_time_nurse
-    ## 8  0.083005123 mean_waiting_time_nurse
-    ## 9  0.085993699 mean_waiting_time_nurse
-    ## 10 0.082182199 mean_waiting_time_nurse
-    ## 11 0.076961916 mean_waiting_time_nurse
-    ## 12 0.076021724 mean_waiting_time_nurse
-    ## 13          NA   mean_serve_time_nurse
-    ## 14          NA   mean_serve_time_nurse
-    ## 15 0.038031407   mean_serve_time_nurse
-    ## 16 0.020111337   mean_serve_time_nurse
-    ## 17 0.013820098   mean_serve_time_nurse
-    ## 18 0.010970063   mean_serve_time_nurse
-    ## 19 0.008935529   mean_serve_time_nurse
-    ## 20 0.008633454   mean_serve_time_nurse
-    ## 21          NA       utilisation_nurse
-    ## 22          NA       utilisation_nurse
-    ## 23 0.022645816       utilisation_nurse
-    ## 24 0.014092162       utilisation_nurse
-    ## 25 0.012893578       utilisation_nurse
-    ## 26 0.009773696       utilisation_nurse
-    ## 27 0.008357978       utilisation_nurse
-    ## 28 0.008924621       utilisation_nurse
+    ## 3  0.133352408 mean_waiting_time_nurse
+    ## 4  0.156243521 mean_waiting_time_nurse
+    ## 5  0.124002814 mean_waiting_time_nurse
+    ## 6  0.099860669 mean_waiting_time_nurse
+    ## 7  0.134569544 mean_waiting_time_nurse
+    ## 8  0.114931418 mean_waiting_time_nurse
+    ## 9  0.101749557 mean_waiting_time_nurse
+    ## 10 0.092097697 mean_waiting_time_nurse
+    ## 11 0.099475254 mean_waiting_time_nurse
+    ## 12 0.089696109 mean_waiting_time_nurse
+    ## 13 0.083206194 mean_waiting_time_nurse
+    ## 14 0.090355580 mean_waiting_time_nurse
+    ## 15 0.090930945 mean_waiting_time_nurse
+    ## 16          NA   mean_serve_time_nurse
+    ## 17          NA   mean_serve_time_nurse
+    ## 18 0.002961446   mean_serve_time_nurse
+    ## 19 0.003116349   mean_serve_time_nurse
+    ## 20 0.015822312   mean_serve_time_nurse
+    ## 21 0.014015579   mean_serve_time_nurse
+    ## 22 0.012698797   mean_serve_time_nurse
+    ## 23 0.010712167   mean_serve_time_nurse
+    ## 24          NA       utilisation_nurse
+    ## 25          NA       utilisation_nurse
+    ## 26 0.020906514       utilisation_nurse
+    ## 27 0.010940962       utilisation_nurse
+    ## 28 0.009636815       utilisation_nurse
+    ## 29 0.009519592       utilisation_nurse
+    ## 30 0.017525183       utilisation_nurse
+    ## 31 0.016262725       utilisation_nurse
 
 ``` r
 path <- file.path(output_dir, "reps_algorithm_wait_time_2.png")
@@ -775,13 +826,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -812,13 +863,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -849,13 +900,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -886,13 +937,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -923,13 +974,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -960,13 +1011,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -997,13 +1048,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -1034,13 +1085,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -1071,13 +1122,13 @@ for (offset in seed_offsets) {
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -1102,7 +1153,7 @@ print(sensitivity_nreps)
 ```
 
     ## $mean_waiting_time_nurse
-    ## [1] 11
+    ## [1] 18
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1111,7 +1162,7 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 10
+    ## [1] 24
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1120,7 +1171,7 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 9
+    ## [1] 22
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1129,7 +1180,7 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 11
+    ## [1] 15
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1138,7 +1189,16 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 9
+    ## [1] 17
+    ## 
+    ## $mean_serve_time_nurse
+    ## [1] 3
+    ## 
+    ## $utilisation_nurse
+    ## [1] 4
+    ## 
+    ## $mean_waiting_time_nurse
+    ## [1] 20
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1147,7 +1207,7 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 13
+    ## [1] 16
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1156,7 +1216,7 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 8
+    ## [1] 15
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1165,16 +1225,7 @@ print(sensitivity_nreps)
     ## [1] 3
     ## 
     ## $mean_waiting_time_nurse
-    ## [1] 8
-    ## 
-    ## $mean_serve_time_nurse
-    ## [1] 3
-    ## 
-    ## $utilisation_nurse
-    ## [1] 3
-    ## 
-    ## $mean_waiting_time_nurse
-    ## [1] 7
+    ## [1] 19
     ## 
     ## $mean_serve_time_nurse
     ## [1] 3
@@ -1185,7 +1236,7 @@ print(sensitivity_nreps)
 ## Chosen number of replications
 
 Given the variations observed using the algorithm in the sensitivity
-analysis, decided appropriate number of replications to be **15**.
+analysis, decided appropriate number of replications to be **25**.
 
 ## Explanation of the automated method
 
@@ -1352,4 +1403,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 1m 56s
+    ## Notebook run time: 1m 21s
