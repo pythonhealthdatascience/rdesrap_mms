@@ -59,7 +59,7 @@ time_series_inspection <- function(
                           patients_in_system = .data[["count"]])
 
   # Create sequence of time intervals
-  time_breaks <- seq(0, simulation_end_time + interval, by = interval)
+  time_breaks <- seq(0L, simulation_end_time + interval, by = interval)
 
   # Loop through all the dataframes in df_list
   for (i in seq_along(metrics)) {
@@ -69,9 +69,9 @@ time_series_inspection <- function(
 
     # Aggregate data to time intervals (calculate mean within each interval)
     aggregated <- metrics[[i]] |>
-      mutate(time_bin = cut(time, breaks = time_breaks,
-                            labels = time_breaks[-1])) |>
-      mutate(time_bin = as.numeric(as.character(time_bin))) |>
+      mutate(time_bin = as.numeric(as.character(
+        cut(time, breaks = time_breaks, labels = time_breaks[-1L])
+      ))) |>
       group_by(.data[["replication"]], .data[["time_bin"]]) |>
       summarise(metric_mean = mean(.data[[metric]])) |>
       ungroup() |>
@@ -87,9 +87,9 @@ time_series_inspection <- function(
 
     # Repeat calculation, but including all replications in one
     overall_aggregated <- metrics[[i]] |>
-      mutate(time_bin = cut(time, breaks = time_breaks,
-                            labels = time_breaks[-1])) |>
-      mutate(time_bin = as.numeric(as.character(time_bin))) |>
+      mutate(time_bin = as.numeric(as.character(
+        cut(time, breaks = time_breaks, labels = time_breaks[-1L])
+      ))) |>
       group_by(.data[["time_bin"]]) |>
       summarise(metric_mean = mean(.data[[metric]])) |>
       ungroup() |>
