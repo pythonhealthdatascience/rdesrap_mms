@@ -356,7 +356,7 @@ Once these are run, it checks if any metrics meet precision already. Typically m
 >
 > We want to make sure that the desired precision is stable and maintained for several replications. Here, we refer to this as the lookahead period.
 >
-> The user will specify **look_ahead** - as noted in [sim-tools](https://tommonks.github.io/sim-tools/04_replications/01_automated_reps.html), this is recommended to be **5** by [Hoad et al. (2010)](https://www.jstor.org/stable/40926090).
+> The user will specify **look_ahead** - as noted in [sim-tools](https://sim-tools.github.io/sim-tools/04_replications/01_automated_reps.html), this is recommended to be **5** by [Hoad et al. (2010)](https://www.jstor.org/stable/40926090).
 >
 > The algorithm contains a method **klimit()** which will scale up the lookahead if more than 100 replications have been run, to ensure a sufficient period is being checked for stability, relative to the number of replications. This is simply: `look_ahead/100 * replications`. For example, if we have run 200 replications and look_ahead is 5: `5/100 * 200 = 10`.
 

@@ -1361,7 +1361,7 @@ solved.
 > lookahead period.
 >
 > The user will specify **look_ahead** - as noted in
-> [sim-tools](https://tommonks.github.io/sim-tools/04_replications/01_automated_reps.html),
+> [sim-tools](https://sim-tools.github.io/sim-tools/04_replications/01_automated_reps.html),
 > this is recommended to be **5** by [Hoad et
 > al. (2010)](https://www.jstor.org/stable/40926090).
 >

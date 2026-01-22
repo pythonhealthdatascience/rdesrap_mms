@@ -9,7 +9,7 @@
 #'
 #' This class is based on the Python class `OnlineStatistics` from Tom Monks
 #' (2021) sim-tools: fundamental tools to support the simulation process in
-#' python (https://github.com/TomMonks/sim-tools) (MIT Licence).
+#' python (https://github.com/sim-tools/sim-tools) (MIT Licence).
 #'
 #' @docType class
 #' @importFrom R6 R6Class
@@ -128,7 +128,7 @@ WelfordStats <- R6Class("WelfordStats", list( # nolint: object_name_linter
 #'
 #' This class is based on the Python class `ReplicationTabulizer` from Tom
 #' Monks (2021) sim-tools: fundamental tools to support the simulation process
-#' in python (https://github.com/TomMonks/sim-tools) (MIT Licence).
+#' in python (https://github.com/sim-tools/sim-tools) (MIT Licence).
 #'
 #' @docType class
 #' @importFrom R6 R6Class
@@ -205,7 +205,7 @@ ReplicationTabuliser <- R6Class("ReplicationTabuliser", list( # nolint: object_n
 #'
 #' This class is based on the Python class `ReplicationsAlgorithm` from Tom
 #' Monks (2021) sim-tools: fundamental tools to support the simulation process
-#' in python (https://github.com/TomMonks/sim-tools) (MIT Licence).
+#' in python (https://github.com/sim-tools/sim-tools) (MIT Licence).
 #'
 #' @docType class
 #' @importFrom R6 R6Class
