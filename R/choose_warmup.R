@@ -3,8 +3,9 @@
 #' Find the cumulative mean results and plot over time (overall and per run).
 #'
 #' @param result Named list with `arrivals` containing output from
-#' `get_mon_arrivals()` and `resources` containing output from
-#' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
+#' `get_mon_arrivals()`, `resources` containing output from
+#' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`), and
+#' `patients_in_service` containing counts of patients in system over time.
 #' @param simulation_end_time Time at end of simulation run.
 #' @param file_path Path to save figure to.
 #' @param interval Time interval in minutes for calculating cumulative means.
