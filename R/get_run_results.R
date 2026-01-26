@@ -6,8 +6,6 @@
 #' @param run_number Integer representing index of current simulation run.
 #' @param simulation_end_time Time at end of simulation run.
 #'
-#' @importFrom tibble tibble
-#'
 #' @return Tibble with processed results from replication.
 #' @export
 
@@ -45,10 +43,6 @@ get_run_results <- function(results, run_number, simulation_end_time) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
-#' @importFrom dplyr across group_by n_distinct summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
-#'
 #' @return Tibble with column containing total number of arrivals.
 #' @export
 
@@ -69,11 +63,6 @@ calc_arrivals <- function(arrivals, groups = NULL) {
 #' @param patient_count Dataframe with patient counts over time.
 #' @param simulation_end_time Time at end of simulation run.
 #' @param groups Optional list of columns to group by for the calculation.
-#'
-#' @importFrom dplyr across group_by arrange mutate lead n row_number
-#' @importFrom dplyr summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
 #'
 #' @return Tibble with column containing mean number of patients in the service.
 #' @export
@@ -116,12 +105,6 @@ calc_mean_patients_in_service <- function(
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param simulation_end_time Time at end of simulation run.
 #' @param groups Optional list of columns to group by for the calculation.
-#'
-#' @importFrom dplyr across arrange lead group_by mutate n row_number summarise
-#' @importFrom dplyr ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
-#' @importFrom tidyr pivot_wider
 #'
 #' @return Tibble with column containing mean queue length.
 #' @export
@@ -167,9 +150,6 @@ calc_mean_queue <- function(arrivals, simulation_end_time, groups = NULL) {
 #' @param resources Dataframe with times patients use or queue for resources.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
-#' @importFrom tidyr drop_na
-#' @importFrom tidyselect any_of
-#'
 #' @return Tibble with columns containing result for each resource.
 #' @export
 
@@ -208,13 +188,6 @@ calc_mean_wait <- function(arrivals, resources, groups = NULL) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param resources Dataframe with times patients use or queue for resources.
 #' @param groups Optional list of columns to group by for the calculation.
-#'
-#' @importFrom dplyr across group_by summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom stats setNames
-#' @importFrom tibble tibble
-#' @importFrom tidyr drop_na pivot_wider
-#' @importFrom tidyselect all_of any_of
 #'
 #' @return Tibble with columns containing result for each resource.
 #' @export
@@ -266,11 +239,6 @@ calc_mean_serve_length <- function(arrivals, resources, groups = NULL) {
 #' @param summarise If TRUE, return overall utilisation. If FALSE, just return
 #' the resource dataframe with the additional columns interval_duration,
 #' effective_capacity and utilisation.
-#'
-#' @importFrom dplyr across group_by mutate n row_number summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
-#' @importFrom tidyr pivot_wider
 #'
 #' @return Tibble with columns containing result for each resource.
 #' @export
@@ -330,11 +298,6 @@ calc_utilisation <- function(
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
-#' @importFrom dplyr across group_by summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
-#' @importFrom tidyr pivot_wider
-#'
 #' @return Tibble with columns containing result for each resource.
 #' @export
 
@@ -358,11 +321,6 @@ calc_unseen_n <- function(arrivals, groups = NULL) {
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
 #'
-#' @importFrom dplyr across group_by summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
-#' @importFrom tidyr pivot_wider
-#'
 #' @return Tibble with columns containing result for each resource.
 #' @export
 
@@ -384,10 +342,6 @@ calc_unseen_mean <- function(arrivals, groups = NULL) {
 #'
 #' @param arrivals Dataframe with times for each patient with each resource.
 #' @param groups Optional list of columns to group by for the calculation.
-#'
-#' @importFrom dplyr across group_by summarise ungroup
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
 #'
 #' @return Tibble with column containing the mean time in the system.
 

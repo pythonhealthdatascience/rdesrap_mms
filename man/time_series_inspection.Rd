@@ -4,16 +4,25 @@
 \alias{time_series_inspection}
 \title{Time series inspection method for determining length of warm-up.}
 \usage{
-time_series_inspection(result, simulation_end_time, file_path, warm_up = NULL)
+time_series_inspection(
+  result,
+  simulation_end_time,
+  file_path,
+  interval = 120L,
+  warm_up = NULL
+)
 }
 \arguments{
 \item{result}{Named list with `arrivals` containing output from
-`get_mon_arrivals()` and `resources` containing output from
-`get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).}
+`get_mon_arrivals()`, `resources` containing output from
+`get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`), and
+`patients_in_service` containing counts of patients in system over time.}
 
 \item{simulation_end_time}{Time at end of simulation run.}
 
 \item{file_path}{Path to save figure to.}
+
+\item{interval}{Time interval in minutes for calculating cumulative means.}
 
 \item{warm_up}{Location on X axis to plot vertical red line indicating the
 chosen warm-up period. Defaults to NULL, which will not plot a line.}
