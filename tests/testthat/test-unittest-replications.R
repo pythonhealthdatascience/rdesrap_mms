@@ -51,7 +51,7 @@ test_that(
                                 initial_replications = 10L,
                                 replication_budget = 9L,
                                 verbose = FALSE),
-      "replication_budget must be less than initial_replications."
+      "replication_budget must be greater than initial_replications."
     )
   }
 )
