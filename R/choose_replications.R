@@ -301,7 +301,7 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
       stop("desired_precision must be greater than 0.", call. = FALSE)
     }
     if (self$replication_budget < self$initial_replications) {
-      stop("replication_budget must be less than initial_replications.",
+      stop("replication_budget must be greater than initial_replications.",
            call. = FALSE)
     }
   },
@@ -330,8 +330,13 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
            call. = FALSE)
     }
 
-    # Check if list is empty or no values below threshold
-    if (length(lst) == 0L || all(is.na(lst)) || !any(unlist(lst) < 0.5)) {
+    # Check if list is empty or all NA
+    if (length(lst) == 0L || all(is.na(lst))) {
+      return(NULL)
+    }
+
+    # Check that there are no values below threshold
+    if (!any(unlist(lst) < self$desired_precision, na.rm = TRUE)) {
       return(NULL)
     }
 
@@ -499,6 +504,81 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
     self$summary_table <- do.call(rbind, summary_tables)
   }
 ))
+
+
+#' Automated replications selection using Welford‑based online statistics.
+#'
+#' @description
+#' A user‑friendly wrapper around the ReplicationsAlgorithm class that:
+#' - Runs the replications sequence
+#' - Returns minimum required replications for each metric
+#' - Returns summary tables for each metric (replication‑by‑replication)
+#'
+#' Based on Hoad, Robinson, & Davies (2010) "Automated selection of the number
+#' of replications for a discrete-event simulation".
+#' You just call this as a function, without exposing the R6 internals.
+#'
+#' @param param List, model configuration (passed to your `runner` or `model`).
+#' @param metrics Character vector of metric names (columns in `run_results`).
+#' @param desired_precision Target deviation of CI half‑width as proportion
+#'   of the mean, e.g. `0.1` for 10%.
+#' @param initial_replications Number of initial replications.
+#' @param look_ahead Minimum extra replications to “look ahead”.
+#' @param replication_budget Maximum allowed replications.
+#' @param verbose Logical; whether to print startup messages.
+#'
+#' @return A list with:
+#' \itemize{
+#'   \item `nreps` named list of min replications per metric (or `NA` if not
+#'   met).
+#'   \item `summary_table` dataframe with per‑replication statistics for all
+#'   metrics.
+#'   \item `status` character vector: metrics for which desired precision was
+#'   not reached.
+#' }
+#' @export
+run_replications_algorithm <- function(
+    param,
+    metrics = c("mean_waiting_time_nurse",
+                "mean_serve_time_nurse",
+                "utilisation_nurse"),
+    desired_precision = 0.1,
+    initial_replications = 3L,
+    look_ahead = 5L,
+    replication_budget = 1000L,
+    verbose = TRUE
+) {
+  # Construct the R6 algorithm object
+  alg <- ReplicationsAlgorithm$new(
+    param = param,
+    metrics = metrics,
+    desired_precision = desired_precision,
+    initial_replications = initial_replications,
+    look_ahead = look_ahead,
+    replication_budget = replication_budget,
+    verbose = verbose
+  )
+
+  # Run the algorithm
+  alg$select()
+
+  # Extract results in a plain‑list form
+  nreps <- as.list(alg$nreps)    # numeric/NA for each metric
+
+  # Identify which metrics didn’t converge
+  unsolved <- names(nreps)[vapply(nreps, is.na, logical(1L))]
+  status <- if (length(unsolved) > 0) {
+    c("not_converged" = unsolved)
+  } else {
+    c("converged" = NA_character_)
+  }
+
+  list(
+    nreps = nreps,
+    summary_table = alg$summary_table,
+    status = status
+  )
+}
 
 
 #' Use the confidence interval method to select the number of replications.
