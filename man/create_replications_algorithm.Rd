@@ -45,12 +45,6 @@ A list of functions with the following methods:
   - `get_summary_table()`: Get full results table with cumulative
     statistics for each replication
   - `get_reps()`: Get number of replications performed
-  - `get_param()`: Get the model parameter list used by the algorithm
-  - `get_metrics()`: Get the vector of metric names being tracked
-  - `get_desired_precision()`: Get the target precision used
-  - `get_klimit()`: Get the current look-ahead window size used internally
-  - `find_position()`: Find the first position where precision is achieved
-    and maintained over the look-ahead window
 }
 \description{
 Implements an adaptive replication algorithm for selecting the
