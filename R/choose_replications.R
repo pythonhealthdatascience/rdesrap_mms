@@ -322,6 +322,12 @@ create_replication_tabuliser <- function() {
 #'   - `get_summary_table()`: Get full results table with cumulative
 #'     statistics for each replication
 #'   - `get_reps()`: Get number of replications performed
+#'   - `get_param()`: Get the model parameter list used by the algorithm
+#'   - `get_metrics()`: Get the vector of metric names being tracked
+#'   - `get_desired_precision()`: Get the target precision used
+#'   - `get_klimit()`: Get the current look-ahead window size used internally
+#'   - `find_position()`: Find the first position where precision is achieved
+#'     and maintained over the look-ahead window
 #'
 #' @export
 
@@ -579,7 +585,9 @@ create_replications_algorithm <- function(
     get_reps = function() state_env$reps,
     get_param = function() state_env$param,
     get_metrics = function() state_env$metrics,
-    get_desired_precision = function() state_env$desired_precision
+    get_desired_precision = function() state_env$desired_precision,
+    get_klimit = klimit,
+    find_position = find_position
   )
 }
 

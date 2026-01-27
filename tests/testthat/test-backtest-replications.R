@@ -26,7 +26,7 @@ test_that("results from confidence_interval_method are consistent", {
 })
 
 
-test_that("results from ReplicationsAlgorithm are consistent", {
+test_that("results from replications algorithm are consistent", {
   # Specify parameters (so consistent even if defaults change)
   param <- parameters(
     patient_inter = 4L,
@@ -37,7 +37,7 @@ test_that("results from ReplicationsAlgorithm are consistent", {
   )
 
   # Run the confidence_interval_method()
-  alg <- ReplicationsAlgorithm$new(
+  alg <- create_replications_algorithm(
     param = param,
     metrics = "mean_serve_time_nurse",
     desired_precision = 0.1,
@@ -47,7 +47,7 @@ test_that("results from ReplicationsAlgorithm are consistent", {
     verbose = FALSE
   )
   suppressWarnings(alg$select())
-  rep_results <- alg$summary_table
+  rep_results <- alg$get_summary_table()
 
   # Import the expected results
   exp_results <- read.csv(test_path("testdata", "rep_algorithm_results.csv"))
