@@ -31,8 +31,7 @@ Imports:
     future.apply,
     ggplot2,
     tibble,
-    gridExtra,
-    R6
+    gridExtra
 Suggests:
     testthat (>= 3.0.0),
     patrick,
