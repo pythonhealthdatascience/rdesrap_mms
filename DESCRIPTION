@@ -32,7 +32,8 @@ Imports:
     ggplot2,
     tibble,
     gridExtra,
-    R6
+    R6,
+    checkmate
 Suggests:
     testthat (>= 3.0.0),
     patrick,
