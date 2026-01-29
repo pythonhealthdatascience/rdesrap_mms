@@ -14,18 +14,12 @@ patrick::with_parameters_test_that(
     # Create parameter list, with the modified input
     param <- do.call(parameters, setNames(list(param_value), param_name))
 
-    # Construct expected error message
-    expected_message <- if (rule == "p") {
-      sprintf('The parameter "%s" must be greater than 0.', param_name)
-    } else {
-      sprintf(
-        'The parameter "%s" must be an integer greater than or equal to 0.',
-        param_name
-      )
-    }
+    # Construct regex pattern to match checkmate's error message
+    # checkmate produces messages like:
+    expected_pattern <- sprintf("Assertion on '%s' failed:", param_name)
 
     # Verify that attempting to run the model raises the correct error message
-    expect_error(model(param = param, run_number = 0L), expected_message)
+    expect_error(model(param = param, run_number = 0L), expected_pattern)
   },
   patrick::cases(
     # Parameters which should be positive (p)
