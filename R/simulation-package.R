@@ -2,6 +2,8 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom checkmate assert_int assert_flag assert_list assert_number
+#' @importFrom checkmate assert_string
 #' @importFrom dplyr across arrange bind_rows desc filter group_by lead
 #' @importFrom dplyr left_join mutate n n_distinct pull rename row_number select
 #' @importFrom dplyr slice slice_head summarise transmute ungroup
