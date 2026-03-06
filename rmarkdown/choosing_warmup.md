@@ -1,7 +1,7 @@
 Choosing warm-up length
 ================
 Amy Heather
-2025-11-07
+2025-11-10
 
 - [Set-up](#set-up)
 - [Determining appropriate warm-up
@@ -83,7 +83,7 @@ param <- parameters(
   warm_up_period = 0L,
   number_of_runs = 5L
 )
-param[["data_collection_period"]] <- param[["data_collection_period"]] * 10L
+param[["data_collection_period"]] <- 100000L
 print(param)
 ```
 
@@ -100,7 +100,7 @@ print(param)
     ## [1] 0
     ## 
     ## $data_collection_period
-    ## [1] 432000
+    ## [1] 100000
     ## 
     ## $number_of_runs
     ## [1] 5
@@ -133,8 +133,8 @@ cumulative mean over time (for each replication, and overall) and plot
 it.
 
 We’ve add a line to the point where it appears to reach a steady state -
-this is a subjective choice but here, for example, we could select **27
-days** (1440\*27=38880 minutes).
+this is a subjective choice but here, for example, we could select **7
+days** (1440\*7=10080 minutes).
 
 ``` r
 path <- file.path(output_dir, "choose_param_time_series.png")
@@ -143,14 +143,15 @@ time_series_inspection(
   result = result,
   simulation_end_time = param[["data_collection_period"]],
   file_path = path,
-  warm_up = 38880L  # Location for dashed red line (manually chosen)
+  interval = 400L,
+  warm_up = 10080L
 )
 ```
 
-    ## Warning: Removed 20 rows containing missing values or values outside the scale
+    ## Warning: Removed 5 rows containing missing values or values outside the scale
     ## range (`geom_line()`).
 
-    ## Warning: Removed 26 rows containing missing values or values outside the scale
+    ## Warning: Removed 1 row containing missing values or values outside the scale
     ## range (`geom_line()`).
 
 ``` r
@@ -172,4 +173,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 19s
+    ## Notebook run time: 0m 4s

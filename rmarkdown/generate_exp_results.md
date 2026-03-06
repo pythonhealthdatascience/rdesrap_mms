@@ -1,7 +1,7 @@
 Generate expected results
 ================
 Amy Heather
-2025-11-07
+2025-11-10
 
 - [Set-up](#set-up)
 - [Base case](#base-case)
@@ -364,10 +364,10 @@ rep_results <- confidence_interval_method(
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
     ## [1] 15
@@ -397,20 +397,20 @@ rep_results <- confidence_interval_method(
 head(rep_results)
 ```
 
-    ##   replications      data cumulative_mean      stdev lower_ci upper_ci
-    ## 1            1  9.943731        9.943731         NA       NA       NA
-    ## 2            2 10.030844        9.987287         NA       NA       NA
-    ## 3            3  9.837930        9.937501 0.09660777 9.697514 10.17749
-    ## 4            4 10.035143        9.961912 0.09276587 9.814301 10.10952
-    ## 5            5 10.151207        9.999771 0.11670760 9.854859 10.14468
-    ## 6            6 10.013713       10.002095 0.10454153 9.892385 10.11180
-    ##    deviation                metric
-    ## 1         NA mean_serve_time_nurse
-    ## 2         NA mean_serve_time_nurse
-    ## 3 0.02414963 mean_serve_time_nurse
-    ## 4 0.01481756 mean_serve_time_nurse
-    ## 5 0.01449149 mean_serve_time_nurse
-    ## 6 0.01096866 mean_serve_time_nurse
+    ##   replications      data cumulative_mean     stdev lower_ci upper_ci  deviation
+    ## 1            1  9.838471        9.838471        NA       NA       NA         NA
+    ## 2            2 10.150584        9.994527        NA       NA       NA         NA
+    ## 3            3  9.886796        9.958617 0.1679954 9.541293 10.37594 0.04190579
+    ## 4            4 10.192953       10.017201 0.1803976 9.730148 10.30425 0.02865600
+    ## 5            5 10.078433       10.029447 0.1586107 9.832506 10.22639 0.01963630
+    ## 6            6  9.847684        9.999153 0.1601006 9.831138 10.16717 0.01680295
+    ##                  metric
+    ## 1 mean_serve_time_nurse
+    ## 2 mean_serve_time_nurse
+    ## 3 mean_serve_time_nurse
+    ## 4 mean_serve_time_nurse
+    ## 5 mean_serve_time_nurse
+    ## 6 mean_serve_time_nurse
 
 ``` r
 # Save to csv
@@ -478,4 +478,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 11s
+    ## Notebook run time: 0m 7s

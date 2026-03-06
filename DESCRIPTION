@@ -1,7 +1,7 @@
 Package: simulation
 Type: Package
 Title: Simulation
-Version: 0.5.0
+Version: 1.0.0
 Authors@R: c(
     person(
       "Amy", "Heather",
@@ -32,7 +32,8 @@ Imports:
     ggplot2,
     tibble,
     gridExtra,
-    R6
+    R6,
+    checkmate
 Suggests:
     testthat (>= 3.0.0),
     patrick,

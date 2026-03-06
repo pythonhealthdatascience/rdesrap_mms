@@ -12,7 +12,7 @@ Updates each time new data is processed. Can generate a results dataframe.
 
 This class is based on the Python class `ReplicationTabulizer` from Tom
 Monks (2021) sim-tools: fundamental tools to support the simulation process
-in python (https://github.com/TomMonks/sim-tools) (MIT Licence).
+in python (https://github.com/sim-tools/sim-tools) (MIT Licence).
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

@@ -3,24 +3,19 @@
 #' Find the cumulative mean results and plot over time (overall and per run).
 #'
 #' @param result Named list with `arrivals` containing output from
-#' `get_mon_arrivals()` and `resources` containing output from
-#' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`).
+#' `get_mon_arrivals()`, `resources` containing output from
+#' `get_mon_resources()` (`per_resource = TRUE` and `ongoing = TRUE`), and
+#' `patients_in_service` containing counts of patients in system over time.
 #' @param simulation_end_time Time at end of simulation run.
 #' @param file_path Path to save figure to.
+#' @param interval Time interval in minutes for calculating cumulative means.
 #' @param warm_up Location on X axis to plot vertical red line indicating the
 #' chosen warm-up period. Defaults to NULL, which will not plot a line.
-#'
-#' @importFrom dplyr arrange group_by mutate rename select ungroup
-#' @importFrom ggplot2 aes_string annotate geom_line geom_vline ggsave labs
-#' @importFrom ggplot2 theme_minimal ggplot
-#' @importFrom gridExtra marrangeGrob
-#' @importFrom rlang .data
-#' @importFrom tidyselect all_of
 #'
 #' @export
 
 time_series_inspection <- function(
-  result, simulation_end_time, file_path, warm_up = NULL
+  result, simulation_end_time, file_path, interval = 120L, warm_up = NULL
 ) {
 
   plot_list <- list()
@@ -57,25 +52,47 @@ time_series_inspection <- function(
   metrics[[5L]] <- rename(result[["patients_in_service"]],
                           patients_in_system = .data[["count"]])
 
+  # Create sequence of time intervals
+  time_breaks <- seq(0L, simulation_end_time + interval, by = interval)
+
   # Loop through all the dataframes in df_list
   for (i in seq_along(metrics)) {
 
     # Get name of the metric
     metric <- setdiff(names(metrics[[i]]), c("time", "replication"))
 
-    # Calculate cumulative mean for the current metric
-    cumulative <- metrics[[i]] |>
+    # Aggregate data to time intervals (calculate mean within each interval)
+    aggregated <- metrics[[i]] |>
+      mutate(time_bin = as.numeric(as.character(
+        cut(time, breaks = time_breaks, labels = time_breaks[-1L])
+      ))) |>
+      group_by(.data[["replication"]], .data[["time_bin"]]) |>
+      summarise(metric_mean = mean(.data[[metric]])) |>
+      ungroup() |>
+      rename(time = .data[["time_bin"]])
+
+    # Calculate cumulative mean for the current metric per replication
+    cumulative <- aggregated |>
       arrange(.data[["replication"]], .data[["time"]]) |>
       group_by(.data[["replication"]]) |>
-      mutate(cumulative_mean = cumsum(.data[[metric]]) /
-               seq_along(.data[[metric]])) |>
+      mutate(cumulative_mean = (cumsum(.data[["metric_mean"]]) /
+                                  seq_along(.data[["metric_mean"]]))) |>
       ungroup()
 
     # Repeat calculation, but including all replications in one
-    overall_cumulative <- metrics[[i]] |>
+    overall_aggregated <- metrics[[i]] |>
+      mutate(time_bin = as.numeric(as.character(
+        cut(time, breaks = time_breaks, labels = time_breaks[-1L])
+      ))) |>
+      group_by(.data[["time_bin"]]) |>
+      summarise(metric_mean = mean(.data[[metric]])) |>
+      ungroup() |>
+      rename(time = .data[["time_bin"]])
+
+    overall_cumulative <- overall_aggregated |>
       arrange(.data[["time"]]) |>
-      mutate(cumulative_mean = cumsum(.data[[metric]]) /
-               seq_along(.data[[metric]])) |>
+      mutate(cumulative_mean = cumsum(.data[["metric_mean"]]) /
+               seq_along(.data[["metric_mean"]])) |>
       ungroup()
 
     # Create plot

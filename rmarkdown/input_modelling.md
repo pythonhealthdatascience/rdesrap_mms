@@ -1,7 +1,7 @@
 Input modelling
 ================
 Amy Heather
-2025-11-07
+2025-11-10
 
 - [Input modelling](#input-modelling)
   - [Set-up](#set-up)
@@ -173,10 +173,10 @@ model, which are often modelled using exponential distributions.
 
 Then, we **inspect the data** in two different ways:
 
-| Plot type       | What does it show?                                                  | Why do we create this plot?                                                                                                                                                                                                                                                                        |
-|-----------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Plot type | What does it show? | Why do we create this plot? |
+|----|----|----|
 | **Time series** | Trends, seasonality, and outliers (e.g., spikes or dips over time). | To check for **stationarity** (i.e. no trends or sudden changes). Stationary is an assumption of many distributions, and if trends or anomalies do exist, we may need to exclude certain periods or model them separately. The time series can also be useful for spotting outliers and data gaps. |
-| **Histogram**   | The shape of the data’s distribution.                               | Helps **identify which distributions might fit** the data.                                                                                                                                                                                                                                         |
+| **Histogram** | The shape of the data’s distribution. | Helps **identify which distributions might fit** the data. |
 
 We repeat this for arrivals and service time, so have created a function
 to avoid duplicate code between each.

@@ -96,3 +96,54 @@ test_that("running algorithm with < 3 replications has no solution", {
   # Check that summary table just has 2 rows per metric
   expect_identical(nrow(alg$summary_table), 6L)
 })
+
+
+test_that("ALgorithm wrapper matches ReplicationsAlgorithm R6 behaviour", {
+  param <- parameters()
+  metrics <- c("mean_waiting_time_nurse",
+               "mean_serve_time_nurse",
+               "utilisation_nurse")
+  desired_precision <- 0.10
+  initial_replications <- 3L
+  look_ahead <- 5L
+  replication_budget <- 50L
+
+  # 1) Run via the wrapper
+  res_wrapper <- run_replications_algorithm(
+    param = param,
+    metrics = metrics,
+    desired_precision = desired_precision,
+    initial_replications = initial_replications,
+    look_ahead = look_ahead,
+    replication_budget = replication_budget,
+    verbose = FALSE
+  )
+
+  # 2) Run via the raw R6 class
+  alg <- ReplicationsAlgorithm$new(
+    param = param,
+    metrics = metrics,
+    desired_precision = desired_precision,
+    initial_replications = initial_replications,
+    look_ahead = look_ahead,
+    replication_budget = replication_budget,
+    verbose = FALSE
+  )
+  alg$select()
+
+  # --- Check nreps identical ---
+  # Wrapper returns a plain list; R6 holds a list in alg$nreps
+  expect_equal(
+    res_wrapper$nreps,
+    alg$nreps,
+    tolerance = testthat_tolerance()
+  )
+
+  # --- Check summary_table identical ---
+  # Use expect_equal so that tiny numeric differences are allowed if needed
+  expect_equal(
+    res_wrapper$summary_table,
+    alg$summary_table,
+    tolerance = testthat_tolerance()
+  )
+})

@@ -21,10 +21,7 @@ valid_inputs <- function(run_number, param) {
 #' @return Throws an error if the run number is invalid.
 
 check_run_number <- function(run_number) {
-  if (run_number < 0L || run_number %% 1L != 0L) {
-    stop("The run number must be a non-negative integer. Provided: ",
-         run_number, call. = FALSE)
-  }
+  assert_int(run_number, lower = 0L, .var.name = "run_number")
 }
 
 
@@ -38,6 +35,8 @@ check_run_number <- function(run_number) {
 #' @return Throws an error if there are missing or extra parameters.
 
 check_param_names <- function(param) {
+  assert_list(param, names = "unique", .var.name = "param")
+
   # Get valid argument names from the function
   valid_names <- names(formals(parameters))
 
@@ -77,22 +76,26 @@ check_param_names <- function(param) {
 #' @return Throws an error if any specified parameter value is invalid.
 
 check_param_values <- function(param) {
+  assert_list(param, names = "unique", .var.name = "param")
 
   # Check that listed parameters are always positive
   p_list <- c("patient_inter", "mean_n_consult_time", "number_of_runs")
   for (p in p_list) {
-    if (param[[p]] <= 0L) {
-      stop('The parameter "', p, '" must be greater than 0.', call. = FALSE)
-    }
+    assert_number(
+      param[[p]],
+      lower = .Machine$double.eps,
+      .var.name = p
+    )
   }
 
   # Check that listed parameters are non-negative integers
   n_list <- c("warm_up_period", "data_collection_period", "number_of_nurses")
   for (n in n_list) {
-    if (param[[n]] < 0L || param[[n]] %% 1L != 0L) {
-      stop('The parameter "', n,
-           '" must be an integer greater than or equal to 0.', call. = FALSE)
-    }
+    assert_int(
+      param[[n]],
+      lower = 0L,
+      .var.name = n
+    )
   }
 }
 
@@ -105,13 +108,18 @@ check_param_values <- function(param) {
 #' @export
 
 check_log_file_path <- function(param) {
+  assert_list(param, names = "unique", .var.name = "param")
+
   log_to_file <- param[["log_to_file"]]
   file_path <- param[["file_path"]]
-  if (isTRUE(log_to_file) && (is.null(file_path) || !nzchar(file_path))) {
-    stop(
-      "If 'log_to_file' is TRUE, you must provide a non-NULL, ",
-      "non-empty 'file_path'.",
-      call. = FALSE
+
+  assert_flag(log_to_file, null.ok = TRUE, .var.name = "log_to_file")
+
+  if (isTRUE(log_to_file)) {
+    assert_string(
+      file_path,
+      min.chars = 1L,
+      .var.name = "file_path"
     )
   }
 }

@@ -1,7 +1,7 @@
 Choosing cores
 ================
 Amy Heather
-2025-11-07
+2025-11-10
 
 - [Set up](#set-up)
 - [Run time with varying number of CPU
@@ -32,22 +32,17 @@ parallel, you must use `devtools::install()` and then
 devtools::install(upgrade = "never")
 ```
 
-    ## Installing 1 packages: S7
-
-    ## Installing package into '/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu'
-    ## (as 'lib' is unspecified)
-
-    ## ── R CMD build ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    ## ── R CMD build ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ##      checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’ ...  ✔  checking for file ‘/home/amy/Documents/stars/rdesrap_mms/DESCRIPTION’
     ##   ─  preparing ‘simulation’:
     ##    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
     ##   ─  checking for LF line-endings in source and make files and shell scripts
     ##   ─  checking for empty or unneeded directories
     ##    Omitted ‘LazyData’ from DESCRIPTION
-    ##   ─  building ‘simulation_0.4.0.tar.gz’
+    ##   ─  building ‘simulation_0.5.0.tar.gz’
     ##      
     ## Running /opt/R/4.4.1/lib/R/bin/R CMD INSTALL \
-    ##   /tmp/RtmpEVIQmd/simulation_0.4.0.tar.gz --install-tests 
+    ##   /tmp/RtmpuXTV1O/simulation_0.5.0.tar.gz --install-tests 
     ## * installing to library ‘/home/amy/.cache/R/renv/library/rdesrap_mms-0ef20566/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu’
     ## * installing *source* package ‘simulation’ ...
     ## ** using staged installation
@@ -193,13 +188,13 @@ run_cores(5L, "cores1.png")
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
-    ## [1] 43200
+    ## [1] 20160
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -259,13 +254,13 @@ run_cores(5L, "cores2.png", list(data_collection_period = 10000L))
     ## [1] 5
     ## 
     ## $warm_up_period
-    ## [1] 38880
+    ## [1] 10080
     ## 
     ## $data_collection_period
     ## [1] 10000
     ## 
     ## $number_of_runs
-    ## [1] 15
+    ## [1] 25
     ## 
     ## $scenario_name
     ## NULL
@@ -308,4 +303,4 @@ seconds <- as.integer(runtime %% 60L)
 cat(sprintf("Notebook run time: %dm %ds", minutes, seconds))
 ```
 
-    ## Notebook run time: 0m 51s
+    ## Notebook run time: 0m 45s

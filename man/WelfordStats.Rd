@@ -17,7 +17,7 @@ See Knuth. D `The Art of Computer Programming` Vol 2. 2nd ed. Page 216.
 
 This class is based on the Python class `OnlineStatistics` from Tom Monks
 (2021) sim-tools: fundamental tools to support the simulation process in
-python (https://github.com/TomMonks/sim-tools) (MIT Licence).
+python (https://github.com/sim-tools/sim-tools) (MIT Licence).
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
