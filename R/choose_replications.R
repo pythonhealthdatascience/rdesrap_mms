@@ -171,7 +171,7 @@ ReplicationTabuliser <- R6Class("ReplicationTabuliser", list( # nolint: object_n
   #' @return Stored results compiled into a dataframe.
   summary_table = function() {
     data.frame(
-      replications = seq_len(length(self$data_points)),
+      replications = seq_along(self$data_points),
       data = self$data_points,
       cumulative_mean = self$cumulative_mean,
       stdev = self$std,

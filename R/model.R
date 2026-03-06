@@ -153,5 +153,5 @@ model <- function(run_number, param, set_seed = TRUE) {
     result, run_number, simulation_end_time = full_run_length
   )
 
-  return(result)
+  result
 }

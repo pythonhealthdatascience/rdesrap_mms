@@ -36,5 +36,5 @@ parameters <- function(
   log_to_file = FALSE,
   file_path = NULL
 ) {
-  return(as.list(environment()))
+  as.list(environment())
 }
