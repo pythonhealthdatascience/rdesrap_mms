@@ -2,7 +2,7 @@
 % Please edit documentation in R/choose_replications.R
 \name{run_replications_algorithm}
 \alias{run_replications_algorithm}
-\title{Automated replications selection using Welford‑based online statistics.}
+\title{Automated replications selection using Welford-based online statistics.}
 \usage{
 run_replications_algorithm(
   param,
@@ -19,8 +19,8 @@ run_replications_algorithm(
 
 \item{metrics}{Character vector of metric names (columns in `run_results`).}
 
-\item{desired_precision}{Target deviation of CI half‑width as proportion
-of the mean, e.g. `0.1` for 10%.}
+\item{desired_precision}{Target deviation of CI half-width as proportion
+of the mean, e.g. `0.1` for 10 percent.}
 
 \item{initial_replications}{Number of initial replications.}
 
@@ -31,23 +31,19 @@ of the mean, e.g. `0.1` for 10%.}
 \item{verbose}{Logical; whether to print startup messages.}
 }
 \value{
-A list with:
-\itemize{
-  \item `nreps` named list of min replications per metric (or `NA` if not
-  met).
-  \item `summary_table` dataframe with per‑replication statistics for all
-  metrics.
-  \item `status` character vector: metrics for which desired precision was
-  not reached.
-}
+A list with: (1) `nreps` named list of min replications per metric
+(or `NA` if not met), (2) `summary_table` dataframe with per-replication
+statistics for all metrics, and (3) `status` character vector: metrics for
+which desired precision was not reached.
 }
 \description{
-A user‑friendly wrapper around the ReplicationsAlgorithm class that:
-- Runs the replications sequence
-- Returns minimum required replications for each metric
-- Returns summary tables for each metric (replication‑by‑replication)
+A user-friendly wrapper around the ReplicationsAlgorithm class that: (1)
+Runs the replications sequence, (2) Returns minimum required replications
+for each metric, and (3) Returns summary tables for each metric
+(replication-by-replication).
 
 Based on Hoad, Robinson, & Davies (2010) "Automated selection of the number
 of replications for a discrete-event simulation".
+
 You just call this as a function, without exposing the R6 internals.
 }

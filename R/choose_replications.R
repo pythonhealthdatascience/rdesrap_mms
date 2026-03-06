@@ -506,37 +506,35 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 ))
 
 
-#' Automated replications selection using Welford‑based online statistics.
+#' Automated replications selection using Welford-based online statistics.
 #'
 #' @description
-#' A user‑friendly wrapper around the ReplicationsAlgorithm class that:
-#' - Runs the replications sequence
-#' - Returns minimum required replications for each metric
-#' - Returns summary tables for each metric (replication‑by‑replication)
+#' A user-friendly wrapper around the ReplicationsAlgorithm class that: (1)
+#' Runs the replications sequence, (2) Returns minimum required replications
+#' for each metric, and (3) Returns summary tables for each metric
+#' (replication-by-replication).
 #'
 #' Based on Hoad, Robinson, & Davies (2010) "Automated selection of the number
 #' of replications for a discrete-event simulation".
+#'
 #' You just call this as a function, without exposing the R6 internals.
 #'
 #' @param param List, model configuration (passed to your `runner` or `model`).
 #' @param metrics Character vector of metric names (columns in `run_results`).
-#' @param desired_precision Target deviation of CI half‑width as proportion
-#'   of the mean, e.g. `0.1` for 10%.
+#' @param desired_precision Target deviation of CI half-width as proportion
+#'   of the mean, e.g. `0.1` for 10 percent.
 #' @param initial_replications Number of initial replications.
 #' @param look_ahead Minimum extra replications to “look ahead”.
 #' @param replication_budget Maximum allowed replications.
 #' @param verbose Logical; whether to print startup messages.
 #'
-#' @return A list with:
-#' \itemize{
-#'   \item `nreps` named list of min replications per metric (or `NA` if not
-#'   met).
-#'   \item `summary_table` dataframe with per‑replication statistics for all
-#'   metrics.
-#'   \item `status` character vector: metrics for which desired precision was
-#'   not reached.
-#' }
+#' @return A list with: (1) `nreps` named list of min replications per metric
+#' (or `NA` if not met), (2) `summary_table` dataframe with per-replication
+#' statistics for all metrics, and (3) `status` character vector: metrics for
+#' which desired precision was not reached.
+#'
 #' @export
+
 run_replications_algorithm <- function(
   param,
   metrics = c("mean_waiting_time_nurse",
@@ -562,7 +560,7 @@ run_replications_algorithm <- function(
   # Run the algorithm
   alg$select()
 
-  # Extract results in a plain‑list form
+  # Extract results in a plain-list form
   nreps <- as.list(alg$nreps)    # numeric/NA for each metric
 
   # Identify which metrics didn’t converge

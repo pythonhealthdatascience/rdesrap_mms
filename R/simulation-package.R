@@ -18,7 +18,7 @@
 #' @importFrom simmer get_mon_attributes get_mon_resources get_queue_count now
 #' @importFrom simmer release run seize set_attribute simmer timeout
 #' @importFrom simmer trajectory wrap
-#' @importFrom stats rexp sd setNames t.test
+#' @importFrom stats rexp sd setNames time t.test
 #' @importFrom tibble tibble
 #' @importFrom tidyr drop_na pivot_wider
 #' @importFrom tidyselect all_of any_of
