@@ -1,3 +1,25 @@
+# Simple M/M/s queuing model: R DES RAP v1.0.0
+
+Some of the main changes in this update include moving away from R6, using checkmate in validation, correcting warm-up analysis, expanding replications analysis to include all metrics, and switching to package-level imports.
+
+## New features
+
+* Add retrospective QA summary.
+* Now run choosing replications analysis on all metrics.
+
+## Bug fixes
+
+* Correct determination of warm-up period to use intervals, and re-run analysis with new parameters.
+
+## Other changes
+
+* Switched to package-level importfrom statements to avoid duplication.
+* Changed replications R6 classes to functions.
+* Use checkmate in validation.
+* Changed some parameters.
+* Updated STRESS.
+* Minor updates to some docstrings.
+
 # Simple M/M/s queuing model: R DES RAP v0.5.0
 
 This update adds new performance measures and tests, improves the GitHub actions, implements some fixes and documentation improvements, among other changes.
