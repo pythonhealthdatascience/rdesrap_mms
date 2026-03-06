@@ -538,15 +538,15 @@ ReplicationsAlgorithm <- R6Class("ReplicationsAlgorithm", list( # nolint: object
 #' }
 #' @export
 run_replications_algorithm <- function(
-    param,
-    metrics = c("mean_waiting_time_nurse",
-                "mean_serve_time_nurse",
-                "utilisation_nurse"),
-    desired_precision = 0.1,
-    initial_replications = 3L,
-    look_ahead = 5L,
-    replication_budget = 1000L,
-    verbose = TRUE
+  param,
+  metrics = c("mean_waiting_time_nurse",
+              "mean_serve_time_nurse",
+              "utilisation_nurse"),
+  desired_precision = 0.1,
+  initial_replications = 3L,
+  look_ahead = 5L,
+  replication_budget = 1000L,
+  verbose = TRUE
 ) {
   # Construct the R6 algorithm object
   alg <- ReplicationsAlgorithm$new(
@@ -567,11 +567,12 @@ run_replications_algorithm <- function(
 
   # Identify which metrics didn’t converge
   unsolved <- names(nreps)[vapply(nreps, is.na, logical(1L))]
-  status <- if (length(unsolved) > 0) {
+  # nolint start: keyword_quote_linter
+  status <- if (length(unsolved) > 0L) {
     c("not_converged" = unsolved)
   } else {
     c("converged" = NA_character_)
-  }
+  } # nolint end: keyword_quote_linter
 
   list(
     nreps = nreps,

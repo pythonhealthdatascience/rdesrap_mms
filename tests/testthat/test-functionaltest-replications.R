@@ -135,13 +135,15 @@ test_that("ALgorithm wrapper matches ReplicationsAlgorithm R6 behaviour", {
   # Wrapper returns a plain list; R6 holds a list in alg$nreps
   expect_equal(
     res_wrapper$nreps,
-    alg$nreps
+    alg$nreps,
+    tolerance = testthat_tolerance()
   )
 
   # --- Check summary_table identical ---
   # Use expect_equal so that tiny numeric differences are allowed if needed
   expect_equal(
     res_wrapper$summary_table,
-    alg$summary_table
+    alg$summary_table,
+    tolerance = testthat_tolerance()
   )
 })

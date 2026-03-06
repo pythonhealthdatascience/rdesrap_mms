@@ -21,7 +21,7 @@ valid_inputs <- function(run_number, param) {
 #' @return Throws an error if the run number is invalid.
 
 check_run_number <- function(run_number) {
-  assert_int(run_number, lower = 0, .var.name = "run_number")
+  assert_int(run_number, lower = 0L, .var.name = "run_number")
 }
 
 
@@ -93,7 +93,7 @@ check_param_values <- function(param) {
   for (n in n_list) {
     assert_int(
       param[[n]],
-      lower = 0,
+      lower = 0L,
       .var.name = n
     )
   }
@@ -118,7 +118,7 @@ check_log_file_path <- function(param) {
   if (isTRUE(log_to_file)) {
     assert_string(
       file_path,
-      min.chars = 1,
+      min.chars = 1L,
       .var.name = "file_path"
     )
   }
